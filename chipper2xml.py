@@ -65,7 +65,7 @@ for i in range(len(lines)):
 		if type(syllable_pattern) is str:	
 			syllable_pattern = syllable_pattern.replace("[","").replace("]","").replace(" ","").split(",")
 		for k in range(number_notes):
-			output_string += "<Note><Position>"+str(onset[k])+"</Position><Length>"+str(lengths[k])+"</Length><Label>"+str(syllable_pattern[k])+"</Note>"
+			output_string += "<Note><Position>"+str(onset[k])+"</Position><Length>"+str(lengths[k])+"</Length><Label>"+str(syllable_pattern[k])+"</Label></Note>"
 		output_string += "</Sequence>"
 
 output_string += "</Sequences>"
