@@ -4,6 +4,8 @@
 
 ## TODO: 
 
+# python3 "/Users/kprovost/Documents/GitHub/bioacoustics/combine_xmls.py" "/Users/kprovost/Documents/TweetyNet/testing_wcs/Melozone_fusca_onlytest/"; 
+
 import sys
 import glob
 import os 
@@ -20,21 +22,33 @@ os.chdir(directory)
 
 lines = []
 
-listfiles = glob.glob("*.xml")
+listfiles = glob.glob("*.xml",recursive=False)
 numfiles = len(listfiles)
+
+for xmlfile in listfiles:
+	with open(xmlfile,"r") as infile:
+		full = infile.read()
+	full = full.replace("\n","")
+	with open(xmlfile,"w") as outfile:
+		outfile.write(full)	
 
 for xmlfile in listfiles:
 	print(xmlfile)
 	with open(xmlfile,"r") as infile:
 		lines += infile.readlines()
-		
-	
 
 ## each line of lines should be one file
 ## need to extract the "<Sequences><NumSequence>*</NumSequence>" and remove it, and then remove "</Sequences>"
 total_sequences = 0
 for i in range(len(lines)):
-	total_sequences += int(lines[i].replace(">","<").split("<")[4]) ## gets the number of the sequences in here. should be one but might not be
+	try:
+		total_sequences += int(lines[i].replace(">","<").split("<")[4]) ## gets the number of the sequences in here. should be one but might not be
+	except:
+		print("ERROR")
+		print(i)
+		print(lines[i])
+		print("###")
+		break
 	## remove the <Sequences><NumSequence>*</NumSequence>
 	lines[i]=re.sub(r"<Sequences><NumSequence>\d+</NumSequence>","",lines[i])
 	lines[i]=re.sub(r"</Sequences>","",lines[i])

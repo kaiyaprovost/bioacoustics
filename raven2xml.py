@@ -4,6 +4,11 @@
 
 ## TODO: audacity, chipper, raven all seem to have different time units 
 
+# cd "/Users/kprovost/"; 
+# for i in /Users/kprovost/Documents/TweetyNet/testing_wcs/Melozone_fusca_onlytest/*.Table.1.selections.txt; do 
+# python3 /Users/kprovost/Documents/GitHub/bioacoustics/raven2xml.py "${i}" 48; 
+# done;
+
 import sys
 import glob
 import os 
@@ -15,16 +20,20 @@ try:
 except:
 	print("Filename not given, quitting")
 	exit()
-	infile="/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/BLB11543.Table.1.selections.txt"
+	#infile="/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/BLB11543.Table.1.selections.txt"
 	
 try:
 	samples_per_ms = int(sys.argv[2])
 	print("\tSamples per ms is:",samples_per_ms)
 except:
-	print("\tSamples per ms not given or invalid. Defaulting to 32")
-	samples_per_ms=32
+	print("\tSamples per ms not given or invalid. Defaulting to 48 (or 48000 / second)")
+	samples_per_ms=48
 	
 output_filepath = str(infile)+".xml"
+
+
+add_labels = True
+
 
 with open(infile,"r") as input:
 	lines = input.readlines()
@@ -32,7 +41,7 @@ with open(infile,"r") as input:
 num_sequences = 1
 output_string = "<Sequences><NumSequence>"+str(num_sequences)+"</NumSequence>"
 ## the filename needs to be extracted from the infile though
-wavfilename= infile.split("/")[-1].split(".")[0].upper()+".wav"
+wavfilename= infile.split("/")[-1].replace(".Table.1.selections.txt",".wav")
 output_string += "\n<Sequence><WaveFileName>"+str(wavfilename)+"</WaveFileName>"
 
 ## each line should have three things separated by tabs: onset, offset, labels
@@ -54,9 +63,9 @@ for i in range(len(lines)):
 	if i > 0:
 		split = lines[i].strip().split("\t")
 		## need to subtract the first_onset and then convert to samples not seconds
-		onset = int(round(float(split[3]) - float(first_onset))*1000*samples_per_ms)
-		offset = int(round(float(split[4]) - float(first_onset))*1000*samples_per_ms)
-		if len(split) > 7:
+		onset = int(round((float(split[3]) - float(first_onset))*1000*samples_per_ms))
+		offset = int(round((float(split[4]) - float(first_onset))*1000*samples_per_ms))
+		if len(split) > 7 and add_labels == True:
 			label = split[-1] ## this means an annotation was manually set
 		else:
 			label = split[0]
