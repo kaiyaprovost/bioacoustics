@@ -9,7 +9,7 @@ import re
 import numpy as np
 import pandas as pd
 
-# python3 "/Users/kprovost/Documents/GitHub/bioacoustics/tweetynet_output_to_raven.py" "/Users/kprovost/Documents/TweetyNet/testing_wcs/Melozone_fusca_onlytest/Melozone_fusca_prep_predict_MASTERLIST.annot.csv"
+# python3 "/Users/kprovost/Documents/GitHub/bioacoustics/tweetynet_output_to_raven.py" "/Users/kprovost/Documents/TweetyNet/testing_wcs/Melozone_fusca_onlytest/Wave_prep_210920_140148.annot.csv"
 
 # for i in /Users/kprovost/Documents/TweetyNet/testing_wcs/Card*card*_train/Predictions/*annot.csv; do python3 "/Users/kprovost/Documents/GitHub/bioacoustics/tweetynet_output_to_raven.py" $i 10000 500 1; done;
 
