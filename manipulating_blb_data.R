@@ -41,3 +41,13 @@ hist(blb$YEAR_COLLECTED)
 sort(table(blb$GENUS_NAME))
 plot(blb$LONGITUDE[blb$GENUS_NAME=="Setophaga"],
      blb$LATITUDE[blb$GENUS_NAME=="Setophaga"])
+
+
+
+
+
+
+## rolling average windows
+df = read.table("/Users/kprovost/OneDrive - The Ohio State University/Song/BLB_Data/Spreadsheets/blb_xc_all_northamerica_nomystery.csv",header=T,sep=",",fill=T)
+df = df[,c("COLLECTION","ID","DAY","MONTH","YEAR")]
+boxplot(df$YEAR~df$COLLECTION)

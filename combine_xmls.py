@@ -4,7 +4,7 @@
 
 ## TODO: 
 
-# python3 "/Users/kprovost/Documents/GitHub/bioacoustics/combine_xmls.py" "/Users/kprovost/Documents/TweetyNet/testing_wcs/Melozone_fusca_onlytest/"; 
+# sudo python3 "/Users/kprovost/Documents/GitHub/bioacoustics/combine_xmls.py" "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Zonotrichia_leucophrys/"; 
 
 import sys
 import glob

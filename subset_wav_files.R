@@ -1,29 +1,31 @@
 library(tuneR)
 
-mypath="/Users/kprovost/OneDrive - The Ohio State University/XenoCanto/Passerellidae/Melozone/Melozone-fusca/"
+mypath="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/"
 
-wavfiles = list.files(path=mypath,
-                       pattern=".wav$",recursive = T,full.names = T)
-
-w=lapply(1:length(wavfiles),FUN=function(i){
-  wavf=wavfiles[i]
-  
-  wav = readWave(wavf,units = "samples",from=0)
-  samples_per_ms=wav@samp.rate
-  if(samples_per_ms!=48000){
-    print(i)
-    print(wavf)
-    print(samples_per_ms)
-  }
-  return(samples_per_ms)
-})
-wavfiles=wavfiles[unlist(w) == 48000]
+# wavfiles = list.files(path=mypath,
+#                        pattern=".wav$",recursive = T,full.names = T)
+# 
+# w=lapply(1:length(wavfiles),FUN=function(i){
+#   print(paste(i,"/",length(wavfiles)))
+#   wavf=wavfiles[i]
+#   
+#   wav = readWave(wavf,units = "samples",from=0)
+#   samples_per_ms=wav@samp.rate
+#   if(samples_per_ms!=48000){
+#     print(i)
+#     print(wavf)
+#     print(samples_per_ms)
+#   }
+#   return(samples_per_ms)
+# })
+# wavfiles2=wavfiles[unlist(w) == 48000]
 
 
 metafiles = list.files(path=mypath,
                        pattern=".Table.1.selections.txt$",recursive = T,full.names = T)
 #   file = "/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/batch2/annotated/BLB23326.wav"
 # meta = "/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/batch2/annotated/BLB23326.Table.1.selections.txt"
+metafiles=metafiles[!(grepl("wav_",metafiles))]
 
 for(meta in metafiles) {
   print(meta)
@@ -100,9 +102,6 @@ for(meta in metafiles) {
       write.table(subset_df,newmeta,quote=F,sep="\t",row.names = F)
       
     }
-    
-    
-    
   }
 }
 

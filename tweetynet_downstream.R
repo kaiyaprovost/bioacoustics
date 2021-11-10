@@ -7,7 +7,7 @@ library(hypervolume)
 do_sumstats = F
 do_soundshape = T
 
-mainpath = "/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/Cardinalidae/Cardinalis/Cardinalis_sinuatus/"
+mainpath = "/Users/kprovost/Documents/OneDrive - The Ohio State University/Song/SoundShape/complexity_metric/"
 setwd(mainpath)
 
 date=format(Sys.time(), "%d%b%Y")
@@ -484,7 +484,7 @@ if(do_sumstats==T){
     }
   }
   
-  finished_files = list.files(path=getwd(),pattern=paste("rvn.dat_trimmed_spectro_fcts_",#date,".txt",
+  finished_files = list.files(path=getwd(),pattern=paste("rvn.dat_trimmed_spectro_fcts_",date,".txt",
                                                          sep=""),
                               full.names = T,recursive = T)
   
@@ -616,7 +616,7 @@ align.wave.custom <- function(wav.at=NULL, wav.to="Aligned", time.length=1, time
   
 } #end function
 
-eigensound.custom = function (analysis.type = threeDshape, wav.at = NULL, store.at = wav.at, 
+eigensound.custom <- function (analysis.type = threeDshape, wav.at = NULL, store.at = wav.at, 
                               dBlevel = 25, flim = c(0, 10), tlim = c(0, 1), trel = tlim, 
                               x.length = 80, y.length = 60, log.scale = TRUE, back.amp = 35, 
                               add.points = FALSE, add.contour = TRUE, lwd = 1, EQ = c(0.05,0.15, 0.3, 0.5, 0.7, 0.85, 0.95), mag.time = 1, f = 44100, 
@@ -765,8 +765,8 @@ eigensound.custom = function (analysis.type = threeDshape, wav.at = NULL, store.
 
 
 ## for i in table1files
-path=c("/Users/kprovost/Documents","/Users/kprovost/OneDrive - The Ohio State University/BLB_Data", "/Users/kprovost/OneDrive - The Ohio State University/XenoCanto")
-pattern=c(".Table.1.selections.txt",".selections.txt")
+path=c("/Users/kprovost/Documents/OneDrive - The Ohio State University/Song/SoundShape/complexity_metric/")
+pattern=c(".Table.1.selections.txt")
 listfiles=c()
 for(pa in path){
   print(pa)
@@ -777,10 +777,10 @@ for(pa in path){
     listfiles=c(listfiles,listfiles1)
   }
 }
-listfiles = listfiles[grepl("Zonotrichia",basename(listfiles))]
-listfiles = listfiles[!(grepl("xml",listfiles))]
-listfiles = listfiles[!(grepl("wav_",listfiles))]
-listfiles=unique(listfiles)
+#listfiles = listfiles[grepl("Zonotrichia",basename(listfiles))] ## only takes Zonotrichia files
+listfiles = listfiles[!(grepl("xml",listfiles))] ## excludes XML files
+listfiles = listfiles[!(grepl("wav_",listfiles))] ## excludes files with "wav_" in the name which are shortened
+listfiles=unique(listfiles) ## no duplicates
 
 run_soundshape = function(path,pattern,doplot=F,verbose=F,outpath=NULL,listfiles=NULL,tpsname="eig.sample",clusterind=F,overwrite=T,
                           checkpointNumber=1,pcascalemin=10,pcascale=T,redo_eig=T,alignCheckpoint=1,eigcheckpoint=1,manualcombinetps=F,shuffle=F,rev=F){
@@ -1066,15 +1066,106 @@ run_soundshape = function(path,pattern,doplot=F,verbose=F,outpath=NULL,listfiles
   print(Sys.time())
 }
 
-run_soundshape(path=path,pattern=pattern,doplot=F,verbose=T,listfiles=listfiles,outpath="~/Documents/",
-               overwrite=F,checkpointNumber=6316,redo_eig=T,alignCheckpoint=513037,eigcheckpoint=46226,shuffle=F,rev=T)
+run_soundshape(path=path,pattern=pattern,doplot=F,verbose=T,listfiles=listfiles,outpath="/Users/kprovost/Documents/OneDrive - The Ohio State University/Song/SoundShape/complexity_metric/",
+               overwrite=F,checkpointNumber=1,redo_eig=T,alignCheckpoint=1,eigcheckpoint=1,shuffle=F,rev=F)
 }
 
+
+
+
+## importing the PCA data from soundshape 
 pca_to_keep = 3
-pcaxF = as.data.frame(data.table::fread("/Users/kprovost/Documents/Zonotrichia_pca_soundshape_SCALEFALSE.txt",sep=" "))
+pcaxF = as.data.frame(data.table::fread("/Users/kprovost/Documents/OneDrive - The Ohio State University/Song/SoundShape/complexity_metric/complexity_pca_soundshape_SCALETRUE.temp",sep=" "))
 rownames(pcaxF) = pcaxF$V1
 pcaxF=pcaxF[,-1]
+rownames(pcaxF)
+rownames(pcaxF)=gsub("-",".",rownames(pcaxF))
+rownames(pcaxF)=gsub("_",".",rownames(pcaxF))
+rownames(pcaxF)=gsub(".mp3","",rownames(pcaxF))
+rownames(pcaxF)=gsub(".gambellii","",rownames(pcaxF))
+rownames(pcaxF)=gsub(".oriantha","",rownames(pcaxF))
+pcaxF$genus=c(sapply(rownames(pcaxF),FUN=function(x){strsplit(x,"\\.")[[1]][1]}))
+pcaxF$species=c(sapply(rownames(pcaxF),FUN=function(x){strsplit(x,"\\.")[[1]][2]}))
+pcaxF$id=c(sapply(rownames(pcaxF),FUN=function(x){strsplit(x,"\\.")[[1]][3]}))
+pcaxF$syllable=c(sapply(rownames(pcaxF),FUN=function(x){strsplit(x,"\\.")[[1]][4]}))
 
+pcaxF_small = cbind(pcaxF[,(1:pca_to_keep)],pcaxF[,c("genus","species","id","syllable")])
+
+hull3=geometry::convhulln(pcaxF_small[,(1:pca_to_keep)],output.options="FA")
+fullarea=hull3$area
+fullvol=hull3$vol
+
+areadf=cbind("ALL","ALL",fullarea,nrow(pcaxF_small))
+voldf=cbind("ALL","ALL",fullvol,nrow(pcaxF_small))
+
+for(spp in unique(pcaxF_small$species)){
+  temp = pcaxF_small[pcaxF_small$species==spp,]
+  hulltemp=geometry::convhulln(temp[,(1:pca_to_keep)],output.options="FA")
+  temparea=hulltemp$area
+  tempvol=hulltemp$vol
+  
+  toadd=cbind(spp,"ALL",temparea,nrow(temp))
+  areadf = rbind(areadf,toadd)
+  toadd2=cbind(spp,"ALL",tempvol,nrow(temp))
+  voldf = rbind(voldf,toadd2)
+  
+  for(id in unique(temp$id)){
+    idtemp = temp[temp$id==id,]
+    hullid=geometry::convhulln(idtemp[,(1:pca_to_keep)],output.options="FA")
+    idarea=hullid$area
+    idvol=hullid$vol
+    
+    toadd=cbind(spp,id,idarea,nrow(idtemp))
+    areadf = rbind(areadf,toadd)
+    toadd2=cbind(spp,id,idvol,nrow(idtemp))
+    voldf = rbind(voldf,toadd2)
+  }
+  
+}
+
+permute_area = function(dataframe,proportion=NULL,to_sample=NULL,columns){
+  df = dataframe[,columns]
+  df = df[complete.cases(df),]
+  if(is.null(to_sample) & is.null(proportion)){
+    stop("ERROR: must specify only one of to_sample or proportion")
+  }
+  if(!(is.null(to_sample)) & !(is.null(proportion))){
+    stop("ERROR: must specify only one of to_sample or proportion")
+  }
+  if(is.null(to_sample)) {
+    to_sample = round(proportion*nrow(df))
+  }
+  if(is.null(proportion)) {
+    proportion = nrow(df) / to_sample
+  }
+  newdf = df[sample(1:nrow(df),to_sample,replace=F),] ### 
+  hull3=geometry::convhulln(newdf,output.options="FA")
+  areavol = cbind(hull3$area,hull3$vol)
+  colnames(areavol) = c("area","vol")
+  return(areavol)
+}
+
+pdf("~/complexity_expected_permutation.pdf")
+for(N in rev(sort(as.numeric(unique(voldf[2:nrow(voldf),4]))))){
+  print(N)
+    permuted=lapply(1:1000,FUN=function(x){permute_area(dataframe=pcaxF_small,to_sample=N,columns=paste("PC",1:pca_to_keep,sep=""))}) ## about 6 seconds for 1000
+    permuted2 = as.data.frame(do.call(rbind,permuted))
+    hist(permuted2$vol,main=N)
+    print(summary(permuted2$vol))
+    abline(v=c(5e1,2e2,6e3,7e3,8e3,9e3,1e4,2e4,3e4,4e4,5e4,7e4,8e4,1e5,2e5,3e5,6e5,1e6,2e6,3e6,5e6,6e6,1e7,2e7))
+}
+dev.off()
+
+
+
+
+
+
+
+
+
+
+## merging the PCA data with the metadata about the zonotrichia songs
 strsplits <- function(x, splits, ...) {
   for (split in splits)
   {
@@ -1189,6 +1280,8 @@ full$STATE[full$STATE=="SanDiegoCounty" & !(is.na(full$STATE))] = "California"
 
 colnames(full) = c("ID","SCI","SUBSPP","YEAR","STATE","LAT","LON",paste("PC",1:pca_to_keep,sep=""))
 full=full[,c("ID","SCI","SUBSPP","YEAR","STATE","LAT","LON",paste("PC",1:pca_to_keep,sep=""))]
+
+## write out the combined metadata and PCA data
 write.table(full,"~/Zonotrichia_full_pcs_meta.txt")
 
 full=read.table("~/Zonotrichia_full_pcs_meta.txt")

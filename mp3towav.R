@@ -1,6 +1,6 @@
 library(tuneR)
 
-setwd("/Users/kprovost/OneDrive - The Ohio State University/Song/XenoCanto/Passeriformes/Oscines/Passerellidae/Zonotrichia")
+setwd("/Users/kprovost/Dropbox (AMNH)/Postdoc_Backup/")
 mp3files = list.files(path=getwd(),
                       pattern="\\.mp3$",full.names = T,recursive=T)
 mp3files=mp3files[!(grepl("WEIRD",mp3files))]
@@ -9,7 +9,7 @@ mp3files=mp3files[!(grepl("weird",mp3files))]
 
 #x <- file.info(mp3files)
 #mp3files=mp3files[order(x$size)]
-for(mp3 in sample(mp3files)) {
+for(mp3 in (mp3files)) {
   if(!(file.exists(paste(mp3,".wav",sep="")))) {
     print(mp3)
     r <- readMP3(mp3)  ## MP3 file in working directory

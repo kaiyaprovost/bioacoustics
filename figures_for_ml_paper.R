@@ -119,7 +119,7 @@ for(i in 1:length(unique(df4$Tested.On))){
 dev.off()
 
 
-pdf("/Users/kprovost/OneDrive - The Ohio State University/Song/TweetyNet_Results_NoMelozoneMultPanels.pdf",width=10)
+pdf("/Users/kprovost/OneDrive - The Ohio State University/Song/TweetyNet_Results_NoMelozoneMultPanels_blackwhite.pdf",width=10)
 par(mfrow=c(2,3),mar=c(4,4,0.1,0.1))
 plot(df4$Estimated.Divergence..mya.,df4$Accuracy,
      ylab="Accuracy",xlab="Estimated Divergence (mya)",
@@ -148,12 +148,14 @@ for(i in 1:length(unique(df4$Tested.On))){
              ylab="Accuracy",xlab="Estimated Divergence (mya)",
              main="")
         points(temp$Estimated.Divergence..mya.,temp$Accuracy,
-               col=i,type="b",pch=i,lty=i)
-        legend("bottomleft",legend=spp,pch=i,col=i,lty=i)
-        points(temp$Estimated.Divergence..mya.[temp$Trained.On=="5 Species"],
-               temp$Accuracy[temp$Trained.On=="5 Species"],pch=0,cex=2)
-         points(temp$Estimated.Divergence..mya.[temp$Trained.On=="5 Species Balanced"],
-               temp$Accuracy[temp$Trained.On=="5 Species Balanced"],pch=1,cex=2)
+               col="black",type="b",pch=1,lty=1)
+        # legend("bottomleft",legend=spp,pch=1,col="black",lty=1)
+        # points(temp$Estimated.Divergence..mya.[temp$Trained.On=="5 Species"],
+        #        temp$Accuracy[temp$Trained.On=="5 Species"],pch=0,cex=2)
+        #  points(temp$Estimated.Divergence..mya.[temp$Trained.On=="5 Species Balanced"],
+        #        temp$Accuracy[temp$Trained.On=="5 Species Balanced"],pch=1,cex=2)
+        legend("bottomleft",legend=c("Unbalanced","Balanced"),
+               pch=c(0,1),pt.cex=2)
         
 }
 dev.off()
@@ -181,10 +183,11 @@ for(i in 1:length(unique(df4$Tested.On))){
 }
 
 
-pdf("/Users/kprovost/OneDrive - The Ohio State University/Song/TweetyNet_Results_Melozone.pdf")
+#pdf("/Users/kprovost/OneDrive - The Ohio State University/Song/TweetyNet_Results_Melozone.pdf")
+pdf("/Users/kprovost/OneDrive - The Ohio State University/Song/TweetyNet_Results_Melozone_blackwhite.pdf")
 plot(df2$Estimated.Divergence..mya.,df2$Accuracy,
      ylab="Accuracy",xlab="Estimated Divergence (mya)",
-     col=6,main="Zero/Few Shot",pch=6,type="b",lty=6)
+     col="black",main="Zero/Few Shot",pch=1,type="b",lty=1)
 points(df2$Estimated.Divergence..mya.[df2$Trained.On=="5 Species"],
        df2$Accuracy[df2$Trained.On=="5 Species"],pch=0,cex=2)
 points(df2$Estimated.Divergence..mya.[df2$Trained.On=="5 Species + Melozone fusca"],
@@ -193,13 +196,13 @@ points(df2$Estimated.Divergence..mya.[df2$Trained.On=="5 Species Balanced"],
        df2$Accuracy[df2$Trained.On=="5 Species Balanced"],pch=1,cex=2)
 points(df2$Estimated.Divergence..mya.[df2$Trained.On=="5 Species Balanced + Melozone fusca"],
        df2$Accuracy[df2$Trained.On=="5 Species Balanced + Melozone fusca"],pch=1,cex=2,col=6)
-legend("left",legend=c("Unbalanced","Unbalanced-Transfer","Balanced","Balanced-Transfer"),
+legend("bottomleft",legend=c("Unbalanced","Unbalanced-Transfer","Balanced","Balanced-Transfer"),
        pch=c(0,0,1,1),pt.cex=2,col=c(1,6,1,6))
-legend("bottomleft",legend=unique(df2$Tested.On),
-       col=c(6),
-       pch=c(6),
-       lty=c(6),
-       text.font=3,title = "Test Species")
+# legend("bottomleft",legend=unique(df2$Tested.On),
+#        col=c(6),
+#        pch=c(6),
+#        lty=c(6),
+#        text.font=3,title = "Test Species")
 dev.off()
 
 
