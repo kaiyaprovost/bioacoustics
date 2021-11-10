@@ -70,7 +70,8 @@ for i in range(len(lines)):
 		if len(split) > 7 and add_labels == True:
 			label = split[-1] ## this means an annotation was manually set
 		else:
-			label = split[0]
+			##label = split[0]
+			label = 1
 		## onset is the same as position
 		length = int(offset)-int(onset)
 		output_string += "\n\t<Note><Position>"+str(onset)+"</Position><Length>"+str(length)+"</Length><Label>"+str(label)+"</Label></Note>"
