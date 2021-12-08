@@ -19,7 +19,7 @@ transform_type = "log_spect"
 [DATALOADER]
 window_size = 88
 
-[TRAIN]
+[TRAIN_CHECKPOINT]
 checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5Species/5Spp_Patience5_Model_results_211207_132739/max-val-acc-checkpoint.pt"
 labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5Species/5Spp_Patience5_Model_results_211207_132739/labelmap.json"
 spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5Species/5Spp_Patience5_Model_results_211207_132739/StandardizeSpect"
