@@ -69,7 +69,7 @@ else
 	if [ "$runtrain" == "1" ]; then
 		echo "START TRAIN_CHECKPOINT" >> $logfile 2>&1
 		date >> $logfile 2>&1
-		vak train_checkpoint /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/ZL/Zonotrichia_leucophrys_train_checkpoint.toml >> $logfile 2>&1 
+		vak train_checkpoint "/Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/ZL/Zonotrichia_leucophrys_train_checkpoint_38-50.toml" >> $logfile 2>&1 
 		echo "FINISHED TRAIN" >> $logfile 2>&1
 		date >> $logfile 2>&1
 	else
