@@ -28,6 +28,7 @@ models = "TweetyNet"
 num_workers = 4
 output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/"
 spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/StandardizeSpect"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/Wave_prep_211110_173704_MASTER_testall.csv"
 
 [TweetyNet.optimizer]
 lr = 0.001
