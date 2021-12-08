@@ -20,15 +20,15 @@ transform_type = "log_spect"
 window_size = 88
 
 [EVAL]
-batch_size = 11
 checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/max-val-acc-checkpoint.pt"
-device = "cpu"
 labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/labelmap.json"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/StandardizeSpect"
+batch_size = 11
+device = "cpu"
 models = "TweetyNet"
 num_workers = 4
-output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_cardinalis/"
-spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/StandardizeSpect"
-csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_cardinalis/CC_Wave_prep_211110_171034_MASTER.csv"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_sinuatus/"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_sinuatus/CS_Wave_prep_211110_171806_MASTER.csv"
 
 [TweetyNet.optimizer]
 lr = 0.001

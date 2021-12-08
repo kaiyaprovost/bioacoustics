@@ -1,0 +1,34 @@
+[PREP]
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Cardinalis_sinuatus/Wave"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_sinuatus/"
+audio_format = "wav"
+annot_format = "koumura"
+labelset = "1"
+train_dur = 10
+val_dur = 10
+test_dur = 10
+annot_file = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Cardinalis_sinuatus/Annotation.xml"
+
+[SPECT_PARAMS]
+fft_size = 512
+freq_cutoffs = [ 500, 10000,]
+step_size = 32
+thresh = 6.25
+transform_type = "log_spect"
+
+[DATALOADER]
+window_size = 88
+
+[EVAL]
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience5_Model_results_211207_155640/max-val-acc-checkpoint.pt"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience5_Model_results_211207_155640/labelmap.json"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience5_Model_results_211207_155640/StandardizeSpect"
+batch_size = 11
+device = "cpu"
+models = "TweetyNet"
+num_workers = 4
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Melozone_fusca/"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Melozone_fusca/MF_Wave_prep_211110_172807_MASTER.csv"
+
+[TweetyNet.optimizer]
+lr = 0.001
