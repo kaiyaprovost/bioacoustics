@@ -26,9 +26,9 @@ device = "cpu"
 labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/labelmap.json"
 models = "TweetyNet"
 num_workers = 4
-output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/"
 spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/StandardizeSpect"
-csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/Wave_prep_211110_173704_MASTER_testall.csv"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/EV_Wave_prep_211110_160409_MASTER.csv"
 
 [TweetyNet.optimizer]
 lr = 0.001
