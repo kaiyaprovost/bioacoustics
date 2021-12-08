@@ -1,18 +1,18 @@
 [PREP]
-data_dir = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/Wave"
-output_dir = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train"
-audio_format = "wav"
+annot_file = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Zonotrichia_leucophrys/Annotation.xml"
 annot_format = "koumura"
+audio_format = "wav"
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Zonotrichia_leucophrys/Wave"
 labelset = "1"
-train_dur = 3328
-val_dur = 415
-test_dur = 415
-annot_file = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/Annotation.xml"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/"
+test_dur = 10
+train_dur = 10
+val_dur = 10
 
 [SPECT_PARAMS]
 fft_size = 512
-step_size = 32
 freq_cutoffs = [ 500, 10000,]
+step_size = 32
 thresh = 6.25
 transform_type = "log_spect"
 
@@ -20,15 +20,14 @@ transform_type = "log_spect"
 window_size = 88
 
 [EVAL]
-csv_path = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/Wave_prep_210602_142227.csv"
-labelmap_path = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/results/results_210602_142402/labelmap.json"
-checkpoint_path = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/results/results_210602_142402/TweetyNet/checkpoints/max-val-acc-checkpoint.pt" 
-spect_scaler_path = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/results/results_210602_142402/StandardizeSpect"
-models = "TweetyNet"
 batch_size = 11
-num_workers = 4
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/max-val-acc-checkpoint.pt"
 device = "cpu"
-output_dir = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/labelmap.json"
+models = "TweetyNet"
+num_workers = 4
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/StandardizeSpect"
 
 [TweetyNet.optimizer]
 lr = 0.001
