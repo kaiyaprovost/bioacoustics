@@ -30,7 +30,7 @@ normalize_spectrograms = true
 num_epochs = 10
 patience = 5
 val_step = 50
-root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Melozone_fusca/"
+root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesMF/"
 csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Melozone_fusca/MF_Wave_prep_211110_172807_MASTER.csv"
 
 [TweetyNet.optimizer]
