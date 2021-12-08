@@ -4,10 +4,9 @@
 
 ## conda activate vak-env; sh /Users/kprovost/Documents/TweetyNet/testing_wcs/JOBFILES_TOMLFILES/run_tweetynet_zonotrichia_2predict.job
 
-
 TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S`
 checkpoint=0
-runeval=0
+runeval=1
 folder="/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/"
 
 if [ "$checkpoint" == "0" ]; then
@@ -36,7 +35,6 @@ fi
 fi
 
 ## before running the "prep" steps from scratch, remember to remove the csv_path entries
-
 echo "START TEST PREP" >> $logfile 2>&1
 date >> $logfile 2>&1
 

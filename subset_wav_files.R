@@ -1,24 +1,24 @@
 library(tuneR)
 
-mypath="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/"
+mypath="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Calypte_anna/Wave/"
 
-# wavfiles = list.files(path=mypath,
-#                        pattern=".wav$",recursive = T,full.names = T)
-# 
-# w=lapply(1:length(wavfiles),FUN=function(i){
-#   print(paste(i,"/",length(wavfiles)))
-#   wavf=wavfiles[i]
-#   
-#   wav = readWave(wavf,units = "samples",from=0)
-#   samples_per_ms=wav@samp.rate
-#   if(samples_per_ms!=48000){
-#     print(i)
-#     print(wavf)
-#     print(samples_per_ms)
-#   }
-#   return(samples_per_ms)
-# })
-# wavfiles2=wavfiles[unlist(w) == 48000]
+ wavfiles = list.files(path=mypath,
+                        pattern=".wav$",recursive = T,full.names = T)
+ 
+ w=lapply(1:length(wavfiles),FUN=function(i){
+   #print(paste(i,"/",length(wavfiles)))
+   wavf=wavfiles[i]
+   
+   wav = readWave(wavf,units = "samples",from=0)
+   samples_per_ms=wav@samp.rate
+   if(samples_per_ms!=48000){
+     #print(i)
+     print(wavf)
+     print(samples_per_ms)
+   }
+   return(samples_per_ms)
+ })
+ wavfiles2=wavfiles[unlist(w) == 48000]
 
 
 metafiles = list.files(path=mypath,

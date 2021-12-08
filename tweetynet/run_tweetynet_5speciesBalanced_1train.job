@@ -1,12 +1,7 @@
 #!/bin/bash
 
 ## command to run this file in terminal
-# conda activate vak-env; sudo launchctl limit maxfiles unlimited unlimited; ## added this to see if stop the file error
-# sh /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/run_tweetynet_calypte_1train.job
-
-## changing epochs does not fix it -- seems to hang around 4900
-## next: change patience from 50->5, which fixes it 
-
+## conda activate vak-env; sh /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/run_tweetynet_5SpeciesBalanced_1train.job
 
 ## set flags
 TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S` ## get date and time
@@ -15,25 +10,24 @@ comboxml=0 ## make Annotation.xml
 checkpoint=0 ## run train_checkpoint (vs run train)
 runprep=0 ## run the prep step yes/no
 runtrain=1 ## run the train step yes/no
-folder="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Calypte_anna/"
+folder="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/"
 
 ## one folder for all of the subsetted wav files as well as the Annotation.xml file 
 
 if [ "$checkpoint" == "0" ]; then
-	logfile="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Calypte_anna/CA_trainlog_$TIMESTAMP.txt"
+	logfile="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_trainlog_$TIMESTAMP.txt"
 else
-	logfile="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Calypte_anna/CA_trainlog_checkpoint_$TIMESTAMP.txt"
+	logfile="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_trainlog_checkpoint_$TIMESTAMP.txt"
 fi
 echo $logfile
 
 ## change this folder as needed
 cd $folder
 
-## 
-export OMP_NUM_THREADS=1; echo "OMP_NUM_THREADS 1" >> $logfile 2>&1; ## tried removing this to see if stop the file error
+export OMP_NUM_THREADS=1
 #conda activate vak-env
 
-## before running the "prep" steps from scratch, remember to remove the csv_path entries
+## before running the "prep" steps from scratch, remember to remove the 5SppBalancedv_path entries
 
 if [ "$makexml" == "1" ]; then
 	## create xmls if needed
@@ -55,14 +49,14 @@ if [ "$checkpoint" == "0" ]; then
 	if [ "$runprep" == "1" ]; then
 		echo "START TRAIN PREP" >> $logfile 2>&1 ## give both outputs and errors to this file
 		date >> $logfile 2>&1
-		vak prep /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Calypte_anna_train.toml >> $logfile 2>&1
+		vak prep /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/5SpeciesBalanced_train.toml >> $logfile 2>&1
 	else
 		echo "SKIP PREP STEP" >> $logfile 2>&1
 	fi
 	if [ "$runtrain" == "1" ]; then
 		echo "START TRAIN" >> $logfile 2>&1
 		date >> $logfile 2>&1
-		vak train /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Calypte_anna_train.toml >> $logfile 2>&1
+		vak train /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/5SpeciesBalanced_train.toml >> $logfile 2>&1
 		echo "FINISHED TRAIN" >> $logfile 2>&1
 		date >> $logfile 2>&1
 	else
@@ -74,7 +68,7 @@ else
 	if [ "$runtrain" == "1" ]; then
 		echo "START TRAIN_CHECKPOINT" >> $logfile 2>&1
 		date >> $logfile 2>&1
-		vak train_checkpoint /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Calypte_anna_train_checkpoint.toml >> $logfile 2>&1 
+		vak train_checkpoint /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/5SpeciesBalanced_train_checkpoint.toml >> $logfile 2>&1 
 		echo "FINISHED TRAIN" >> $logfile 2>&1
 		date >> $logfile 2>&1
 	else

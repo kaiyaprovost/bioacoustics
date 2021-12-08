@@ -1,7 +1,8 @@
 #!/bin/bash
 
 ## command to run this file in terminal
-## conda activate vak-env; sh /Users/kprovost/Documents/Postdoc_Working/Scripts/run_tweetynet_empidonax_1train.job
+# conda activate vak-env; sudo launchctl limit maxfiles unlimited unlimited; 
+# sh /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/run_tweetynet_empidonax_1train.job
 
 ## set flags
 TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S` ## get date and time
@@ -49,14 +50,14 @@ if [ "$checkpoint" == "0" ]; then
 	if [ "$runprep" == "1" ]; then
 		echo "START TRAIN PREP" >> $logfile 2>&1 ## give both outputs and errors to this file
 		date >> $logfile 2>&1
-		vak prep /Users/kprovost/Documents/Postdoc_Working/Scripts/Empidonax_virescens_train.toml >> $logfile 2>&1
+		vak prep /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Empidonax_virescens_train.toml >> $logfile 2>&1
 	else
 		echo "SKIP PREP STEP" >> $logfile 2>&1
 	fi
 	if [ "$runtrain" == "1" ]; then
 		echo "START TRAIN" >> $logfile 2>&1
 		date >> $logfile 2>&1
-		vak train /Users/kprovost/Documents/Postdoc_Working/Scripts/Empidonax_virescens_train.toml >> $logfile 2>&1
+		vak train /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Empidonax_virescens_train.toml >> $logfile 2>&1
 		echo "FINISHED TRAIN" >> $logfile 2>&1
 		date >> $logfile 2>&1
 	else
@@ -68,7 +69,7 @@ else
 	if [ "$runtrain" == "1" ]; then
 		echo "START TRAIN_CHECKPOINT" >> $logfile 2>&1
 		date >> $logfile 2>&1
-		vak train_checkpoint /Users/kprovost/Documents/Postdoc_Working/Scripts/Empidonax_virescens_train_checkpoint.toml >> $logfile 2>&1 
+		vak train_checkpoint /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Empidonax_virescens_train_checkpoint.toml >> $logfile 2>&1 
 		echo "FINISHED TRAIN" >> $logfile 2>&1
 		date >> $logfile 2>&1
 	else

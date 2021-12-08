@@ -21,15 +21,14 @@ window_size = 88
 
 [EVAL]
 csv_path = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/Wave_prep_210602_142227.csv"
-checkpoint_path = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/results/results_210602_142402/TweetyNet/checkpoints/max-val-acc-checkpoint.pt" 
-output_dir = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train"
 labelmap_path = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/results/results_210602_142402/labelmap.json"
+checkpoint_path = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/results/results_210602_142402/TweetyNet/checkpoints/max-val-acc-checkpoint.pt" 
+spect_scaler_path = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/results/results_210602_142402/StandardizeSpect"
 models = "TweetyNet"
 batch_size = 11
 num_workers = 4
-spect_scaler_path = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/results/results_210602_142402/StandardizeSpect"
 device = "cpu"
-
+output_dir = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train"
 
 [TweetyNet.optimizer]
 lr = 0.001

@@ -27,7 +27,7 @@ num_epochs = 10
 normalize_spectrograms = true
 val_step = 50
 ckpt_step = 200
-patience = 50
+patience = 5
 csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/Wave_prep_211110_160409_MASTER.csv"
 
 [TweetyNet.optimizer]

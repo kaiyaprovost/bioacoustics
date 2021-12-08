@@ -27,8 +27,8 @@ num_epochs = 10
 normalize_spectrograms = true
 val_step = 50
 ckpt_step = 200
-patience = 50
-csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_cardinalis/Wave_prep_211110_171034.csv"
+patience = 5
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_cardinalis/Wave_prep_211110_171034_MASTER.csv"
 
 [TweetyNet.optimizer]
 lr = 0.001

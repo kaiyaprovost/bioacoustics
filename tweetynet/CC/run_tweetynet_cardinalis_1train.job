@@ -1,15 +1,16 @@
 #!/bin/bash
 
 ## command to run this file in terminal
-## conda activate vak-env; sh /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/run_tweetynet_cardinalis_1train.job
+# conda activate vak-env; sudo launchctl limit maxfiles unlimited unlimited; 
+# sh /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/run_tweetynet_cardinalis_1train.job
 
 ## set flags
 TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S` ## get date and time
 makexml=0 ## make xml files from raven
 comboxml=0 ## make Annotation.xml
 checkpoint=0 ## run train_checkpoint (vs run train)
-runprep=1 ## run the prep step yes/no
-runtrain=0 ## run the train step yes/no
+runprep=0 ## run the prep step yes/no
+runtrain=1 ## run the train step yes/no
 folder="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_cardinalis/"
 
 ## one folder for all of the subsetted wav files as well as the Annotation.xml file 

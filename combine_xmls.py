@@ -4,7 +4,7 @@
 
 ## TODO: 
 
-# sudo python3 "/Users/kprovost/Documents/GitHub/bioacoustics/combine_xmls.py" "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Zonotrichia_leucophrys/"; 
+# sudo python3 /Users/kprovost/Documents/GitHub/bioacoustics/combine_xmls.py /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/5Spp/Wave/; 
 
 import sys
 import glob
@@ -22,7 +22,7 @@ os.chdir(directory)
 
 lines = []
 
-listfiles = glob.glob("*.xml",recursive=False)
+listfiles = glob.glob("/**/*.xml",recursive=True)
 numfiles = len(listfiles)
 
 for xmlfile in listfiles:

@@ -1,18 +1,18 @@
 [PREP]
-data_dir = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/Wave"
-output_dir = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train"
-audio_format = "wav"
+annot_file = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Zonotrichia_leucophrys/Annotation.xml"
 annot_format = "koumura"
+audio_format = "wav"
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Zonotrichia_leucophrys/Wave"
 labelset = "1"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/"
+test_dur = 415
 train_dur = 3326
 val_dur = 415
-test_dur = 415
-annot_file = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/Annotation.xml"
 
 [SPECT_PARAMS]
 fft_size = 512
-step_size = 32
 freq_cutoffs = [ 500, 10000,]
+step_size = 32
 thresh = 6.25
 transform_type = "log_spect"
 
@@ -20,14 +20,20 @@ transform_type = "log_spect"
 window_size = 88
 
 [TRAIN]
-models = [ "TweetyNet",]
-root_results_dir = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/results"
 batch_size = 3
-num_epochs = 10
-normalize_spectrograms = true
-val_step = 50
+checkpoint_path = "/Users/kprovost/Documents/TweetyNet/FINISHED_MODELS_BY_SPECIES/Zonotrichia_leucophrys/210602_142402_Zonotrichia_leucophrys_notransfer/max-val-acc-checkpoint.pt"
 ckpt_step = 200
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/Wave_prep_211110_173704_MASTER.csv"
+labelmap_path = "/Users/kprovost/Documents/TweetyNet/FINISHED_MODELS_BY_SPECIES/Zonotrichia_leucophrys/210602_142402_Zonotrichia_leucophrys_notransfer/labelmap.json"
+models = [ "TweetyNet",]
+normalize_spectrograms = true
+num_epochs = 10
 patience = 50
+root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/"
+root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/"
+spect_scaler_path = "/Users/kprovost/Documents/TweetyNet/FINISHED_MODELS_BY_SPECIES/Zonotrichia_leucophrys/210602_142402_Zonotrichia_leucophrys_notransfer/StandardizeSpect"
+val_step = 50
+
 
 [TweetyNet.optimizer]
 lr = 0.001
