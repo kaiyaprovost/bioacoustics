@@ -14,6 +14,7 @@ time_subtract = function(time1=c(0,0,0),time2=c(1,1,1)){
   return(dif)
   
 }
+time_subtract(c(11,34,43),c(13,4,00))
 
 time_subtract(c(0,3,15),c(0,8,25))
 time_subtract(c(0,2,39),c(0,8,56))

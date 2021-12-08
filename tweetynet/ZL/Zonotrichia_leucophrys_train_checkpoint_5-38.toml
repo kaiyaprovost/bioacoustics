@@ -28,11 +28,10 @@ labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonot
 models = [ "TweetyNet",]
 normalize_spectrograms = true
 num_epochs = 10
-patience = 50
+patience = 45
 root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/"
 spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/StandardizeSpect"
 val_step = 50
-
 
 [TweetyNet.optimizer]
 lr = 0.001
