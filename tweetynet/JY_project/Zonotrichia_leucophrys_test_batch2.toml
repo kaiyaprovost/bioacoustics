@@ -1,0 +1,25 @@
+[PREP]
+audio_format = "wav"
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/JY_project/b16"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/JY_project"
+
+[SPECT_PARAMS]
+fft_size = 512
+freq_cutoffs = [ 500, 10000,]
+step_size = 64
+thresh = 6.25
+transform_type = "log_spect"
+
+[PREDICT]
+batch_size = 11
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/JY_project/Final_results_211129_005033/max-val-acc-checkpoint.pt"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/JY_project/Final_results_211129_005033/labelmap.json"
+majority_vote = false
+models = "TweetyNet"
+num_workers = 4
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/JY_project"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/JY_project/Final_results_211129_005033/StandardizeSpect"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/JY_project/b16_prep_220202_163458.csv"
+
+[TweetyNet.optimizer]
+lr = 0.001

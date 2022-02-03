@@ -2,6 +2,7 @@ library(tuneR)
 
 mypath="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Calypte_anna/Wave/"
 
+## load the files 
  wavfiles = list.files(path=mypath,
                         pattern=".wav$",recursive = T,full.names = T)
  

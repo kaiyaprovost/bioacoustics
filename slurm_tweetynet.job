@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --time=4:00:00
+#SBATCH --time=1:00:00
 #SBATCH --nodes=1 
 #SBATCH --ntasks-per-node=1 
 #SBATCH --gpus-per-node=0
 #SBATCH --job-name=vakEV
 #SBATCH --account=PAA0202
-#SBATCH --partition=serial
+#SBATCH --partition=debug
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=provost.27@osu.edu
 
@@ -31,7 +31,7 @@ source activate vak-env
 ## vak code is here: ls ~/.conda/envs/vak-env/lib/python3.6/site-packages/vak
 # rsync -avzP ~/myvak/* ~/.conda/envs/vak-env/lib/python3.6/site-packages/vak/
 
-conda activate vak-env; sh ~/bioacoustics/TOMLS/EV/run_tweetynet_empidonax_1train_slurm.job
+conda activate vak-env; sh ~/bioacoustics/TOMLS/EV/run_tweetynet_empidonax_1train_slurm.job >> logfile_vakEV.txt 2>&1
 
 ## sbatch ~/bioacoustics/slurm_tweetynet.job
 ## squeue -u kprovost

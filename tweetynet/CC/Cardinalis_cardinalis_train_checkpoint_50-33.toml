@@ -1,0 +1,37 @@
+[PREP]
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Cardinalis_cardinalis/Wave"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_cardinalis/"
+audio_format = "wav"
+annot_format = "koumura"
+labelset = "1"
+train_dur = 10
+val_dur = 10
+test_dur = 10
+annot_file = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Cardinalis_cardinalis/Annotation.xml"
+
+[SPECT_PARAMS]
+fft_size = 512
+step_size = 32
+freq_cutoffs = [ 500, 10000,]
+thresh = 6.25
+transform_type = "log_spect"
+
+[DATALOADER]
+window_size = 88
+
+[TRAIN_CHECKPOINT]
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_cardinalis/CC_Patience50-33_Model_results_211115_125856/max-val-acc-checkpoint.pt"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_cardinalis/CC_Patience50-33_Model_results_211115_125856/labelmap.json"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_cardinalis/CC_Patience50-33_Model_results_211115_125856/StandardizeSpect"
+models = [ "TweetyNet",]
+batch_size = 3
+num_epochs = 10
+normalize_spectrograms = true
+val_step = 50
+ckpt_step = 200
+patience = 50
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_cardinalis/CC_Wave_prep_211110_171034_MASTER.csv"
+root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_cardinalis/"
+
+[TweetyNet.optimizer]
+lr = 0.001

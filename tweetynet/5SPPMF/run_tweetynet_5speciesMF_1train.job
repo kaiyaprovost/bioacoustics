@@ -32,7 +32,7 @@ if [ "$checkpoint" == "1" ]; then
 	if [ "$runtrain" == "1" ]; then
 		echo "START TRAIN_CHECKPOINT" >> $logfile 2>&1
 		date >> $logfile 2>&1
-		vak train_checkpoint /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/5SPPMF/5SpeciesMF_train_checkpoint.toml >> $logfile 2>&1 
+		vak train_checkpoint /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/5SPPMF/5SpeciesMF_train_checkpoint_50.toml >> $logfile 2>&1 
 		echo "FINISHED TRAIN" >> $logfile 2>&1
 		date >> $logfile 2>&1
 	else

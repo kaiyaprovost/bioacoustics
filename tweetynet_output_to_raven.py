@@ -9,9 +9,11 @@ import re
 import numpy as np
 import pandas as pd
 
+## to run this code: copy the line below and paste into terminal 
+
 # python3 "/Users/kprovost/Documents/GitHub/bioacoustics/tweetynet_output_to_raven.py" "/Users/kprovost/Documents/TweetyNet/testing_wcs/Melozone_fusca_onlytest/Wave_prep_210920_140148.annot.csv"
 
-# for i in /Users/kprovost/Documents/TweetyNet/testing_wcs/Card*card*_train/Predictions/*annot.csv; do python3 "/Users/kprovost/Documents/GitHub/bioacoustics/tweetynet_output_to_raven.py" $i 10000 500 1; done;
+# for i in /Users/kprovost/Documents/Postdoc_Working/JY_project/ANNOTATED/b*/*annot.csv; do python3 "/Users/kprovost/Documents/GitHub/bioacoustics/tweetynet_output_to_raven.py" $i 10000 500 1; gzip $i; done;
 
 try:
 	csvfile = sys.argv[1]

@@ -20,9 +20,9 @@ transform_type = "log_spect"
 window_size = 88
 
 [EVAL]
-checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_sinuatus/CS_Patience5_Model_results_211116_110454/max-val-acc-checkpoint.pt"
-labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_sinuatus/CS_Patience5_Model_results_211116_110454/labelmap.json"
-spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_sinuatus/CS_Patience5_Model_results_211116_110454/StandardizeSpect"
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_sinuatus/CS_Patience50_Model_results_211116_110454/max-val-acc-checkpoint.pt"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_sinuatus/CS_Patience50_Model_results_211116_110454/labelmap.json"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis_sinuatus/CS_Patience50_Model_results_211116_110454/StandardizeSpect"
 batch_size = 11
 device = "cpu"
 models = "TweetyNet"

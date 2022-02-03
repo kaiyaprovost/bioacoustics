@@ -1,0 +1,27 @@
+#!/bin/bash
+
+## set flags
+
+## conda activate vak-env; sh /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/JY_project/run_tweetynet_zonotrichia_2predict_batch1.job
+
+TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S`
+folder="/Users/kprovost/Documents/Postdoc_Working/JY_project/"
+
+logfile="/Users/kprovost/Documents/Postdoc_Working/JY_project/testlog_$TIMESTAMP.txt"
+echo $logfile
+
+## change this folder as needed
+cd $folder
+
+export OMP_NUM_THREADS=1
+
+## before running the "prep" steps from scratch, remember to remove the csv_path entries
+echo "START TEST PREP" >> $logfile 2>&1
+date >> $logfile 2>&1
+
+vak prep /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/JY_project/Zonotrichia_leucophrys_test_batch1.toml >> $logfile 2>&1
+echo "START TEST" >> $logfile 2>&1
+date >> $logfile 2>&1
+vak predict /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/JY_project/Zonotrichia_leucophrys_test_batch1.toml >> $logfile 2>&1
+echo "FINISHED TEST" >> $logfile 2>&1
+date >> $logfile 2>&1

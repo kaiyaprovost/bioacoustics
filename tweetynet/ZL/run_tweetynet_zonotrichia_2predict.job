@@ -7,6 +7,7 @@
 TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S`
 checkpoint=0
 runeval=1
+runtest=0
 folder="/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/"
 
 if [ "$checkpoint" == "0" ]; then
@@ -34,7 +35,9 @@ vak eval /Users/kprovost/Documents/TweetyNet/testing_wcs/JOBFILES_TOMLFILES/Zono
 fi
 fi
 
+
 ## before running the "prep" steps from scratch, remember to remove the csv_path entries
+if [ "$runeval" == "1" ]; then
 echo "START TEST PREP" >> $logfile 2>&1
 date >> $logfile 2>&1
 
@@ -54,3 +57,4 @@ fi
 
 echo "FINISHED TEST" >> $logfile 2>&1
 date >> $logfile 2>&1
+fi

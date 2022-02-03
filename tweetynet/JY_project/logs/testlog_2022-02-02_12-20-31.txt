@@ -1,0 +1,372 @@
+START TEST PREP
+Wed Feb  2 12:20:31 EST 2022
+determined that config file has section: PREDICT
+Will add csv_path option to that section
+purpose for dataset: predict
+will not split dataset
+making array files containing spectrograms from audio files in: /Users/kprovost/Documents/Postdoc_Working/JY_project/b4
+[                                        ] | 0% Completed |  0.0s[                                        ] | 0% Completed |  0.1s[                                        ] | 0% Completed |  0.2s[                                        ] | 0% Completed |  0.3s[                                        ] | 0% Completed |  0.4s[                                        ] | 0% Completed |  0.5s[                                        ] | 0% Completed |  0.6s[                                        ] | 0% Completed |  0.7s[                                        ] | 0% Completed |  0.8s[                                        ] | 0% Completed |  0.9s[                                        ] | 0% Completed |  1.0s[                                        ] | 0% Completed |  1.1s[                                        ] | 0% Completed |  1.2s[                                        ] | 0% Completed |  1.3s[                                        ] | 0% Completed |  1.4s[                                        ] | 0% Completed |  1.5s[                                        ] | 0% Completed |  1.6s[                                        ] | 0% Completed |  1.7s[                                        ] | 0% Completed |  1.8s[                                        ] | 0% Completed |  2.0s[                                        ] | 0% Completed |  2.1s[                                        ] | 0% Completed |  2.2s[                                        ] | 0% Completed |  2.3s[                                        ] | 0% Completed |  2.4s[                                        ] | 0% Completed |  2.5s[                                        ] | 0% Completed |  2.6s[                                        ] | 0% Completed |  2.7s[                                        ] | 0% Completed |  2.8s[                                        ] | 0% Completed |  2.9s[                                        ] | 0% Completed |  3.0s[                                        ] | 0% Completed |  3.1s[                                        ] | 0% Completed |  3.2s[                                        ] | 0% Completed |  3.3s[                                        ] | 0% Completed |  3.4s[                                        ] | 0% Completed |  3.5s[                                        ] | 0% Completed |  3.6s[                                        ] | 0% Completed |  3.7s[                                        ] | 0% Completed |  3.8s[                                        ] | 0% Completed |  3.9s[                                        ] | 0% Completed |  4.0s[                                        ] | 0% Completed |  4.1s[                                        ] | 0% Completed |  4.2s[                                        ] | 0% Completed |  4.3s[                                        ] | 0% Completed |  4.4s[                                        ] | 0% Completed |  4.5s[                                        ] | 0% Completed |  4.6s[                                        ] | 0% Completed |  4.7s[                                        ] | 0% Completed |  4.8s[                                        ] | 0% Completed |  4.9s[                                        ] | 0% Completed |  5.0s[                                        ] | 0% Completed |  5.1s[                                        ] | 0% Completed |  5.2s[                                        ] | 0% Completed |  5.3s[                                        ] | 0% Completed |  5.4s[                                        ] | 0% Completed |  5.5s[                                        ] | 0% Completed |  5.6s[                                        ] | 0% Completed |  5.8s[                                        ] | 0% Completed |  5.9s[                                        ] | 0% Completed |  6.0s[                                        ] | 0% Completed |  6.1s[                                        ] | 0% Completed |  6.2s[                                        ] | 0% Completed |  6.3s[                                        ] | 0% Completed |  6.4s[                                        ] | 0% Completed |  6.5s[                                        ] | 0% Completed |  6.6s[                                        ] | 0% Completed |  6.7s[                                        ] | 0% Completed |  6.8s[                                        ] | 0% Completed |  6.9s[                                        ] | 0% Completed |  7.0s[                                        ] | 0% Completed |  7.1s[                                        ] | 0% Completed |  7.2s[                                        ] | 0% Completed |  7.3s[                                        ] | 0% Completed |  7.4s[                                        ] | 0% Completed |  7.5s[                                        ] | 0% Completed |  7.6s[                                        ] | 0% Completed |  7.7s[                                        ] | 0% Completed |  7.8s[                                        ] | 0% Completed |  7.9s[                                        ] | 0% Completed |  8.0s[                                        ] | 0% Completed |  8.1s[                                        ] | 0% Completed |  8.2s[                                        ] | 0% Completed |  8.3s[                                        ] | 0% Completed |  8.4s[                                        ] | 0% Completed |  8.5s[                                        ] | 0% Completed |  8.6s[                                        ] | 0% Completed |  8.7s[                                        ] | 0% Completed |  8.8s[                                        ] | 0% Completed |  8.9s[                                        ] | 0% Completed |  9.0s[                                        ] | 0% Completed |  9.1s[                                        ] | 0% Completed |  9.2s[                                        ] | 0% Completed |  9.3s[                                        ] | 0% Completed |  9.4s[                                        ] | 0% Completed |  9.5s[                                        ] | 0% Completed |  9.6s[                                        ] | 0% Completed |  9.7s[                                        ] | 0% Completed |  9.8s[                                        ] | 0% Completed |  9.9s[                                        ] | 0% Completed | 10.0s[###                                     ] | 9% Completed | 10.1s[#####                                   ] | 12% Completed | 10.2s[#####                                   ] | 12% Completed | 10.3s[#####                                   ] | 12% Completed | 10.4s[#####                                   ] | 12% Completed | 10.5s[#####                                   ] | 12% Completed | 10.6s[#####                                   ] | 12% Completed | 10.7s[#####                                   ] | 12% Completed | 10.8s[#####                                   ] | 12% Completed | 10.9s[######                                  ] | 15% Completed | 11.1s[######                                  ] | 15% Completed | 11.2s[######                                  ] | 15% Completed | 11.3s[########                                ] | 21% Completed | 11.4s[##########                              ] | 25% Completed | 11.5s[##########                              ] | 25% Completed | 11.6s[##########                              ] | 25% Completed | 11.7s[##########                              ] | 25% Completed | 11.8s[##########                              ] | 25% Completed | 11.9s[##########                              ] | 25% Completed | 12.0s[##########                              ] | 25% Completed | 12.1s[##########                              ] | 25% Completed | 12.2s[##########                              ] | 25% Completed | 12.3s[##########                              ] | 25% Completed | 12.4s[##########                              ] | 25% Completed | 12.5s[###########                             ] | 28% Completed | 12.6s[###########                             ] | 28% Completed | 12.7s[###########                             ] | 28% Completed | 12.8s[############                            ] | 31% Completed | 12.9s[#############                           ] | 34% Completed | 13.0s[###############                         ] | 37% Completed | 13.1s[###############                         ] | 37% Completed | 13.2s[###############                         ] | 37% Completed | 13.3s[###############                         ] | 37% Completed | 13.4s[###############                         ] | 37% Completed | 13.5s[###############                         ] | 37% Completed | 13.6s[###############                         ] | 37% Completed | 13.7s[###############                         ] | 37% Completed | 13.8s[################                        ] | 40% Completed | 13.9s[#################                       ] | 43% Completed | 14.0s[#################                       ] | 43% Completed | 14.1s[##################                      ] | 46% Completed | 14.2s[##################                      ] | 46% Completed | 14.3s[##################                      ] | 46% Completed | 14.4s[##################                      ] | 46% Completed | 14.5s[##################                      ] | 46% Completed | 14.6s[##################                      ] | 46% Completed | 14.7s[####################                    ] | 50% Completed | 14.8s[####################                    ] | 50% Completed | 14.9s[####################                    ] | 50% Completed | 15.0s[####################                    ] | 50% Completed | 15.1s[####################                    ] | 50% Completed | 15.2s[####################                    ] | 50% Completed | 15.3s[####################                    ] | 50% Completed | 15.4s[####################                    ] | 50% Completed | 15.5s[####################                    ] | 50% Completed | 15.6s[######################                  ] | 56% Completed | 15.8s[######################                  ] | 56% Completed | 15.9s[#########################               ] | 62% Completed | 16.0s[#########################               ] | 62% Completed | 16.1s[#########################               ] | 62% Completed | 16.2s[#########################               ] | 62% Completed | 16.3s[#########################               ] | 62% Completed | 16.4s[##########################              ] | 65% Completed | 16.5s[##########################              ] | 65% Completed | 16.6s[###########################             ] | 68% Completed | 16.7s[###########################             ] | 68% Completed | 16.8s[###########################             ] | 68% Completed | 16.9s[###########################             ] | 68% Completed | 17.0s[###########################             ] | 68% Completed | 17.1s[###########################             ] | 68% Completed | 17.2s[##############################          ] | 75% Completed | 17.3s[##############################          ] | 75% Completed | 17.4s[##############################          ] | 75% Completed | 17.5s[##############################          ] | 75% Completed | 17.6s[##############################          ] | 75% Completed | 17.7s[##############################          ] | 75% Completed | 17.8s[##############################          ] | 75% Completed | 17.9s[##############################          ] | 75% Completed | 18.0s[###############################         ] | 78% Completed | 18.1s[###############################         ] | 78% Completed | 18.2s[###############################         ] | 78% Completed | 18.3s[###############################         ] | 78% Completed | 18.4s[################################        ] | 81% Completed | 18.5s[###################################     ] | 87% Completed | 18.6s[####################################    ] | 90% Completed | 18.7s[####################################    ] | 90% Completed | 18.8s[#####################################   ] | 93% Completed | 18.9s[#####################################   ] | 93% Completed | 19.0s[#####################################   ] | 93% Completed | 19.1s[#####################################   ] | 93% Completed | 19.2s[######################################  ] | 96% Completed | 19.3s[########################################] | 100% Completed | 19.4s
+/Users/kprovost/opt/anaconda3/lib/python3.8/site-packages/vak/io/audio.py:194: WavFileWarning: Chunk (non-data) not understood, skipping it.
+  fs, dat = constants.AUDIO_FORMAT_FUNC_MAP[audio_format](audio_file)
+/Users/kprovost/opt/anaconda3/lib/python3.8/site-packages/vak/io/audio.py:194: WavFileWarning: Chunk (non-data) not understood, skipping it.
+  fs, dat = constants.AUDIO_FORMAT_FUNC_MAP[audio_format](audio_file)
+/Users/kprovost/opt/anaconda3/lib/python3.8/site-packages/vak/spect.py:78: RuntimeWarning: divide by zero encountered in log10
+  spect = np.log10(spect)  # take log
+/Users/kprovost/opt/anaconda3/lib/python3.8/site-packages/vak/io/audio.py:194: WavFileWarning: Chunk (non-data) not understood, skipping it.
+  fs, dat = constants.AUDIO_FORMAT_FUNC_MAP[audio_format](audio_file)
+/Users/kprovost/opt/anaconda3/lib/python3.8/site-packages/vak/io/audio.py:194: WavFileWarning: Chunk (non-data) not understood, skipping it.
+  fs, dat = constants.AUDIO_FORMAT_FUNC_MAP[audio_format](audio_file)
+/Users/kprovost/opt/anaconda3/lib/python3.8/site-packages/vak/io/audio.py:194: WavFileWarning: Chunk (non-data) not understood, skipping it.
+  fs, dat = constants.AUDIO_FORMAT_FUNC_MAP[audio_format](audio_file)
+/Users/kprovost/opt/anaconda3/lib/python3.8/site-packages/vak/spect.py:78: RuntimeWarning: divide by zero encountered in log10
+  spect = np.log10(spect)  # take log
+/Users/kprovost/opt/anaconda3/lib/python3.8/site-packages/vak/io/audio.py:194: WavFileWarning: Chunk (non-data) not understood, skipping it.
+  fs, dat = constants.AUDIO_FORMAT_FUNC_MAP[audio_format](audio_file)
+/Users/kprovost/opt/anaconda3/lib/python3.8/site-packages/vak/io/audio.py:194: WavFileWarning: Chunk (non-data) not understood, skipping it.
+  fs, dat = constants.AUDIO_FORMAT_FUNC_MAP[audio_format](audio_file)
+creating datasetfrom spectrogram files in: /Users/kprovost/Documents/Postdoc_Working/JY_project
+validating set of spectrogram files
+[                                        ] | 0% Completed |  0.0s[                                        ] | 0% Completed |  0.1s[                                        ] | 0% Completed |  0.2s[                                        ] | 0% Completed |  0.3s[                                        ] | 0% Completed |  0.4s[                                        ] | 0% Completed |  0.5s[                                        ] | 0% Completed |  0.6s[                                        ] | 0% Completed |  0.7s[                                        ] | 0% Completed |  0.8s[                                        ] | 0% Completed |  0.9s[                                        ] | 0% Completed |  1.0s[                                        ] | 0% Completed |  1.1s[                                        ] | 0% Completed |  1.2s[                                        ] | 0% Completed |  1.3s[                                        ] | 0% Completed |  1.4s[                                        ] | 0% Completed |  1.5s[                                        ] | 0% Completed |  1.6s[                                        ] | 0% Completed |  1.7s[                                        ] | 0% Completed |  1.8s[                                        ] | 0% Completed |  1.9s[                                        ] | 0% Completed |  2.0s[                                        ] | 0% Completed |  2.1s[                                        ] | 0% Completed |  2.2s[                                        ] | 0% Completed |  2.3s[                                        ] | 0% Completed |  2.5s[                                        ] | 0% Completed |  2.6s[                                        ] | 0% Completed |  2.7s[                                        ] | 0% Completed |  2.8s[                                        ] | 0% Completed |  2.9s[                                        ] | 0% Completed |  3.0s[                                        ] | 0% Completed |  3.1s[                                        ] | 0% Completed |  3.2s[                                        ] | 0% Completed |  3.3s[                                        ] | 0% Completed |  3.4s[                                        ] | 0% Completed |  3.5s[                                        ] | 0% Completed |  3.6s[                                        ] | 0% Completed |  3.7s[                                        ] | 0% Completed |  3.8s[                                        ] | 0% Completed |  3.9s[                                        ] | 0% Completed |  4.0s[                                        ] | 0% Completed |  4.1s[                                        ] | 0% Completed |  4.2s[                                        ] | 0% Completed |  4.3s[                                        ] | 0% Completed |  4.4s[                                        ] | 0% Completed |  4.5s[                                        ] | 0% Completed |  4.6s[                                        ] | 0% Completed |  4.7s[                                        ] | 0% Completed |  4.8s[                                        ] | 0% Completed |  4.9s[                                        ] | 0% Completed |  5.0s[                                        ] | 0% Completed |  5.1s[                                        ] | 0% Completed |  5.2s[                                        ] | 0% Completed |  5.3s[                                        ] | 0% Completed |  5.4s[                                        ] | 0% Completed |  5.5s[                                        ] | 0% Completed |  5.6s[                                        ] | 0% Completed |  5.7s[                                        ] | 0% Completed |  5.8s[                                        ] | 0% Completed |  5.9s[                                        ] | 0% Completed |  6.0s[                                        ] | 0% Completed |  6.1s[                                        ] | 0% Completed |  6.2s[                                        ] | 0% Completed |  6.3s[                                        ] | 0% Completed |  6.4s[                                        ] | 0% Completed |  6.5s[                                        ] | 0% Completed |  6.6s[                                        ] | 0% Completed |  6.7s[                                        ] | 0% Completed |  6.8s[                                        ] | 0% Completed |  6.9s[                                        ] | 0% Completed |  7.0s[                                        ] | 0% Completed |  7.1s[                                        ] | 0% Completed |  7.2s[                                        ] | 0% Completed |  7.3s[##########                              ] | 25% Completed |  7.5s[##########                              ] | 25% Completed |  7.6s[##########                              ] | 25% Completed |  7.7s[################                        ] | 40% Completed |  7.8s[####################                    ] | 50% Completed |  7.9s[####################                    ] | 50% Completed |  8.0s[############################            ] | 71% Completed |  8.1s[##############################          ] | 75% Completed |  8.2s[###############################         ] | 78% Completed |  8.3s[######################################  ] | 96% Completed |  8.4s[########################################] | 100% Completed |  8.5s
+[(101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,), (101,)]
+creating pandas.DataFrame representing dataset from spectrogram files
+[                                        ] | 0% Completed |  0.0s[                                        ] | 0% Completed |  0.1s[                                        ] | 0% Completed |  0.2s[                                        ] | 0% Completed |  0.3s[                                        ] | 0% Completed |  0.4s[                                        ] | 0% Completed |  0.5s[                                        ] | 0% Completed |  0.6s[                                        ] | 0% Completed |  0.7s[                                        ] | 0% Completed |  0.8s[                                        ] | 0% Completed |  0.9s[                                        ] | 0% Completed |  1.0s[                                        ] | 0% Completed |  1.1s[                                        ] | 0% Completed |  1.2s[                                        ] | 0% Completed |  1.3s[                                        ] | 0% Completed |  1.4s[                                        ] | 0% Completed |  1.5s[                                        ] | 0% Completed |  1.6s[                                        ] | 0% Completed |  1.7s[                                        ] | 0% Completed |  1.8s[                                        ] | 0% Completed |  1.9s[                                        ] | 0% Completed |  2.0s[                                        ] | 0% Completed |  2.2s[                                        ] | 0% Completed |  2.3s[                                        ] | 0% Completed |  2.4s[                                        ] | 0% Completed |  2.5s[                                        ] | 0% Completed |  2.6s[                                        ] | 0% Completed |  2.7s[                                        ] | 0% Completed |  2.8s[                                        ] | 0% Completed |  2.9s[                                        ] | 0% Completed |  3.0s[                                        ] | 0% Completed |  3.1s[                                        ] | 0% Completed |  3.2s[                                        ] | 0% Completed |  3.3s[                                        ] | 0% Completed |  3.4s[                                        ] | 0% Completed |  3.5s[                                        ] | 0% Completed |  3.6s[                                        ] | 0% Completed |  3.7s[                                        ] | 0% Completed |  3.8s[                                        ] | 0% Completed |  3.9s[                                        ] | 0% Completed |  4.0s[                                        ] | 0% Completed |  4.1s[                                        ] | 0% Completed |  4.2s[                                        ] | 0% Completed |  4.3s[                                        ] | 0% Completed |  4.4s[                                        ] | 0% Completed |  4.5s[                                        ] | 0% Completed |  4.6s[                                        ] | 0% Completed |  4.7s[                                        ] | 0% Completed |  4.8s[                                        ] | 0% Completed |  4.9s[                                        ] | 0% Completed |  5.0s[                                        ] | 0% Completed |  5.1s[                                        ] | 0% Completed |  5.2s[                                        ] | 0% Completed |  5.3s[                                        ] | 0% Completed |  5.4s[                                        ] | 0% Completed |  5.5s[                                        ] | 0% Completed |  5.6s[                                        ] | 0% Completed |  5.7s[                                        ] | 0% Completed |  5.8s[                                        ] | 0% Completed |  5.9s[                                        ] | 0% Completed |  6.0s[                                        ] | 0% Completed |  6.1s[                                        ] | 0% Completed |  6.2s[                                        ] | 0% Completed |  6.3s[                                        ] | 0% Completed |  6.4s[                                        ] | 0% Completed |  6.5s[                                        ] | 0% Completed |  6.6s[                                        ] | 0% Completed |  6.7s[                                        ] | 0% Completed |  6.8s[                                        ] | 0% Completed |  6.9s[                                        ] | 0% Completed |  7.0s[                                        ] | 0% Completed |  7.1s[                                        ] | 0% Completed |  7.2s[                                        ] | 0% Completed |  7.3s[                                        ] | 0% Completed |  7.4s[                                        ] | 0% Completed |  7.5s[                                        ] | 0% Completed |  7.6s[                                        ] | 0% Completed |  7.8s[                                        ] | 0% Completed |  7.9s[#####                                   ] | 12% Completed |  8.0s[################                        ] | 40% Completed |  8.1s[###########################             ] | 68% Completed |  8.2s[#####################################   ] | 93% Completed |  8.3s[########################################] | 100% Completed |  8.4s
+saving dataset as a .csv file: /Users/kprovost/Documents/Postdoc_Working/JY_project/b4_prep_220202_122035.csv
+START TEST
+Wed Feb  2 12:21:12 EST 2022
+Logging results to /Users/kprovost/Documents/Postdoc_Working/JY_project
+loading SpectScaler from path: /Users/kprovost/Documents/Postdoc_Working/JY_project/Final_results_211129_005033/StandardizeSpect
+loading labelmap from path: /Users/kprovost/Documents/Postdoc_Working/JY_project/Final_results_211129_005033/labelmap.json
+loading dataset to predict from csv path: /Users/kprovost/Documents/Postdoc_Working/JY_project/b4_prep_220202_122035.csv
+will save annotations in .csv file: /Users/kprovost/Documents/Postdoc_Working/JY_project/b4_prep_220202_122035.annot.csv
+dataset has timebins with duration: 0.00133
+shape of input to networks used for predictions: torch.Size([1, 101, 88])
+instantiating models from model-config map:/n{'TweetyNet': {'optimizer': {'lr': 0.001}, 'network': {}, 'loss': {}, 'metrics': {}}}
+loading checkpoint for TweetyNet from path: /Users/kprovost/Documents/Postdoc_Working/JY_project/Final_results_211129_005033/max-val-acc-checkpoint.pt
+Loading checkpoint from:
+/Users/kprovost/Documents/Postdoc_Working/JY_project/Final_results_211129_005033/max-val-acc-checkpoint.pt 
+running predict method of TweetyNet
+  0%|          | 0/32 [00:00<?, ?it/s]batch 0 / 32:   0%|          | 0/32 [00:06<?, ?it/s]batch 0 / 32:   3%|▎         | 1/32 [00:06<03:35,  6.96s/it]batch 1 / 32:   3%|▎         | 1/32 [00:09<03:35,  6.96s/it]batch 1 / 32:   6%|▋         | 2/32 [00:09<02:47,  5.57s/it]batch 2 / 32:   6%|▋         | 2/32 [00:11<02:47,  5.57s/it]batch 2 / 32:   9%|▉         | 3/32 [00:11<02:11,  4.54s/it]batch 3 / 32:   9%|▉         | 3/32 [00:13<02:11,  4.54s/it]batch 3 / 32:  12%|█▎        | 4/32 [00:13<01:47,  3.84s/it]batch 4 / 32:  12%|█▎        | 4/32 [00:16<01:47,  3.84s/it]batch 4 / 32:  16%|█▌        | 5/32 [00:16<01:35,  3.52s/it]batch 5 / 32:  16%|█▌        | 5/32 [00:18<01:35,  3.52s/it]batch 5 / 32:  19%|█▉        | 6/32 [00:18<01:23,  3.22s/it]batch 6 / 32:  19%|█▉        | 6/32 [00:21<01:23,  3.22s/it]batch 6 / 32:  22%|██▏       | 7/32 [00:21<01:13,  2.94s/it]batch 7 / 32:  22%|██▏       | 7/32 [00:23<01:13,  2.94s/it]batch 7 / 32:  25%|██▌       | 8/32 [00:23<01:09,  2.88s/it]batch 8 / 32:  25%|██▌       | 8/32 [00:26<01:09,  2.88s/it]batch 8 / 32:  28%|██▊       | 9/32 [00:26<01:04,  2.78s/it]batch 9 / 32:  28%|██▊       | 9/32 [00:28<01:04,  2.78s/it]batch 9 / 32:  31%|███▏      | 10/32 [00:28<00:58,  2.64s/it]batch 10 / 32:  31%|███▏      | 10/32 [00:31<00:58,  2.64s/it]batch 10 / 32:  34%|███▍      | 11/32 [00:31<00:53,  2.56s/it]batch 11 / 32:  34%|███▍      | 11/32 [00:33<00:53,  2.56s/it]batch 11 / 32:  38%|███▊      | 12/32 [00:33<00:51,  2.56s/it]batch 12 / 32:  38%|███▊      | 12/32 [00:36<00:51,  2.56s/it]batch 12 / 32:  41%|████      | 13/32 [00:36<00:46,  2.47s/it]batch 13 / 32:  41%|████      | 13/32 [00:38<00:46,  2.47s/it]batch 13 / 32:  44%|████▍     | 14/32 [00:38<00:44,  2.46s/it]batch 14 / 32:  44%|████▍     | 14/32 [00:41<00:44,  2.46s/it]batch 14 / 32:  47%|████▋     | 15/32 [00:41<00:43,  2.57s/it]batch 15 / 32:  47%|████▋     | 15/32 [00:43<00:43,  2.57s/it]batch 15 / 32:  50%|█████     | 16/32 [00:43<00:39,  2.49s/it]batch 16 / 32:  50%|█████     | 16/32 [00:46<00:39,  2.49s/it]batch 16 / 32:  53%|█████▎    | 17/32 [00:46<00:38,  2.55s/it]batch 17 / 32:  53%|█████▎    | 17/32 [00:48<00:38,  2.55s/it]batch 17 / 32:  56%|█████▋    | 18/32 [00:48<00:36,  2.59s/it]batch 18 / 32:  56%|█████▋    | 18/32 [00:51<00:36,  2.59s/it]batch 18 / 32:  59%|█████▉    | 19/32 [00:51<00:33,  2.57s/it]batch 19 / 32:  59%|█████▉    | 19/32 [00:53<00:33,  2.57s/it]batch 19 / 32:  62%|██████▎   | 20/32 [00:53<00:30,  2.50s/it]batch 20 / 32:  62%|██████▎   | 20/32 [00:56<00:30,  2.50s/it]batch 20 / 32:  66%|██████▌   | 21/32 [00:56<00:26,  2.45s/it]batch 21 / 32:  66%|██████▌   | 21/32 [00:58<00:26,  2.45s/it]batch 21 / 32:  69%|██████▉   | 22/32 [00:58<00:24,  2.45s/it]batch 22 / 32:  69%|██████▉   | 22/32 [01:01<00:24,  2.45s/it]batch 22 / 32:  72%|███████▏  | 23/32 [01:01<00:22,  2.51s/it]batch 23 / 32:  72%|███████▏  | 23/32 [01:03<00:22,  2.51s/it]batch 23 / 32:  75%|███████▌  | 24/32 [01:03<00:19,  2.45s/it]batch 24 / 32:  75%|███████▌  | 24/32 [01:06<00:19,  2.45s/it]batch 24 / 32:  78%|███████▊  | 25/32 [01:06<00:17,  2.50s/it]batch 25 / 32:  78%|███████▊  | 25/32 [01:08<00:17,  2.50s/it]batch 25 / 32:  81%|████████▏ | 26/32 [01:08<00:15,  2.51s/it]batch 26 / 32:  81%|████████▏ | 26/32 [01:10<00:15,  2.51s/it]batch 26 / 32:  84%|████████▍ | 27/32 [01:10<00:12,  2.43s/it]batch 27 / 32:  84%|████████▍ | 27/32 [01:13<00:12,  2.43s/it]batch 27 / 32:  88%|████████▊ | 28/32 [01:13<00:10,  2.52s/it]batch 28 / 32:  88%|████████▊ | 28/32 [01:15<00:10,  2.52s/it]batch 28 / 32:  91%|█████████ | 29/32 [01:15<00:07,  2.43s/it]batch 29 / 32:  91%|█████████ | 29/32 [01:18<00:07,  2.43s/it]batch 29 / 32:  94%|█████████▍| 30/32 [01:18<00:04,  2.40s/it]batch 30 / 32:  94%|█████████▍| 30/32 [01:20<00:04,  2.40s/it]batch 30 / 32:  97%|█████████▋| 31/32 [01:20<00:02,  2.44s/it]batch 31 / 32:  97%|█████████▋| 31/32 [01:23<00:02,  2.44s/it]batch 31 / 32: 100%|██████████| 32/32 [01:23<00:00,  2.58s/it]batch 31 / 32: 100%|██████████| 32/32 [01:43<00:00,  3.24s/it]
+  0%|          | 0/32 [00:00<?, ?it/s]converting predictions to annotations
+  3%|▎         | 1/32 [00:04<02:18,  4.47s/it] 16%|█▌        | 5/32 [00:04<01:25,  3.16s/it] 28%|██▊       | 9/32 [00:04<00:51,  2.22s/it] 38%|███▊      | 12/32 [00:05<00:31,  1.56s/it]Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli-445848.mp3.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli-445848.mp3.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli-445848.mp3.wav']
+Print audio_fnames 2
+['Zonotrichia-leucophrys-nuttalli-445848.mp3.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli-610641.mp3.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli-610641.mp3.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli-610641.mp3.wav']
+Print audio_fnames 2
+['Zonotrichia-leucophrys-nuttalli-610641.mp3.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli.445848.mp3.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli.445848.mp3.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli.445848.mp3.wav']
+Print audio_fnames 2
+['Zonotrichia-leucophrys-nuttalli.445848.mp3.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli.610641.mp3.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli.610641.mp3.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-nuttalli.610641.mp3.wav']
+Print audio_fnames 2
+['Zonotrichia-leucophrys-nuttalli.610641.mp3.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis-159488.mp3.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis-159488.mp3.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis-159488.mp3.wav']
+Print audio_fnames 2
+['Zonotrichia-leucophrys-pugetensis-159488.mp3.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis-160091.mp3.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis-160091.mp3.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis-160091.mp3.wav']
+Print audio_fnames 2
+['Zonotrichia-leucophrys-pugetensis-160091.mp3.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis-253834.mp3.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis-253834.mp3.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis-253834.mp3.wav']
+Print audio_fnames 2
+['Zonotrichia-leucophrys-pugetensis-253834.mp3.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis.159488.mp3.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis.159488.mp3.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis.159488.mp3.wav']
+Print audio_fnames 2
+['Zonotrichia-leucophrys-pugetensis.159488.mp3.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis.160091.mp3.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis.160091.mp3.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis.160091.mp3.wav']
+Print audio_fnames 2
+['Zonotrichia-leucophrys-pugetensis.160091.mp3.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis.253834.mp3.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis.253834.mp3.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia-leucophrys-pugetensis.253834.mp3.wav']
+Print audio_fnames 2
+['Zonotrichia-leucophrys-pugetensis.253834.mp3.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB21474.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB21474.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB21474.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_nuttalli.BLB21474.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB22575.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB22575.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB22575.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_nuttalli.BLB22575.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB23829.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB23829.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB23829.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_nuttalli.BLB23829.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24545.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24545.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24545.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_nuttalli.BLB24545.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24685.wav.spect.npz 47%|████▋     | 15/32 [00:05<00:19,  1.12s/it] 59%|█████▉    | 19/32 [00:05<00:10,  1.26it/s] 72%|███████▏  | 23/32 [00:05<00:05,  1.76it/s] 84%|████████▍ | 27/32 [00:05<00:02,  2.45it/s]
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24685.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24685.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_nuttalli.BLB24685.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24688.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24688.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24688.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_nuttalli.BLB24688.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24705.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24705.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24705.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_nuttalli.BLB24705.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24707.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24707.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24707.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_nuttalli.BLB24707.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24713.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24713.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB24713.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_nuttalli.BLB24713.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB33196.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB33196.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB33196.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_nuttalli.BLB33196.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB33332.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB33332.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_nuttalli.BLB33332.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_nuttalli.BLB33332.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24750.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24750.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24750.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_pugetensis.BLB24750.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24764.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24764.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24764.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_pugetensis.BLB24764.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24870.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24870.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24870.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_pugetensis.BLB24870.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24875.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24875.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24875.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_pugetensis.BLB24875.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24879.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24879.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24879.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_pugetensis.BLB24879.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24880.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24880.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24880.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_pugetensis.BLB24880.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24889.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24889.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24889.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_pugetensis.BLB24889.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24967.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24967.wav.spect.npz 97%|█████████▋| 31/32 [00:05<00:00,  3.39it/s] 97%|█████████▋| 31/32 [00:16<00:00,  3.39it/s]100%|██████████| 32/32 [00:25<00:00,  1.23it/s]
+
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB24967.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_pugetensis.BLB24967.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB25002.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB25002.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB25002.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_pugetensis.BLB25002.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB25003.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB25003.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB25003.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_pugetensis.BLB25003.wav']
+Ext: cbin
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB25005.wav.spect.npz
+Ext: wav
+Spect_path: 
+/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB25005.wav.spect.npz
+Print audio_fnames 1
+[None, '/Users/kprovost/Documents/Postdoc_Working/JY_project/spectrograms_generated_220202_122035/Zonotrichia_leucophrys_pugetensis.BLB25005.wav']
+Print audio_fnames 2
+['Zonotrichia_leucophrys_pugetensis.BLB25005.wav']
+FINISHED TEST
+Wed Feb  2 12:23:26 EST 2022

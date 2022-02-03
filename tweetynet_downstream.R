@@ -3,6 +3,7 @@ library(Rraven)
 library(soundgen)
 library(SoundShape)
 library(hypervolume)
+library(geomorph)
 
 do_sumstats = F
 do_soundshape = T
@@ -553,420 +554,619 @@ if(do_sumstats==T){
 ## try out soundshape
 
 if(do_soundshape==T){
-
-align.wave.custom <- function(wav.at=NULL, wav.to="Aligned", time.length=1, time.perc=0.0, dBlevel=25, f=44100, wl=512, ovlp=70,
-                              overwrite=F,verbose=T,alignCheckpoint=1)  {
   
-  if(is.null(wav.at)) {stop("Use 'wav.at' to specify folder path where '.wav' files are stored")}
+  outersect <- function(x, y) {
+    sort(c(setdiff(x, y),
+           setdiff(y, x)))
+  }
   
-  # Create folder to store aligned calls
-  if(!dir.exists(file.path(wav.at, wav.to))) dir.create(file.path(wav.at, wav.to))
-  
-  # Replace sounds for each ".wav" file in a folder
-  filestoalign = list.files(wav.at, pattern = ".wav")
-  numalignfiles=length(filestoalign)
-  for(j in alignCheckpoint:numalignfiles){
-    file = filestoalign[j]
-    if(verbose==T) {print(paste(j,file,numalignfiles))}
-    if(overwrite==T || !(file.exists(file.path(wav.at, wav.to, file)))){
-      
-      orig.wav0 <- tuneR::readWave(paste(wav.at,"/", file, sep=""))
-      
-      # Add silence to fill sound window and prevent error
-      orig.wav <- seewave::addsilw(orig.wav0, f=f, at="end", d=(time.length*10), output = "Wave")
-      
-      # create spectro object
-      orig.spec <- seewave::spectro(orig.wav, f=f, wl=wl, ovlp=ovlp, osc=F, grid=F, plot=F)
-      
-      # Acquire contours
-      cont.spec <- grDevices::contourLines(x=orig.spec$time, y=orig.spec$freq, z=t(orig.spec$amp),
-                                           levels=seq(-dBlevel,-dBlevel,1))
-      
-      # vectors to store minimum and maximum time values
-      min.spec <- numeric(length(cont.spec))
-      max.spec <- numeric(length(cont.spec))
-      
-      # minimum and maximum time values among contours detected
-      for(i in 1:length(min.spec)){min.spec[i] <- min(cont.spec[[i]]$x)}
-      for(i in 1:length(max.spec)){max.spec[i] <- max(cont.spec[[i]]$x)}
-      
-      # minimum and maximum time values
-      t.min <- min(min.spec)
-      t.max <- max(max.spec)
-      
-      if((t.min-(time.perc*time.length))<0)
-        stop("Time percentage is too large. Consider a smaller value of 'time.perc'")
-      
-      # cut Wave file using minimum and maximum time values
-      short.wav0 <- seewave::deletew(orig.wav, f=f, output = "Wave",
-                                     from = (t.max+(time.perc*time.length)), to = max(orig.spec$time))
-      
-      short.wav <- seewave::deletew(short.wav0, f=f, output = "Wave",
-                                    from = 0, to = (t.min-(time.perc*time.length)))
-      
-      
-      # Add silence to fill sound window
-      final.wav <- seewave::addsilw(short.wav, f=f, at="end", d=time.length, output = "Wave")
-      
-      tuneR::writeWave(final.wav, file.path(wav.at, wav.to, file), extensible = F)
-    } else {
-      if(verbose==T) {print("SKIPPING")}
-    }
-  } #end loop
-  
-} #end function
-
-eigensound.custom <- function (analysis.type = threeDshape, wav.at = NULL, store.at = wav.at, 
-                              dBlevel = 25, flim = c(0, 10), tlim = c(0, 1), trel = tlim, 
-                              x.length = 80, y.length = 60, log.scale = TRUE, back.amp = 35, 
-                              add.points = FALSE, add.contour = TRUE, lwd = 1, EQ = c(0.05,0.15, 0.3, 0.5, 0.7, 0.85, 0.95), mag.time = 1, f = 44100, 
-                              wl = 512, ovlp = 70, plot.exp = TRUE, plot.as = "jpeg", plot.type = "surface", 
-                              rotate.Xaxis = 60, rotate.Yaxis = 40, TPS.file = NULL,doIndTPS=T,shuffle=F,eigcheckpoint=1,verbose=T,rev=F) {
-  if (is.null(wav.at)) {
-    stop("Use 'wav.at' to specify folder path where '.wav' files are stored")
-  }
-  if (is.null(analysis.type)) {
-    stop("Method undefined in 'analysis.type'")
-  }
-  if (!is.null(analysis.type)) {
-    if (analysis.type != "threeDshape") 
-      stop("Invalid analysis specified by 'analysis.type'.")
-  }
-  if (plot.exp == TRUE) {
-    if (plot.as != "jpeg" && plot.as != "tif" && plot.as != 
-        "tiff") 
-      stop("Invalid image format specified by 'plot.as'. Choose between 'jpeg', 'tif' or 'tiff'")
-  }
-  if (plot.exp == TRUE && analysis.type == "threeDshape") {
-    if (plot.type != "surface" && plot.type != "points") 
-      stop("Invalid 3D sound shape specified by 'plot.type'. Choose between 'surface' or 'points'")
-  }
-  if (!is.null(TPS.file)) {
-    TPS.path <- paste(store.at, "/", TPS.file, ".tps", sep = "")
-    file.create(TPS.path, showWarnings = TRUE)
-  }
-  if (analysis.type == "threeDshape") {
-    files=list.files(wav.at, pattern = ".wav")
-    files=files[eigcheckpoint:length(files)]
-    if(verbose==T){print(paste("CHECKPOINTED AT:",eigcheckpoint))}
-    if(rev==T){
-      files=rev(files)
-      if(verbose==T){print("REVERSED")}
-    }
-    if(shuffle==T){
-      files=sample(files)
-      if(verbose==T){print("SHUFFLED")}
-    }
-
-    lenfiles=length(files)
-    for (file_index in 1:length(files)) {
-      file=files[file_index]
-      if(verbose==T){print(paste(file,file_index,lenfiles))}
-      
-      indtps = paste(file,TPS.file,sep=".")
-      indtps.Path <- paste(store.at, "/", indtps, ".tps", sep = "")
-      
-      if(doIndTPS==T & (file.exists(indtps.Path))){
-        if(verbose==T){print("skipping")}
+  align.wave.custom <- function(wav.at=NULL, wav.to="Aligned", time.length=1, time.perc=0.0, dBlevel=25, f=44100, wl=512, ovlp=70,
+                                overwrite=F,verbose=T,alignCheckpoint=1)  {
+    
+    if(is.null(wav.at)) {stop("Use 'wav.at' to specify folder path where '.wav' files are stored")}
+    
+    # Create folder to store aligned calls
+    if(!dir.exists(file.path(wav.at, wav.to))) dir.create(file.path(wav.at, wav.to))
+    
+    # Replace sounds for each ".wav" file in a folder
+    filestoalign = list.files(wav.at, pattern = ".wav")
+    numalignfiles=length(filestoalign)
+    for(j in alignCheckpoint:numalignfiles){
+      file = filestoalign[j]
+      if(verbose==T) {print(paste(j,file,numalignfiles))}
+      if(overwrite==T || !(file.exists(file.path(wav.at, wav.to, file)))){
+        
+        orig.wav0 <- tuneR::readWave(paste(wav.at,"/", file, sep=""))
+        
+        # Add silence to fill sound window and prevent error
+        orig.wav <- seewave::addsilw(orig.wav0, f=f, at="end", d=(time.length*10), output = "Wave")
+        
+        # create spectro object
+        orig.spec <- seewave::spectro(orig.wav, f=f, wl=wl, ovlp=ovlp, osc=F, grid=F, plot=F)
+        
+        # Acquire contours
+        cont.spec <- grDevices::contourLines(x=orig.spec$time, y=orig.spec$freq, z=t(orig.spec$amp),
+                                             levels=seq(-dBlevel,-dBlevel,1))
+        
+        # vectors to store minimum and maximum time values
+        min.spec <- numeric(length(cont.spec))
+        max.spec <- numeric(length(cont.spec))
+        
+        # minimum and maximum time values among contours detected
+        for(i in 1:length(min.spec)){min.spec[i] <- min(cont.spec[[i]]$x)}
+        for(i in 1:length(max.spec)){max.spec[i] <- max(cont.spec[[i]]$x)}
+        
+        # minimum and maximum time values
+        t.min <- min(min.spec)
+        t.max <- max(max.spec)
+        
+        if((t.min-(time.perc*time.length))<0)
+          stop("Time percentage is too large. Consider a smaller value of 'time.perc'")
+        
+        # cut Wave file using minimum and maximum time values
+        short.wav0 <- seewave::deletew(orig.wav, f=f, output = "Wave",
+                                       from = (t.max+(time.perc*time.length)), to = max(orig.spec$time))
+        
+        short.wav <- seewave::deletew(short.wav0, f=f, output = "Wave",
+                                      from = 0, to = (t.min-(time.perc*time.length)))
+        
+        
+        # Add silence to fill sound window
+        final.wav <- seewave::addsilw(short.wav, f=f, at="end", d=time.length, output = "Wave")
+        
+        tuneR::writeWave(final.wav, file.path(wav.at, wav.to, file), extensible = F)
       } else {
+        if(verbose==T) {print("SKIPPING")}
+      }
+    } #end loop
+    
+  } #end function
+  
+  eigensound.custom <- function (analysis.type = threeDshape, wav.at = NULL, store.at = wav.at, 
+                                 dBlevel = 25, flim = c(0, 10), tlim = c(0, 1), trel = tlim, 
+                                 x.length = 80, y.length = 60, log.scale = TRUE, back.amp = 35, 
+                                 add.points = FALSE, add.contour = TRUE, lwd = 1, EQ = c(0.05,0.15, 0.3, 0.5, 0.7, 0.85, 0.95), mag.time = 1, f = 44100, 
+                                 wl = 512, ovlp = 70, plot.exp = TRUE, plot.as = "jpeg", plot.type = "surface", 
+                                 rotate.Xaxis = 60, rotate.Yaxis = 40, TPS.file = NULL,doIndTPS=T,shuffle=F,eigcheckpoint=1,verbose=T,rev=F) {
+    if (is.null(wav.at)) {
+      stop("Use 'wav.at' to specify folder path where '.wav' files are stored")
+    }
+    if (is.null(analysis.type)) {
+      stop("Method undefined in 'analysis.type'")
+    }
+    if (!is.null(analysis.type)) {
+      if (analysis.type != "threeDshape") 
+        stop("Invalid analysis specified by 'analysis.type'.")
+    }
+    if (plot.exp == TRUE) {
+      if (plot.as != "jpeg" && plot.as != "tif" && plot.as != 
+          "tiff") 
+        stop("Invalid image format specified by 'plot.as'. Choose between 'jpeg', 'tif' or 'tiff'")
+    }
+    if (plot.exp == TRUE && analysis.type == "threeDshape") {
+      if (plot.type != "surface" && plot.type != "points") 
+        stop("Invalid 3D sound shape specified by 'plot.type'. Choose between 'surface' or 'points'")
+    }
+    if (!is.null(TPS.file)) {
+      TPS.path <- paste(store.at, "/", TPS.file, ".tps", sep = "")
+      file.create(TPS.path, showWarnings = TRUE)
+    }
+    if (analysis.type == "threeDshape") {
+      files=list.files(wav.at, pattern = ".wav")
+      files=files[eigcheckpoint:length(files)]
+      if(verbose==T){print(paste("CHECKPOINTED AT:",eigcheckpoint))}
+      if(rev==T){
+        files=rev(files)
+        if(verbose==T){print("REVERSED")}
+      }
+      if(shuffle==T){
+        files=sample(files)
+        if(verbose==T){print("SHUFFLED")}
+      }
+      
+      lenfiles=length(files)
+      for (file_index in 1:length(files)) {
+        file=files[file_index]
+        if(verbose==T){print(paste(file,file_index,lenfiles))}
         
-        threeD <- tuneR::readWave(paste(wav.at, "/", file, 
-                                        sep = ""))
-        e <- seewave::spectro(threeD, f = f, wl = wl, ovlp = ovlp, 
-                              flim = flim, tlim = tlim, plot = F)
-        freq.seq <- seq(1, length(e$freq), length = y.length)
-        ifelse(isTRUE(log.scale), time.seq <- 10^(seq(log10(1), 
-                                                      log10(length(e$time)), length.out = x.length)), 
-               time.seq <- seq(1, length(e$time), length.out = x.length))
-        time.sub <- e$time[time.seq]
-        freq.sub <- e$freq[freq.seq]
-        amp.sub <- e$amp[freq.seq, time.seq]
-        for (i in 1:length(amp.sub)) {
-          if (amp.sub[i] == -Inf | amp.sub[i] <= -dBlevel) {
-            amp.sub[i] <- -dBlevel
-          }
-        }
-        colnames(amp.sub) <- time.sub
-        rownames(amp.sub) <- freq.sub
-        ind.3D <- as.matrix(stats::setNames(reshape2::melt(t(amp.sub)), 
-                                            c("time", "freq", "amp")))
+        indtps = paste(file,TPS.file,sep=".")
+        indtps.Path <- paste(store.at, "/", indtps, ".tps", sep = "")
         
-        ifelse(!exists("coord"), coord <- array(data = ind.3D, 
-                                                    dim = c(dim(ind.3D), 1)), coord <- abind::abind(coord, 
-                                                                                                      ind.3D, along = 3))
-        if (plot.exp == TRUE) {
-          if (plot.as == "jpeg") {
-            grDevices::jpeg(width = 5000, height = 3500, 
-                            units = "px", res = 500, filename = paste(store.at, 
-                                                                      "/", sub(".wav", "", file), ".jpg", sep = ""))
+        if(doIndTPS==T & (file.exists(indtps.Path))){
+          if(verbose==T){print("skipping")}
+        } else {
+          
+          threeD <- tuneR::readWave(paste(wav.at, "/", file, 
+                                          sep = ""))
+          e <- seewave::spectro(threeD, f = f, wl = wl, ovlp = ovlp, 
+                                flim = flim, tlim = tlim, plot = F)
+          freq.seq <- seq(1, length(e$freq), length = y.length)
+          ifelse(isTRUE(log.scale), time.seq <- 10^(seq(log10(1), 
+                                                        log10(length(e$time)), length.out = x.length)), 
+                 time.seq <- seq(1, length(e$time), length.out = x.length))
+          time.sub <- e$time[time.seq]
+          freq.sub <- e$freq[freq.seq]
+          amp.sub <- e$amp[freq.seq, time.seq]
+          for (i in 1:length(amp.sub)) {
+            if (amp.sub[i] == -Inf | amp.sub[i] <= -dBlevel) {
+              amp.sub[i] <- -dBlevel
+            }
           }
-          if (plot.as == "tiff" | plot.as == "tif") {
-            grDevices::tiff(width = 5000, height = 3500, 
-                            units = "px", res = 500, filename = paste(store.at, 
-                                                                      "/", sub(".wav", "", file), ".tif", sep = ""))
-          }
-          if (plot.type == "surface") {
-            plot3D::persp3D(x = time.sub, y = freq.sub, 
-                            z = t(amp.sub), border = "black", lwd = 0.1, 
-                            theta = rotate.Xaxis, phi = rotate.Yaxis, 
-                            resfac = 1, r = 3, expand = 0.5, cex.axis = 0.7, 
-                            scale = T, axes = T, col = seewave::spectro.colors(n = 100), 
-                            ticktype = "detailed", nticks = 4, xlab = "Time (s)", 
-                            ylab = "Frequency (kHz)", zlab = "Amplitude (dB)", 
-                            main = sub(".wav", "", file), clab = expression("Amplitude dB"))
-          }
-          if (plot.type == "points") {
-            plot3D::scatter3D(x = ind.3D[, 1], y = ind.3D[, 
-                                                          2], z = ind.3D[, 3], pch = 21, cex = 0.5, 
+          colnames(amp.sub) <- time.sub
+          rownames(amp.sub) <- freq.sub
+          ind.3D <- as.matrix(stats::setNames(reshape2::melt(t(amp.sub)), 
+                                              c("time", "freq", "amp")))
+          
+          ifelse(!exists("coord"), coord <- array(data = ind.3D, 
+                                                  dim = c(dim(ind.3D), 1)), coord <- abind::abind(coord, 
+                                                                                                  ind.3D, along = 3))
+          if (plot.exp == TRUE) {
+            if (plot.as == "jpeg") {
+              grDevices::jpeg(width = 5000, height = 3500, 
+                              units = "px", res = 500, filename = paste(store.at, 
+                                                                        "/", sub(".wav", "", file), ".jpg", sep = ""))
+            }
+            if (plot.as == "tiff" | plot.as == "tif") {
+              grDevices::tiff(width = 5000, height = 3500, 
+                              units = "px", res = 500, filename = paste(store.at, 
+                                                                        "/", sub(".wav", "", file), ".tif", sep = ""))
+            }
+            if (plot.type == "surface") {
+              plot3D::persp3D(x = time.sub, y = freq.sub, 
+                              z = t(amp.sub), border = "black", lwd = 0.1, 
                               theta = rotate.Xaxis, phi = rotate.Yaxis, 
                               resfac = 1, r = 3, expand = 0.5, cex.axis = 0.7, 
                               scale = T, axes = T, col = seewave::spectro.colors(n = 100), 
                               ticktype = "detailed", nticks = 4, xlab = "Time (s)", 
                               ylab = "Frequency (kHz)", zlab = "Amplitude (dB)", 
                               main = sub(".wav", "", file), clab = expression("Amplitude dB"))
+            }
+            if (plot.type == "points") {
+              plot3D::scatter3D(x = ind.3D[, 1], y = ind.3D[, 
+                                                            2], z = ind.3D[, 3], pch = 21, cex = 0.5, 
+                                theta = rotate.Xaxis, phi = rotate.Yaxis, 
+                                resfac = 1, r = 3, expand = 0.5, cex.axis = 0.7, 
+                                scale = T, axes = T, col = seewave::spectro.colors(n = 100), 
+                                ticktype = "detailed", nticks = 4, xlab = "Time (s)", 
+                                ylab = "Frequency (kHz)", zlab = "Amplitude (dB)", 
+                                main = sub(".wav", "", file), clab = expression("Amplitude dB"))
+            }
+            grDevices::dev.off()
           }
-          grDevices::dev.off()
-        }
-        if (!is.null(TPS.file)) {
-          lmline <- paste("LM=", dim(ind.3D)[1], sep = "")
-          idline <- paste("ID=", sub(".wav", "", file), 
-                          sep = "")
-          if(doIndTPS==T){
-            file.create(indtps.Path, showWarnings = TRUE)
-            write(lmline, indtps.Path, append = TRUE)
-            utils::write.table(ind.3D, indtps.Path, col.names = FALSE, 
-                               row.names = FALSE, append = TRUE)
-            write(idline, indtps.Path, append = TRUE)
-            write("", indtps.Path, append = TRUE)
-          } else {
-            write(lmline, TPS.path, append = TRUE)
-            utils::write.table(ind.3D, TPS.path, col.names = FALSE, 
-                               row.names = FALSE, append = TRUE)
-            write(idline, TPS.path, append = TRUE)
-            write("", TPS.path, append = TRUE)
-            
-          }
-          
-          rm(lmline, idline)
-        }
-      }
-      
-    }
-    dimnames(coord)[[3]] <- sub(".wav", "", list.files(wav.at, 
-                                                       pattern = ".wav"))
-  }
-  else (coord <- NULL)
-  if (analysis.type == "threeDshape") {
-    coord <- coord
-    
-  }
-  results <- coord
-}
-
-
-## for i in table1files
-path=c("/Users/kprovost/Documents/OneDrive - The Ohio State University/Song/SoundShape/complexity_metric/")
-pattern=c(".Table.1.selections.txt")
-listfiles=c()
-for(pa in path){
-  print(pa)
-  for(patt in pattern){
-    print(patt)
-    listfiles1=list.files(path=pa,pattern=patt,recursive=T,full.names = T)
-    print(length(listfiles1))
-    listfiles=c(listfiles,listfiles1)
-  }
-}
-#listfiles = listfiles[grepl("Zonotrichia",basename(listfiles))] ## only takes Zonotrichia files
-listfiles = listfiles[!(grepl("xml",listfiles))] ## excludes XML files
-listfiles = listfiles[!(grepl("wav_",listfiles))] ## excludes files with "wav_" in the name which are shortened
-listfiles=unique(listfiles) ## no duplicates
-
-run_soundshape = function(path,pattern,doplot=F,verbose=F,outpath=NULL,listfiles=NULL,tpsname="eig.sample",clusterind=F,overwrite=T,
-                          checkpointNumber=1,pcascalemin=10,pcascale=T,redo_eig=T,alignCheckpoint=1,eigcheckpoint=1,manualcombinetps=F,shuffle=F,rev=F){
-  print(Sys.time())
-  
-  if(is.null(outpath)){
-    outpath = base::tempdir()
-  }
-  
-  if(is.null(listfiles)) {
-    if(verbose==T){print("generating listfiles")}
-    if(length(path)==1) {
-      listfiles=c()
-      for(patt in pattern){
-        listfiles = c(listfiles,list.files(path=path,pattern=patt,recursive = T,full.names = T))
-      }
-      
-    } else {
-      for(patt in pattern){
-        listfiles1 = sapply(path,FUN=function(x){listfiles = list.files(path=x,pattern=patt,recursive = T,full.names = T)})
-        listfiles1 = as.vector(unlist(listfiles))
-        listfiles=c(listfiles,listfiles1)
-      }
-      #path=path[1]
-    }
-    
-    listfiles = listfiles[!(grepl("xml",listfiles))]
-    listfiles = listfiles[!(grepl("wav_",listfiles))]
-  }
-  
-  if(verbose==T){print("creating smallwav folders")}
-  wav.at <- file.path(outpath,"original_wave_bandpass")
-  if(!dir.exists(wav.at)) dir.create(wav.at)
-  store.at <- file.path(outpath,"output_temp")
-  if(!dir.exists(store.at)) dir.create(store.at)
-  
-  listnotes = c()
-  listmaxdif = c()
-  
-  if(verbose==T){print("looping over list of files")}
-  for (file in listfiles[checkpointNumber:length(listfiles)]) {
-    if(verbose==T){print(paste(which(listfiles==file),basename(file)))}
-    wavfile=file
-    for(patt in pattern){
-      wavfile = sub(patt,".wav",wavfile)
-    }
-    
-    if(file.exists(wavfile)) {
-      ## generate cutwav
-      wav=NULL
-      try({wav=tuneR::readWave(wavfile)})
-      if(is.null(wav)){
-        print("WAV COULD NOT BE READ")
-      } else {
-        wavdf = read.table(file,header=T,sep="\t")
-        listnotes = c(listnotes,nrow(wavdf))
-        
-        if(is.null(wavdf$Delta.Time..s.)){
-          wavdf$Delta.Time..s. = (wavdf$End.Time..s. - wavdf$Begin.Time..s.)
-        }
-        
-        maxdif = max(wavdf$Delta.Time..s.,na.rm=T)
-        
-        prefix = sub(".wav","",basename(wavfile))
-        
-        for(i in 1:nrow(wavdf)){
-          #if(verbose==T){print(i)}
-          
-          if(!(file.exists(file.path(wav.at, paste(prefix,i,"wav",sep="."))))) {
-            
-            if(wavdf$End.Time..s.[i]-wavdf$Begin.Time..s.[i]<=0) {
-              if(verbose==T){print(paste("SKIPPING ROW WITH NEGATIVE SIZE",i))}
+          if (!is.null(TPS.file)) {
+            lmline <- paste("LM=", dim(ind.3D)[1], sep = "")
+            idline <- paste("ID=", sub(".wav", "", file), 
+                            sep = "")
+            if(doIndTPS==T){
+              file.create(indtps.Path, showWarnings = TRUE)
+              write(lmline, indtps.Path, append = TRUE)
+              utils::write.table(ind.3D, indtps.Path, col.names = FALSE, 
+                                 row.names = FALSE, append = TRUE)
+              write(idline, indtps.Path, append = TRUE)
+              write("", indtps.Path, append = TRUE)
             } else {
-              
-              cutwav=NULL
-              try({cutwav = seewave::cutw(wav,from=wavdf$Begin.Time..s.[i]-maxdif*0.01,to=wavdf$Begin.Time..s.[i]+maxdif,output="Wave")})
-              if(is.null(cutwav)){
-                print("redo")
-                try({cutwav = seewave::cutw(wav,from=wavdf$Begin.Time..s.[i],to=wavdf$End.Time..s.[i],output="Wave")})
-              }
-              cutwav_f=NULL
-              try({cutwav_f=seewave::ffilter(cutwav, from = 0, to = 500, bandpass = FALSE,wl = 512, ovlp = 70, output="Wave",rescale=T)})
-              
-              if(!(is.null(cutwav_f))){
-                if(doplot==T){
-                  
-                  
-                  par(mfrow=c(1,2), mar=c(0,2,1,0))
-                  threeDspectro(cutwav, flim=c(0.5, 10), 
-                                colkey=list(plot=FALSE), cex.axis=0.4, cex.lab=0.8, resfac=3)
-                  threeDspectro(cutwav, flim=c(0.5, 10), plot.type="points",
-                                samp.grid=TRUE, x.length=70, y.length=50, main="Semilandmarks 3D",
-                                colkey=list(plot=FALSE), cex.axis=0.4, cex.lab=0.8)
-                  
-                  
-                  par(mfrow=c(1,2), mar=c(4,4,2,1)) # view side by side
-                  seewave::oscillo(cutwav, title="Oscillogram")
-                  seewave::spectro(cutwav, flim=c(0.5, 10), grid=FALSE, scale=FALSE, main="Spectrogram")
-                  
-                  
-                  par(mfrow=c(1,2), mar=c(4,4,1,1))
-                  
-                  # Set background at -25 dB and remove -Inf values from spectrogram data 
-                  spec_cut <- seewave::spectro(cutwav_f, flim=c(0, 10),  
-                                               f=48000,wl=512, ovlp=70,contlevels = seq(-25, -25, 1),
-                                               collevels = seq(-25, 0, 0.1),fastdisp=T,
-                                               plot=doplot)
-                  for(i in 1:length(spec_cut$amp)){if(spec_cut$amp[i] == -Inf |spec_cut$amp[i] <= -25)
-                  {spec_cut$amp[i] <- -25}}
-                  
-                  # 3D spectrogram (with a lower dBlevel for illustrative purpuses)
-                  threeDspectro(cutwav_f, dBlevel=25, flim=c(0, 10), main="",
-                                colkey=list(plot=FALSE), cex.axis=0.4, cex.lab=0.8, resfac=2) 
-                  
-                  plot3D::contour3D(x=spec_cut$time, y=spec_cut$freq, colvar=t(spec_cut$amp), z=-25,
-                                    plot=T, add=T, addbox=F, col="black", lwd=1.9, nlevels=2, dDepth=0.25)
-                  
-                  
-                  # Add curve of relative amplitude
-                  
-                  threeDspectro(cutwav_f, samp.grid=TRUE, x.length=70, y.length=47, plot.type="surface", 
-                                dBlevel=25, flim=c(0, 10),  f=48000, wl=512, ovlp=70, main="As 'surface'",
-                                colkey=list(plot=FALSE), cex.axis=0.4, cex.lab=0.8)
-                  
-                  # As "points"
-                  threeDspectro(cutwav_f, samp.grid=TRUE, x.length=70, y.length=47, plot.type="points", 
-                                dBlevel=25, flim=c(0, 10), f=48000, wl=512, ovlp=70, main="As 'points'",
-                                colkey=list(plot=FALSE), cex.axis=0.4, cex.lab=0.8)
-                }
-                
-                try({tuneR::writeWave(cutwav_f, filename = file.path(wav.at, paste(prefix,i,"wav",sep=".")), extensible = FALSE)})
-              }
-              
+              write(lmline, TPS.path, append = TRUE)
+              utils::write.table(ind.3D, TPS.path, col.names = FALSE, 
+                                 row.names = FALSE, append = TRUE)
+              write(idline, TPS.path, append = TRUE)
+              write("", TPS.path, append = TRUE)
               
             }
+            
+            rm(lmline, idline)
           }
         }
-        listmaxdif=c(listmaxdif,maxdif)
-      }} else {
-        print(paste("can't find wav:",wavfile))
-        listnotes = c(listnotes,NA)
-        listmaxdif = c(listmaxdif,NA)
+        
       }
+      dimnames(coord)[[3]] <- sub(".wav", "", list.files(wav.at, 
+                                                         pattern = ".wav"))
+    }
+    else (coord <- NULL)
+    if (analysis.type == "threeDshape") {
+      coord <- coord
+      
+    }
+    results <- coord
+  }
+  readmulti.tps.custom <- function(filelist, ... ){
+    tps.list <- filelist
+    readland.args <- list(...)
+    if(is.null(readland.args$specID)) readland.args$specID <- "None"
+    
+    file.ext <- substr(tps.list, nchar(tps.list)-3, nchar(tps.list))
+    if(!all(file.ext%in%c(".tps", ".TPS"))) 
+      stop("File list includes files in a format other than tps, please ammend")
+    
+    dt.dims <- sapply(1:length(tps.list), function(x){
+      print(paste(x,length(tps.list)))
+      dim(readland.tps(tps.list[x], ...))
+    }, simplify = T)
+    p1 <- dt.dims[1, 1]; k1 <- dt.dims[2, 1]; n1 <- dt.dims[3, 1]
+    
+    if(any(dt.dims[1,]!=p1)) stop("Input tps files include different numbers of landmarks, please correct")
+    
+    if(any(dt.dims[2,]!=k1)) stop("Input tps files include landmarks in different dimensions (2D and 3D), please correct")
+    
+    all.lms <- NULL
+    for(f in 1:length(tps.list)){   
+      print(paste("SECOND:",f,length(tps.list)))
+      lms <- two.d.array(readland.tps(tps.list[f], ...))
+      all.lms <- rbind(all.lms, lms)
+    }
+    all.lms <- arrayspecs(all.lms, p1, k1)
+    
+    if(any(table(dimnames(all.lms)[3])!=1)) {
+      if(readland.args$specID != "imageID") {
+        dimnames(all.lms)[[3]] <- 1:dim(all.lms)[3]
+      } else {
+        warning("Input files seem to include repeated specimen names")
+      }
+    }
+    
+    return(all.lms)
   }
   
-  if(verbose==T){print("aligning wavs (lengthy)"); print(Sys.time())}
-  align.wave.custom(wav.at=wav.at, wav.to="Aligned",
-                    f=48000,time.perc=0,overwrite=overwrite,alignCheckpoint = alignCheckpoint)
   
-  if(doplot==T) {
-    SoundShape::eigensound(analysis.type = "twoDshape", wav.at = file.path(wav.at, "Aligned"),
-                           store.at=store.at, plot.exp=TRUE, flim=c(0, 10), tlim=c(0, 0.8),
-                           fastdisp=T)
+  ## for i in table1files
+  path=c("/Users/kprovost/Documents/OneDrive - The Ohio State University/Song/SoundShape/complexity_metric/")
+  pattern=c(".Table.1.selections.txt")
+  listfiles=c()
+  for(pa in path){
+    print(pa)
+    for(patt in pattern){
+      print(patt)
+      listfiles1=list.files(path=pa,pattern=patt,recursive=T,full.names = T)
+      print(length(listfiles1))
+      listfiles=c(listfiles,listfiles1)
+    }
   }
+  #listfiles = listfiles[grepl("Zonotrichia",basename(listfiles))] ## only takes Zonotrichia files
+  listfiles = listfiles[!(grepl("xml",listfiles))] ## excludes XML files
+  listfiles = listfiles[!(grepl("wav_",listfiles))] ## excludes files with "wav_" in the name which are shortened
+  listfiles=unique(listfiles) ## no duplicates
   
-  
-  if(verbose==T){print("calculating eigensound (lengthy)");print(Sys.time())}
-  if(redo_eig==T || !(file.exists(file.path(store.at,paste(tpsname,".tps",sep=""))))){
-    eig.sample <- eigensound.custom(analysis.type="threeDshape", dBlevel=25, 
-                                    f=48000, wl=512, ovlp=70, flim=c(0, 10),tlim = c(0,0.4),
-                                    log.scale=T, plot.exp=doplot, plot.type="points",
-                                    wav.at=file.path(wav.at, "Aligned"), store.at=store.at,
-                                    TPS.file=tpsname,eigcheckpoint=eigcheckpoint,shuffle=shuffle,rev=rev)
-  } else {
-    if(manualcombinetps==T){
-      eig.sample = geomorph::readmulti.tps(list.files(path=file.path(store.at),pattern=paste(".wav.",tpsname,".tps",sep=""),full.names = T),specID = "ID",negNA=F)
+  soundshape_pca_only=function(eig.sample,outpath,samples_per_cluster,sample.gr,date,pcascalemin,
+                               verbose=T,pcascale=T,outfilename="pca_soundshape") {
+    if(verbose==T){print("calculating pca");print(Sys.time())}
+    # PCA using three-dimensional semilandmark coordinates embeeded in eig.sample
+    
+    ## CAN WE CALCULATE A WEIGHTED PCA???
+    ## subsample the data and then project the data 
+    
+    eig.2D = geomorph::two.d.array(eig.sample)
+    
+    if(pcascale==F){
+      pca.eig.sample <- stats::prcomp(eig.2D)
+      write.table(pca.eig.sample$x,file.path(outpath,paste(outfilename,"_SCALE",pcascale,".",date,".temp",sep="")))
+      write.table(pca.eig.sample$rotation,file.path(outpath,paste(outfilename,"_rotation_SCALE",pcascale,".",date,".temp",sep="")))
+      write.table(unclass(summary(pca.eig.sample))$importance,file.path(outpath,paste(outfilename,"_importance_SCALE",pcascale,".",date,".temp",sep="")))
+      
+      pca.eig.data = pca.eig.sample$x
       
     } else {
-      eig.sample = geomorph::readland.tps(file.path(store.at,paste(tpsname,".tps",sep="")),specID = "ID",negNA=F)
+      print("SCALING")
+      eid.2D.sample = NULL
       
+      for(group in names(samples_per_cluster)) {
+        print(group)
+        subset = eig.2D[sample.gr==group,]
+        toadd = subset[sample(1:nrow(subset),size = min(pcascalemin,nrow(subset)),replace = F),]
+        if(is.null(eid.2D.sample)){
+          eid.2D.sample=toadd
+        } else {
+          eid.2D.sample = rbind(eid.2D.sample,toadd)
+        }
+      }
+      pca.eig.subset <- stats::prcomp(eid.2D.sample)
+      pca.eig.sample = stats::predict(pca.eig.subset,newdata=eig.2D)
+      
+      write.table(pca.eig.subset$x,file.path(outpath,paste(outfilename,"_SUBSET",".",date,".temp",sep="")))
+      write.table(pca.eig.sample,file.path(outpath,paste(outfilename,"_SCALE",pcascale,".",date,".temp",sep="")))
+      write.table(pca.eig.subset$rotation,file.path(outpath,paste(outfilename,"_rotation_SUBSET",".",date,".temp",sep="")))
+      write.table(unclass(summary(pca.eig.subset))$importance,file.path(outpath,paste(outfilename,"_importance_SUBSET",".",date,".temp",sep="")))
+      
+      pca.eig.data = pca.eig.sample
     }
-    if(dim(eig.sample)[3]!=length(list.files(wav.at))){
-      eig.sample <- SoundShape::eigensound(analysis.type="threeDshape", dBlevel=25, 
-                                           f=48000, wl=512, ovlp=70, flim=c(0, 10),tlim = c(0,0.4),
-                                           log.scale=T, plot.exp=doplot, plot.type="points",
-                                           wav.at=file.path(wav.at, "Aligned"), store.at=store.at,
-                                           TPS.file=tpsname,eigcheckpoint=eigcheckpoint)
+    
+    
+    
+    if(doplot==T) {
+      # Create hypothetical sound surfaces using hypo.surf
+      
+      # Mean shape configuration (consensus)
+      hypo.surf(eig.sample,  PC="mean", flim=c(0, 10), tlim=c(0, 0.4), x.length=70, y.length=47,
+                cex.lab=0.7, cex.axis=0.5, cex.main=1)
+      
+      # Minimum and maximum deformations - Principal Component 1
+      hypo.surf(eig.sample, PC=1, flim=c(0, 10), tlim=c(0, 0.4), x.length=70, y.length=47,
+                cex.lab=0.7, cex.axis=0.5, cex.main=1)
     }
+    
+    # Based on those names, create factor to use as groups in subsequent ordination plot
+    #listnotes[is.na(listnotes)]=0
+    
+    if(verbose==T){print("plotting pca")}
+    # Ordination plot
+    
+    ## NEEDS TO BE FIXED FOR NEW DATATYPE
+    if(pcascale==F){
+      png(paste(outpath,"/",outfilename,"_pca",".",date,".png",sep=""))
+      SoundShape::pca.plot(pca.eig.sample, groups=sample.gr, conv.hulls=sample.gr,leg=F)
+      dev.off()
+    } else {
+      png(paste(outpath,"/",outfilename,"_pca_SCALE",".",date,".png",sep=""))
+      plot(pca.eig.subset$x[,1],pca.eig.subset$x[,2],cex=0.5,pch=4,col=as.numeric(as.factor(sample.gr.scaled)))
+      points(pca.eig.data[,1],pca.eig.data[,2],col=as.numeric(as.factor(sample.gr)))
+      dev.off()
+    }
+    
+    print(Sys.time())
   }
-
   
-  # Verify names of acoustic units from sample 
-  sample.gr=dimnames(eig.sample)[[3]]
-  #sample.gr = rownames(pca.eig.sample$x)
+  run_soundshape = function(path,pattern,doplot=F,verbose=F,outpath=NULL,listfiles=NULL,tpsname="eig.sample",clusterind=F,overwrite=T,
+                            checkpointNumber=1,pcascalemin=10,pcascale=T,redo_eig=F,alignCheckpoint=1,eigcheckpoint=1,manualcombinetps=T,shuffle=F,rev=F,
+                            skipCutwave=F,skipAlign=F,date=format(Sys.time(), "%d%b%Y")){
+    print(Sys.time())
+    
+    if(is.null(outpath)){
+      outpath = base::tempdir()
+    }
+    
+    if(is.null(listfiles)) {
+      if(verbose==T){print("generating listfiles")}
+      if(length(path)==1) {
+        listfiles=c()
+        for(patt in pattern){
+          listfiles = c(listfiles,list.files(path=path,pattern=patt,recursive = T,full.names = T))
+        }
+        
+      } else {
+        for(patt in pattern){
+          listfiles1 = sapply(path,FUN=function(x){listfiles = list.files(path=x,pattern=patt,recursive = T,full.names = T)})
+          listfiles1 = as.vector(unlist(listfiles))
+          listfiles=c(listfiles,listfiles1)
+        }
+        #path=path[1]
+      }
+      
+      listfiles = listfiles[!(grepl("xml",listfiles))]
+      listfiles = listfiles[!(grepl("wav_",listfiles))]
+    }
+    
+    if(verbose==T){print("creating smallwav folders")}
+    wav.at <- file.path(outpath,"original_wave_bandpass")
+    if(!dir.exists(wav.at)) dir.create(wav.at)
+    store.at <- file.path(outpath,"output_temp")
+    if(!dir.exists(store.at)) dir.create(store.at)
+    
+    listnotes = c()
+    listmaxdif = c()
+    
+    if(skipCutwave==F){
+      if(verbose==T){print("looping over list of files")}
+      for (file in listfiles[checkpointNumber:length(listfiles)]) {
+        if(verbose==T){print(paste(which(listfiles==file),basename(file)))}
+        wavfile=file
+        for(patt in pattern){
+          wavfile = sub(patt,".wav",wavfile)
+        }
+        
+        if(file.exists(wavfile)) {
+          ## generate cutwav
+          wav=NULL
+          try({wav=tuneR::readWave(wavfile)})
+          if(is.null(wav)){
+            print("WAV COULD NOT BE READ")
+          } else {
+            wavdf = read.table(file,header=T,sep="\t")
+            listnotes = c(listnotes,nrow(wavdf))
+            
+            if(is.null(wavdf$Delta.Time..s.)){
+              wavdf$Delta.Time..s. = (wavdf$End.Time..s. - wavdf$Begin.Time..s.)
+            }
+            
+            maxdif = max(wavdf$Delta.Time..s.,na.rm=T)
+            
+            prefix = sub(".wav","",basename(wavfile))
+            
+            for(i in 1:nrow(wavdf)){
+              #if(verbose==T){print(i)}
+              
+              if(!(file.exists(file.path(wav.at, paste(prefix,i,"wav",sep="."))))) {
+                
+                if(wavdf$End.Time..s.[i]-wavdf$Begin.Time..s.[i]<=0) {
+                  if(verbose==T){print(paste("SKIPPING ROW WITH NEGATIVE SIZE",i))}
+                } else {
+                  
+                  cutwav=NULL
+                  try({cutwav = seewave::cutw(wav,from=wavdf$Begin.Time..s.[i]-maxdif*0.01,to=wavdf$Begin.Time..s.[i]+maxdif,output="Wave")})
+                  if(is.null(cutwav)){
+                    print("redo")
+                    try({cutwav = seewave::cutw(wav,from=wavdf$Begin.Time..s.[i],to=wavdf$End.Time..s.[i],output="Wave")})
+                  }
+                  cutwav_f=NULL
+                  try({cutwav_f=seewave::ffilter(cutwav, from = 0, to = 500, bandpass = FALSE,wl = 512, ovlp = 70, output="Wave",rescale=T)})
+                  
+                  if(!(is.null(cutwav_f))){
+                    if(doplot==T){
+                      
+                      
+                      par(mfrow=c(1,2), mar=c(0,2,1,0))
+                      threeDspectro(cutwav, flim=c(0.5, 10), 
+                                    colkey=list(plot=FALSE), cex.axis=0.4, cex.lab=0.8, resfac=3)
+                      threeDspectro(cutwav, flim=c(0.5, 10), plot.type="points",
+                                    samp.grid=TRUE, x.length=70, y.length=50, main="Semilandmarks 3D",
+                                    colkey=list(plot=FALSE), cex.axis=0.4, cex.lab=0.8)
+                      
+                      
+                      par(mfrow=c(1,2), mar=c(4,4,2,1)) # view side by side
+                      seewave::oscillo(cutwav, title="Oscillogram")
+                      seewave::spectro(cutwav, flim=c(0.5, 10), grid=FALSE, scale=FALSE, main="Spectrogram")
+                      
+                      
+                      par(mfrow=c(1,2), mar=c(4,4,1,1))
+                      
+                      # Set background at -25 dB and remove -Inf values from spectrogram data 
+                      spec_cut <- seewave::spectro(cutwav_f, flim=c(0, 10),  
+                                                   f=48000,wl=512, ovlp=70,contlevels = seq(-25, -25, 1),
+                                                   collevels = seq(-25, 0, 0.1),fastdisp=T,
+                                                   plot=doplot)
+                      for(i in 1:length(spec_cut$amp)){if(spec_cut$amp[i] == -Inf |spec_cut$amp[i] <= -25)
+                      {spec_cut$amp[i] <- -25}}
+                      
+                      # 3D spectrogram (with a lower dBlevel for illustrative purpuses)
+                      threeDspectro(cutwav_f, dBlevel=25, flim=c(0, 10), main="",
+                                    colkey=list(plot=FALSE), cex.axis=0.4, cex.lab=0.8, resfac=2) 
+                      
+                      plot3D::contour3D(x=spec_cut$time, y=spec_cut$freq, colvar=t(spec_cut$amp), z=-25,
+                                        plot=T, add=T, addbox=F, col="black", lwd=1.9, nlevels=2, dDepth=0.25)
+                      
+                      
+                      # Add curve of relative amplitude
+                      
+                      threeDspectro(cutwav_f, samp.grid=TRUE, x.length=70, y.length=47, plot.type="surface", 
+                                    dBlevel=25, flim=c(0, 10),  f=48000, wl=512, ovlp=70, main="As 'surface'",
+                                    colkey=list(plot=FALSE), cex.axis=0.4, cex.lab=0.8)
+                      
+                      # As "points"
+                      threeDspectro(cutwav_f, samp.grid=TRUE, x.length=70, y.length=47, plot.type="points", 
+                                    dBlevel=25, flim=c(0, 10), f=48000, wl=512, ovlp=70, main="As 'points'",
+                                    colkey=list(plot=FALSE), cex.axis=0.4, cex.lab=0.8)
+                    }
+                    
+                    try({tuneR::writeWave(cutwav_f, filename = file.path(wav.at, paste(prefix,i,"wav",sep=".")), extensible = FALSE)})
+                  }
+                  
+                  
+                }
+              }
+            }
+            listmaxdif=c(listmaxdif,maxdif)
+          }} else {
+            print(paste("can't find wav:",wavfile))
+            listnotes = c(listnotes,NA)
+            listmaxdif = c(listmaxdif,NA)
+          }
+      }
+    }
+    
+    if(skipAlign==F){
+      if(verbose==T){print("aligning wavs (lengthy)"); print(Sys.time())}
+      align.wave.custom(wav.at=wav.at, wav.to="Aligned",
+                        f=48000,time.perc=0,overwrite=overwrite,alignCheckpoint = alignCheckpoint)
+      
+      if(doplot==T) {
+        SoundShape::eigensound(analysis.type = "twoDshape", wav.at = file.path(wav.at, "Aligned"),
+                               store.at=store.at, plot.exp=TRUE, flim=c(0, 10), tlim=c(0, 0.8),
+                               fastdisp=T)
+      }
+    }
+    
+    if(verbose==T){print("calculating eigensound (lengthy)");print(Sys.time())}
+    if(redo_eig==T || !(file.exists(file.path(store.at,paste(tpsname,".tps",sep=""))))){
+      eig.sample <- eigensound.custom(analysis.type="threeDshape", dBlevel=25, 
+                                      f=48000, wl=512, ovlp=70, flim=c(0, 10),tlim = c(0,0.4),
+                                      log.scale=T, plot.exp=doplot, plot.type="points",
+                                      wav.at=file.path(wav.at, "Aligned"), store.at=store.at,
+                                      TPS.file=tpsname,eigcheckpoint=eigcheckpoint,shuffle=shuffle,rev=rev)
+    } else {
+      if(manualcombinetps==T){
+        if(verbose==T){print("reading multiple files to manually generate")}
+        eig.sample = readmulti.tps.custom(list.files(path=file.path(store.at),pattern=paste(".wav.",tpsname,".tps",sep=""),full.names = T),
+                                          specID = "ID",negNA=F,warnmsg=F)
+        if(verbose==T){print("writing tps file")}
+        writeland.tps(eig.sample, file=paste(store.at,"/",tpsname,".",date,".tps",sep=""), scale = NULL, specID = TRUE)
+        
+      } else {
+        eig.sample = geomorph::readland.tps(file.path(store.at,paste(tpsname,".tps",sep="")),specID = "ID",negNA=F)
+        
+      }
+      if(verbose==T){print("done reading eig.sample; checking")}
+      
+      thefiles=list.files(wav.at)
+      thefiles=thefiles[thefiles!="Aligned"]
+      
+      if(dim(eig.sample)[3]!=length(thefiles)){
+        
+        missing = outersect(dimnames(eig.sample)[[3]],sub(".wav","",thefiles))
+        
+        eig.sample <- SoundShape::eigensound(analysis.type="threeDshape", dBlevel=25, 
+                                             f=48000, wl=512, ovlp=70, flim=c(0, 10),tlim = c(0,0.4),
+                                             log.scale=T, plot.exp=doplot, plot.type="points",
+                                             wav.at=file.path(wav.at, "Aligned"), store.at=store.at,
+                                             TPS.file=tpsname)
+      }
+    }
+    
+    
+    # Verify names of acoustic units from sample 
+    sample.gr=dimnames(eig.sample)[[3]]
+    #sample.gr = rownames(pca.eig.sample$x)
+    
+    sample.gr = sapply(sample.gr,FUN=function(y){
+      z=strsplit(as.character(y),"-")[[1]]
+      if(length(z)>1){
+        z=paste(z[1:2],collapse="-")
+      }
+      x=strsplit(as.character(z),"\\.")[[1]]
+      if(clusterind==F){
+        x = x[1]
+      } else {
+        x = paste(x[1:2],collapse=".")
+      }
+      return(x)
+    })
+    sample.gr = as.factor(sample.gr)
+    samples_per_cluster=table(sample.gr)
+    samples_per_cluster_scaled = samples_per_cluster
+    samples_per_cluster_scaled[samples_per_cluster_scaled>pcascalemin] = pcascalemin
+    sample.gr.scaled = unlist(sapply(1:length(samples_per_cluster_scaled),
+                                     FUN=function(i){
+                                       name=names(samples_per_cluster_scaled)[i]
+                                       val=samples_per_cluster_scaled[i]
+                                       newgroup = rep(name,val)
+                                       return(newgroup)
+                                     },simplify = T))
+    
+    soundshape_pca_only(eig.sample,outpath,samples_per_cluster,sample.gr,date,pcascalemin,
+                        verbose=T,pcascale=T)
+  }
   
-  sample.gr = sapply(sample.gr,FUN=function(y){
+  path=path
+  pattern=pattern
+  doplot=F
+  verbose=T
+  listfiles=listfiles
+  outpath="/Users/kprovost/Documents/OneDrive - The Ohio State University/Song/SoundShape/complexity_metric/"
+  overwrite=F
+  checkpointNumber=1
+  redo_eig=F
+  alignCheckpoint=1
+  eigcheckpoint=1
+  shuffle=F
+  rev=F
+  skipCutwave=T
+  skipAlign=T
+  tpsname="eig.sample"
+  manualcombinetps=T
+  clusterind=F
+  pcascalemin=10
+  pcascale=T
+  
+  # run_soundshape(path=path,pattern=pattern,doplot=F,verbose=T,listfiles=listfiles,outpath="/Users/kprovost/Documents/OneDrive - The Ohio State University/Song/SoundShape/complexity_metric/",
+  #                overwrite=F,checkpointNumber=1,redo_eig=F,alignCheckpoint=1,eigcheckpoint=1,shuffle=F,rev=F,skipCutwave=T,skipAlign=T,tpsname="eig.sample",
+  #                manualcombinetps=T)
+  
+  
+  ## make a function to do soundshape on subsets of tps files
+  tps_path = paste(outpath,"output_temp/",sep="")
+  tps.list = list.files(path=tps_path,
+                        pattern=paste(".wav.",tpsname,".tps",sep=""))
+  tps.list=tps.list[tps.list!=paste(tpsname,".tps",sep="")]
+  
+  
+  tps.species=sapply(tps.list,FUN=function(y){
+    y=sub("_","-",y)
     z=strsplit(as.character(y),"-")[[1]]
     if(length(z)>1){
       z=paste(z[1:2],collapse="-")
@@ -979,98 +1179,194 @@ run_soundshape = function(path,pattern,doplot=F,verbose=F,outpath=NULL,listfiles
     }
     return(x)
   })
-  sample.gr = as.factor(sample.gr)
-  samples_per_cluster=table(sample.gr)
-  samples_per_cluster_scaled = samples_per_cluster
-  samples_per_cluster_scaled[samples_per_cluster_scaled>pcascalemin] = pcascalemin
-  sample.gr.scaled = unlist(sapply(1:length(samples_per_cluster_scaled),
-                                   FUN=function(i){
-                                     name=names(samples_per_cluster_scaled)[i]
-                                     val=samples_per_cluster_scaled[i]
-                                     newgroup = rep(name,val)
-                                     return(newgroup)
-                                   },simplify = T))
   
-  if(verbose==T){print("calculating pca");print(Sys.time())}
-  # PCA using three-dimensional semilandmark coordinates embeeded in eig.sample
+  tps.species = sub("_gambellii","",tps.species)
+  tps.species = sub("_oriantha","",tps.species)
   
-  ## CAN WE CALCULATE A WEIGHTED PCA???
-  ## subsample the data and then project the data 
+  tps.df = cbind(tps.list,tps.species)
+  tps.df=as.data.frame(tps.df)
   
-  eig.2D = geomorph::two.d.array(eig.sample)
+  num_to_keep_per_species = 50
+  num_iterations=50
   
-  if(pcascale==F){
-    pca.eig.sample <- stats::prcomp(eig.2D)
-    write.table(pca.eig.sample$x,file.path(outpath,paste("pca_soundshape_SCALE",pcascale,".temp",sep="")))
-    write.table(pca.eig.sample$rotation,file.path(outpath,paste("pca_soundshape_rotation_SCALE",pcascale,".temp",sep="")))
-    write.table(unclass(summary(pca.eig.sample))$importance,file.path(outpath,paste("pca_soundshape_importance_SCALE",pcascale,".temp",sep="")))
+  for(this_iteration in 1:num_iterations){
     
-    pca.eig.data = pca.eig.sample$x
+    outfilename=paste("pca_soundshape",".",this_iteration,sep="")
+    outtps=paste(tps_path,"/",tpsname,".",date,".",this_iteration,".tps",sep="")
+    pngfile=(paste(outpath,"/",outfilename,"_pca_SCALE",".",date,".png",sep=""))
     
-  } else {
-    print("SCALING")
-    eid.2D.sample = NULL
-    
-    for(group in names(samples_per_cluster)) {
-      subset = eig.2D[sample.gr==group,]
-      toadd = subset[sample(1:nrow(subset),size = min(pcascalemin,nrow(subset)),replace = F),]
-      if(is.null(eid.2D.sample)){
-        eid.2D.sample=toadd
+    if(!file.exists(pngfile)){
+      
+      if(!file.exists(outtps)){
+        print(paste("creating iteration file",this_iteration))
+        kept=c()
+        for(spp in sort(unique(tps.df$tps.species))){
+          print(spp)
+          
+          temp = tps.df[tps.df$tps.species==spp,]
+          tokeep=sample(1:nrow(temp),num_to_keep_per_species,replace=F)
+          kept  = c(kept,temp$tps.list[tokeep])
+        }
+        
+        # tps_path
+        print(paste("reading in kept",this_iteration))
+        eig.sample = readmulti.tps.custom(file.path(tps_path,kept),specID = "ID",negNA=F,warnmsg=F)
+        print(paste("writing out kept as iteration",this_iteration,"/",num_iterations))
+        writeland.tps(eig.sample, file=outtps, scale = NULL, specID = TRUE)
       } else {
-        eid.2D.sample = rbind(eid.2D.sample,toadd)
+        print(paste("reading existing iteration file",this_iteration))
+        eig.sample = readland.tps(outtps,specID = "ID",negNA=F,warnmsg=F)
       }
+      
+      
+      
+      
+      sample.gr=rep(sort(unique(tps.df$tps.species)),num_to_keep_per_species)
+      samples_per_cluster=table(sample.gr)
+      pcascalemin=10
+      pcascale=T
+      verbose=T
+      
+      
+      temp=soundshape_pca_only(eig.sample=eig.sample,outpath=outpath,samples_per_cluster=samples_per_cluster,
+                               sample.gr=sample.gr,date=date,pcascalemin=pcascalemin,
+                               verbose=verbose,pcascale=pcascale,outfilename=outfilename)
+    } else {
+      print(paste("skipping iteration",this_iteration,"file exists"))
     }
-    pca.eig.subset <- stats::prcomp(eid.2D.sample)
-    pca.eig.sample = stats::predict(pca.eig.subset,newdata=eig.2D)
     
-    write.table(pca.eig.subset$x,file.path(outpath,paste("pca_soundshape_SUBSET.temp",sep="")))
-    write.table(pca.eig.sample,file.path(outpath,paste("pca_soundshape_SCALE",pcascale,".temp",sep="")))
-    write.table(pca.eig.subset$rotation,file.path(outpath,paste("pca_soundshape_rotation_SUBSET.temp",sep="")))
-    write.table(unclass(summary(pca.eig.subset))$importance,file.path(outpath,paste("pca_soundshape_importance_SUBSET.temp",sep="")))
-    
-    pca.eig.data = pca.eig.sample
   }
   
-   
   
-  if(doplot==T) {
-    # Create hypothetical sound surfaces using hypo.surf
-    
-    # Mean shape configuration (consensus)
-    hypo.surf(eig.sample,  PC="mean", flim=c(0, 10), tlim=c(0, 0.4), x.length=70, y.length=47,
-              cex.lab=0.7, cex.axis=0.5, cex.main=1)
-    
-    # Minimum and maximum deformations - Principal Component 1
-    hypo.surf(eig.sample, PC=1, flim=c(0, 10), tlim=c(0, 0.4), x.length=70, y.length=47,
-              cex.lab=0.7, cex.axis=0.5, cex.main=1)
-  }
-  
-  # Based on those names, create factor to use as groups in subsequent ordination plot
-  listnotes[is.na(listnotes)]=0
-  
-  if(verbose==T){print("plotting pca")}
-  # Ordination plot
-  
-  ## NEEDS TO BE FIXED FOR NEW DATATYPE
-  if(pcascale==F){
-  png(file.path(outpath,"pca_soundshape_pca.png"))
-  SoundShape::pca.plot(pca.eig.sample, groups=sample.gr, conv.hulls=sample.gr,leg=F)
-  dev.off()
-  } else {
-    png(file.path(outpath,"pca_soundshape_pca_SCALE.png"))
-    plot(pca.eig.subset$x[,1],pca.eig.subset$x[,2],cex=0.5,pch=4,col=as.numeric(as.factor(sample.gr.scaled)))
-    points(pca.eig.data[,1],pca.eig.data[,2],col=as.numeric(as.factor(sample.gr)))
-    dev.off()
-  }
-  
-  print(Sys.time())
-}
-
-run_soundshape(path=path,pattern=pattern,doplot=F,verbose=T,listfiles=listfiles,outpath="/Users/kprovost/Documents/OneDrive - The Ohio State University/Song/SoundShape/complexity_metric/",
-               overwrite=F,checkpointNumber=1,redo_eig=T,alignCheckpoint=1,eigcheckpoint=1,shuffle=F,rev=F)
 }
 
 
+## soundshape iterations imports
+
+iter_files = list.files(path=outpath,pattern="SCALETRUE")
+pca_to_keep = 3
+
+species_iteration_volumes=lapply(iter_files,FUN=function(file){
+  
+  pcaxF = as.data.frame(data.table::fread(file.path(outpath,file),sep=" "))
+  rownames(pcaxF) = pcaxF$V1
+  pcaxF=pcaxF[,-1]
+  rownames(pcaxF)
+  rownames(pcaxF)=gsub("-",".",rownames(pcaxF))
+  rownames(pcaxF)=gsub("_",".",rownames(pcaxF))
+  rownames(pcaxF)=gsub(".mp3","",rownames(pcaxF))
+  rownames(pcaxF)=gsub(".gambellii","",rownames(pcaxF))
+  rownames(pcaxF)=gsub(".oriantha","",rownames(pcaxF))
+  pcaxF$genus=c(sapply(rownames(pcaxF),FUN=function(x){strsplit(x,"\\.")[[1]][1]}))
+  pcaxF$species=c(sapply(rownames(pcaxF),FUN=function(x){strsplit(x,"\\.")[[1]][2]}))
+  pcaxF$id=c(sapply(rownames(pcaxF),FUN=function(x){strsplit(x,"\\.")[[1]][3]}))
+  pcaxF$syllable=c(sapply(rownames(pcaxF),FUN=function(x){strsplit(x,"\\.")[[1]][4]}))
+  pcaxF_small = cbind(pcaxF[,(1:pca_to_keep)],pcaxF[,c("genus","species","id","syllable")])
+  
+  hull3=geometry::convhulln(pcaxF_small[,(1:pca_to_keep)],output.options="FA")
+  #fullarea=hull3$area
+  fullvol=hull3$vol
+  
+  #areadf=cbind("ALL","ALL",fullarea,nrow(pcaxF_small))
+  voldf=cbind("ALL","ALL",fullvol,nrow(pcaxF_small))
+  
+  for(spp in sort(unique(pcaxF_small$species))){
+    print(spp)
+    temp = pcaxF_small[pcaxF_small$species==spp,]
+    hulltemp=geometry::convhulln(temp[,(1:pca_to_keep)],output.options="FA")
+    #temparea=hulltemp$area
+    tempvol=hulltemp$vol
+    
+    #toadd=cbind(spp,"ALL",temparea,nrow(temp))
+    #areadf = rbind(areadf,toadd)
+    toadd2=cbind(spp,"ALL",tempvol,nrow(temp))
+    voldf = rbind(voldf,toadd2)
+    
+    # for(id in unique(temp$id)){
+    #   print(id)
+    #   idtemp = temp[temp$id==id,]
+    #   if(nrow(idtemp)>1){
+    #   hullid=geometry::convhulln(idtemp[,(1:pca_to_keep)],output.options="FA")
+    #   idarea=hullid$area
+    #   idvol=hullid$vol
+    #   } else {
+    #     idarea=NA
+    #     idvol=NA
+    #   }
+    #   
+    #   toadd=cbind(spp,id,idarea,nrow(idtemp))
+    #   areadf = rbind(areadf,toadd)
+    #   toadd2=cbind(spp,id,idvol,nrow(idtemp))
+    #   voldf = rbind(voldf,toadd2)
+    # }
+    
+  }
+  
+  #colnames(areadf) = c("species","id","area","nrow")
+  colnames(voldf) = c("species","id","vol","nrow")
+  voldf = as.data.frame(voldf)
+  
+  voldf$relative = as.numeric(voldf$vol)  / max(as.numeric(voldf$vol),na.rm=T)
+  outputvol = voldf[voldf$species!="ALL",c("species","relative")]
+  relative = outputvol$relative; names(relative) = outputvol$species
+  return(relative)
+  
+})
+spp_iter_vol_df  = do.call(rbind,species_iteration_volumes)
+rownames(spp_iter_vol_df) = iter_files
+spp_iter_vol_df=as.data.frame(spp_iter_vol_df)
+write.table(spp_iter_vol_df,paste(outpath,"/iterations_of_vol_standardized_",date,"_iters",num_iterations,"_persppnum",num_to_keep_per_species,"_pcs",pca_to_keep,".txt",sep=""))
+
+spp_iter_vol_df=spp_iter_vol_df[3:nrow(spp_iter_vol_df),]
+
+par(mfrow=c(2,3))
+hist(spp_iter_vol_df$anna)
+print(mean(spp_iter_vol_df$anna,na.rm=T))
+print(sd(spp_iter_vol_df$anna,na.rm=T))
+abline(v=mean(spp_iter_vol_df$anna,na.rm=T),col="red")
+abline(v=mean(spp_iter_vol_df$anna,na.rm=T)+sd(spp_iter_vol_df$anna,na.rm=T),col="red",lty=2)
+abline(v=mean(spp_iter_vol_df$anna,na.rm=T)-sd(spp_iter_vol_df$anna,na.rm=T),col="red",lty=2)
+
+hist(spp_iter_vol_df$virescens)
+print(mean(spp_iter_vol_df$virescens,na.rm=T))
+print(sd(spp_iter_vol_df$virescens,na.rm=T))
+abline(v=mean(spp_iter_vol_df$virescens,na.rm=T),col="red")
+abline(v=mean(spp_iter_vol_df$virescens,na.rm=T)+sd(spp_iter_vol_df$virescens,na.rm=T),col="red",lty=2)
+abline(v=mean(spp_iter_vol_df$virescens,na.rm=T)-sd(spp_iter_vol_df$virescens,na.rm=T),col="red",lty=2)
+
+hist(spp_iter_vol_df$leucophrys)
+print(mean(spp_iter_vol_df$leucophrys,na.rm=T))
+print(sd(spp_iter_vol_df$leucophrys,na.rm=T))
+abline(v=mean(spp_iter_vol_df$leucophrys,na.rm=T),col="red")
+abline(v=mean(spp_iter_vol_df$leucophrys,na.rm=T)+sd(spp_iter_vol_df$leucophrys,na.rm=T),col="red",lty=2)
+abline(v=mean(spp_iter_vol_df$leucophrys,na.rm=T)-sd(spp_iter_vol_df$leucophrys,na.rm=T),col="red",lty=2)
+
+hist(spp_iter_vol_df$fusca)
+print(mean(spp_iter_vol_df$fusca,na.rm=T))
+print(sd(spp_iter_vol_df$fusca,na.rm=T))
+abline(v=mean(spp_iter_vol_df$fusca,na.rm=T),col="red")
+abline(v=mean(spp_iter_vol_df$fusca,na.rm=T)+sd(spp_iter_vol_df$fusca,na.rm=T),col="red",lty=2)
+abline(v=mean(spp_iter_vol_df$fusca,na.rm=T)-sd(spp_iter_vol_df$fusca,na.rm=T),col="red",lty=2)
+
+hist(spp_iter_vol_df$cardinalis)
+print(mean(spp_iter_vol_df$cardinalis,na.rm=T))
+print(sd(spp_iter_vol_df$cardinalis,na.rm=T))
+abline(v=mean(spp_iter_vol_df$cardinalis,na.rm=T),col="red")
+abline(v=mean(spp_iter_vol_df$cardinalis,na.rm=T)+sd(spp_iter_vol_df$cardinalis,na.rm=T),col="red",lty=2)
+abline(v=mean(spp_iter_vol_df$cardinalis,na.rm=T)-sd(spp_iter_vol_df$cardinalis,na.rm=T),col="red",lty=2)
+
+hist(spp_iter_vol_df$sinuatus)
+print(mean(spp_iter_vol_df$sinuatus,na.rm=T))
+print(sd(spp_iter_vol_df$sinuatus,na.rm=T))
+abline(v=mean(spp_iter_vol_df$sinuatus,na.rm=T),col="red")
+abline(v=mean(spp_iter_vol_df$sinuatus,na.rm=T)+sd(spp_iter_vol_df$sinuatus,na.rm=T),col="red",lty=2)
+abline(v=mean(spp_iter_vol_df$sinuatus,na.rm=T)-sd(spp_iter_vol_df$sinuatus,na.rm=T),col="red",lty=2)
+
+means=colMeans(spp_iter_vol_df,na.rm=T)
+sds=matrixStats::colSds(as.matrix(spp_iter_vol_df),na.rm=T)
+par(mfrow=c(1,1))
+bp=barplot(means,ylim=c(0,0.02))
+segments(x0=bp,y0=means+sds,y1=means-sds)
 
 
 ## importing the PCA data from soundshape 
@@ -1148,11 +1444,11 @@ permute_area = function(dataframe,proportion=NULL,to_sample=NULL,columns){
 pdf("~/complexity_expected_permutation.pdf")
 for(N in rev(sort(as.numeric(unique(voldf[2:nrow(voldf),4]))))){
   print(N)
-    permuted=lapply(1:1000,FUN=function(x){permute_area(dataframe=pcaxF_small,to_sample=N,columns=paste("PC",1:pca_to_keep,sep=""))}) ## about 6 seconds for 1000
-    permuted2 = as.data.frame(do.call(rbind,permuted))
-    hist(permuted2$vol,main=N)
-    print(summary(permuted2$vol))
-    abline(v=c(5e1,2e2,6e3,7e3,8e3,9e3,1e4,2e4,3e4,4e4,5e4,7e4,8e4,1e5,2e5,3e5,6e5,1e6,2e6,3e6,5e6,6e6,1e7,2e7))
+  permuted=lapply(1:1000,FUN=function(x){permute_area(dataframe=pcaxF_small,to_sample=N,columns=paste("PC",1:pca_to_keep,sep=""))}) ## about 6 seconds for 1000
+  permuted2 = as.data.frame(do.call(rbind,permuted))
+  hist(permuted2$vol,main=N)
+  print(summary(permuted2$vol))
+  abline(v=c(5e1,2e2,6e3,7e3,8e3,9e3,1e4,2e4,3e4,4e4,5e4,7e4,8e4,1e5,2e5,3e5,6e5,1e6,2e6,3e6,5e6,6e6,1e7,2e7))
 }
 dev.off()
 
@@ -1480,13 +1776,13 @@ celldf=cbind("ALL",fullvol,nrow(full))
 
 for(cell in unique(cells)){
   if(!(is.na(cell))) {
-  subset = full[full$cells==cell,]
-  subset = subset[,(1:pca_to_keep)+7]
-  subset = subset[complete.cases(subset),]
-  ## calculate the volume of this subset
-  hullsub=geometry::convhulln(subset,output.options="FA")
-  subsetvol=hullsub$vol
-  celldf = rbind(celldf,cbind(cell,subsetvol,nrow(subset)))
+    subset = full[full$cells==cell,]
+    subset = subset[,(1:pca_to_keep)+7]
+    subset = subset[complete.cases(subset),]
+    ## calculate the volume of this subset
+    hullsub=geometry::convhulln(subset,output.options="FA")
+    subsetvol=hullsub$vol
+    celldf = rbind(celldf,cbind(cell,subsetvol,nrow(subset)))
   }
 }
 
@@ -1552,9 +1848,9 @@ for(i in 1:length(unique(full$SUBSPP))){
   subspp=unique(full$SUBSPP)[i]
   subset=full[full$SUBSPP==subspp,c("PC1","PC2")]
   subset=subset[complete.cases(subset),]
-hpts <- chull(subset)
-hpts <- c(hpts, hpts[1])
-lines(subset[hpts, ],col=i)
+  hpts <- chull(subset)
+  hpts <- c(hpts, hpts[1])
+  lines(subset[hpts, ],col=i)
 }
 
 ## and compare to nucdiv

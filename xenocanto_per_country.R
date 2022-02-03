@@ -1,6 +1,8 @@
+#library(warbleR)
+devtools::install_github("maRce10/warbleR")
 library(warbleR)
-library(raster) 
-library(viridis)
+#library(raster) 
+#library(viridis)
 
 #list_of_species = c("Zonotrichia leucophrys","Zonotrichia albicollis","Xenops minutus","Vireo hypochryseus","Vireo gilvus","Vireo bellii","Turdus migratorius","Troglodytes aedon","Sturnus vulgaris","Setophaga striata","Setophaga ruticilla","Setophaga petechia","Setophaga coronata",
 #"Regulus calendula","Ramphocaenus melanurus","Polioptila plumbea","Polioptila caerulea","Poecile atricapillus","Phaethornis longirostris","Passer domesticus","Momotus mexicanus","Mionectes oleagineus","Microbates cinereiventris","Melospiza melodia","Melospiza lincolnii","Melanerpes chrysogenys","Leiothlypis celata","Junco hyemalis","Hirundo rustica","Henicorhina leucophrys","Habia rubica","Eremophila alpestris",
@@ -13,10 +15,10 @@ library(viridis)
   #"Emberizidae","Cuculidae","Corvidae","Columbidae","Charadriidae","Anatidae","Alcidae","Accipitridae","Cardinalidae")
 
 ## download a particular species
-path = "/Users/kprovost/OneDrive - The Ohio State University/Song/XenoCanto/Passeriformes/Oscines/"
+path = "~/Documents/OneDrive - The Ohio State University/Song/XenoCanto/Passeriformes/Oscines/"
 #path = "/Users/kprovost/Documents/XenoCanto/0_DONE/"
-list_of_families=c("Paridae")
-genera=sample(c("Poecile superciliosa","Poecile davidi"))
+list_of_families=c("Parulidae")
+genera=sample(c("Geothlypis","Setophaga","Parkesia"))
 setwd(path)
 for(family in rev(list_of_families)) {
   if(!(dir.exists(paste(path,family,sep="/")))) {
@@ -37,7 +39,7 @@ for(family in rev(list_of_families)) {
     #try({x = query_xc(qword=paste("gen:",genus," q:A type:song area:america",sep=""),download=T)})
     #try({x = query_xc(qword=paste("gen:",genus," q:B type:song area:america",sep=""),download=T)})
     #try({x = query_xc(qword=paste("gen:",genus," type:song area:america",sep=""),download=T)})
-    try({x = query_xc(qword=paste(genus," q:B",sep=""),download=T)})
+    try({x = query_xc(qword=paste(genus," q:A type:song area:america",sep=""),download=T)})
     
   }
   #x = query_xc(qword=paste(species,"q:A type:song",sep=" "),download=T)

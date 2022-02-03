@@ -20,14 +20,14 @@ transform_type = "log_spect"
 window_size = 88
 
 [EVAL]
-checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/max-val-acc-checkpoint.pt"
-labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/labelmap.json"
-spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/StandardizeSpect"
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience50-16-50_Model_results_211116_111859/max-val-acc-checkpoint.pt"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience50-16-50_Model_results_211116_111859/labelmap.json"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience50-16-50_Model_results_211116_111859/StandardizeSpect"
 batch_size = 11
 device = "cpu"
 models = "TweetyNet"
 num_workers = 4
-output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Melozone_fusca/"
 csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Melozone_fusca/MF_Wave_prep_211110_172807_MASTER.csv"
 
 [TweetyNet.optimizer]
