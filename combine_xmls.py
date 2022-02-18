@@ -4,7 +4,7 @@
 
 ## TODO: 
 
-# sudo python3 /Users/kprovost/Documents/GitHub/bioacoustics/combine_xmls.py /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/5Spp/Wave/; 
+# sudo python3 /Users/kprovost/Documents/GitHub/bioacoustics/combine_xmls.py /Users/kprovost/Documents/Postdoc_Working/FOR_FIGURES_ONLY/; 
 
 import sys
 import glob
@@ -22,10 +22,12 @@ os.chdir(directory)
 
 lines = []
 
-listfiles = glob.glob("/**/*.xml",recursive=True)
+listfiles = glob.glob("*.xml",recursive=False)
+#listfiles = glob.glob("/**/*.xml",recursive=True)
 numfiles = len(listfiles)
 
 for xmlfile in listfiles:
+	print(xmlfile)
 	with open(xmlfile,"r") as infile:
 		full = infile.read()
 	full = full.replace("\n","")

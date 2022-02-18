@@ -15,10 +15,10 @@ library(warbleR)
   #"Emberizidae","Cuculidae","Corvidae","Columbidae","Charadriidae","Anatidae","Alcidae","Accipitridae","Cardinalidae")
 
 ## download a particular species
-path = "~/Documents/OneDrive - The Ohio State University/Song/XenoCanto/Passeriformes/Oscines/"
+path = "~/Documents/OneDrive - The Ohio State University/Song/XenoCanto/Falconiformes/"
 #path = "/Users/kprovost/Documents/XenoCanto/0_DONE/"
-list_of_families=c("Parulidae")
-genera=sample(c("Geothlypis","Setophaga","Parkesia"))
+list_of_families=c("Falconidae")
+genera=sample(c("Falco"))
 setwd(path)
 for(family in rev(list_of_families)) {
   if(!(dir.exists(paste(path,family,sep="/")))) {
@@ -39,7 +39,7 @@ for(family in rev(list_of_families)) {
     #try({x = query_xc(qword=paste("gen:",genus," q:A type:song area:america",sep=""),download=T)})
     #try({x = query_xc(qword=paste("gen:",genus," q:B type:song area:america",sep=""),download=T)})
     #try({x = query_xc(qword=paste("gen:",genus," type:song area:america",sep=""),download=T)})
-    try({x = query_xc(qword=paste(genus," q:A type:song area:america",sep=""),download=T)})
+    try({x = query_xc(qword=paste("gen:",genus," type:song area:america",sep=""),download=T)})
     
   }
   #x = query_xc(qword=paste(species,"q:A type:song",sep=" "),download=T)

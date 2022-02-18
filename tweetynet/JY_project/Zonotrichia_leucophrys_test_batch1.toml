@@ -1,6 +1,6 @@
 [PREP]
 audio_format = "wav"
-data_dir = "/Users/kprovost/Documents/Postdoc_Working/JY_project/b16.5"
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/JY_project/b36.4"
 output_dir = "/Users/kprovost/Documents/Postdoc_Working/JY_project"
 
 [SPECT_PARAMS]
@@ -19,7 +19,7 @@ models = "TweetyNet"
 num_workers = 4
 output_dir = "/Users/kprovost/Documents/Postdoc_Working/JY_project"
 spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/JY_project/Final_results_211129_005033/StandardizeSpect"
-csv_path = "/Users/kprovost/Documents/Postdoc_Working/JY_project/b16.5_prep_220203_110909.csv"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/JY_project/b36.4_prep_220207_105825.csv"
 
 [TweetyNet.optimizer]
 lr = 0.001

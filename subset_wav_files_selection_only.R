@@ -1,40 +1,27 @@
 library(tuneR)
 
-## TODO: update so that formatted correctly
-
-mypath="~/Documents/OneDrive - The Ohio State University/Song/BLB_Data/Aves/"
-
-## look for files with selections and see if they fit the criteria
+mypath="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves"
 metafiles = list.files(path=mypath,
                        pattern=".Table.1.selections.txt$",recursive = T,full.names = T)
 #   file = "/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/batch2/annotated/BLB23326.wav"
 # meta = "/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/batch2/annotated/BLB23326.Table.1.selections.txt"
 metafiles=metafiles[!(grepl("wav_",metafiles))]
-for(meta in metafiles){
-  print(meta)
-  wavfile = sub(".Table.1.selections.txt",".wav",meta)
-  if(file.exists(wavfile)) {
-  wav = readWave(wavfile,units = "samples",from=0)
-  samples_per_ms=wav@samp.rate
-  if(samples_per_ms!=48000){
-    print(samples_per_ms)
-    try({R.utils::gzip(wavfile,overwrite=T)})
-  }
-  }
-}
+## load the files 
 
-for(meta in rev(metafiles)) {
+for(meta in metafiles) {
   print(meta)
   file = sub(".Table.1.selections.txt",".wav",meta)
-  
-  if(file.exists(file)) {
-    
-    wav = readWave(file,units = "samples",from=0) ## if you change this to seconds it can cut off bits
+  if(file.exists(file)){
+    wav = readWave(file,units = "samples",from=0)
     samples_per_ms=wav@samp.rate
-    full_duration=length(wav)
+    
+    
     seconds_separated = 1
     buffer = 1 
     buffer_samp = buffer*samples_per_ms
+    
+    
+    
     
     df = read.table(meta,header=T,sep="\t",check.names = F)
     df=df[order(df[,4]),] ## begin time is col 4
@@ -53,18 +40,10 @@ for(meta in rev(metafiles)) {
     firsts = df[c(1,need_splitting+1),4] ## begin time is col 4
     soundlengths = lasts-firsts
     
-    # if (min(differences[c(need_splitting)],na.rm=T) > max(soundlengths,na.rm=T)){
-    #   to_buffer = soundlengths
-    #   #to_buffer = rep(buffer,length(soundlengths))
-    # } else {
-    #   to_buffer = rep( min(differences[c(need_splitting)],na.rm=T), length(soundlengths))
-    # }
     new_firsts = firsts-buffer
     new_lasts = lasts+buffer
     
     boundaries = cbind(floor(new_firsts*samples_per_ms),ceiling(new_lasts*samples_per_ms))
-    #boundaries[boundaries<1] = 1
-    #boundaries[boundaries>full_duration] = full_duration
     
     for(rownum in 1:nrow(boundaries)) {
       this_buffer=buffer_samp
@@ -81,10 +60,6 @@ for(meta in rev(metafiles)) {
       }
       this_buffer/samples_per_ms ## this is the amount of time between start of recording and start of first annotation
       
-      newfile = paste(file,"_",row[1],"-",row[2],".wav",sep="")
-      writeWave(wav[row[1]:row[2]],newfile,extensible = F)
-
-      
       ## THIS SUBSET IS NOT WORKING AND I DON'T KNOW WHY   
       subset_df = df[df[,4]>=seconds[1] & df[,5]<=seconds[2],] ## begin time is col 4, end time is col 5
       subset_df = subset_df[,1:7]
@@ -98,6 +73,9 @@ for(meta in rev(metafiles)) {
       write.table(subset_df,newmeta,quote=F,sep="\t",row.names = F)
       
     }
+    
   }
+  
+  
 }
 

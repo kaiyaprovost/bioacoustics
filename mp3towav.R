@@ -1,6 +1,8 @@
 library(tuneR)
 
-setwd("~/Documents/OneDrive - The Ohio State University/Song/XenoCanto/Passeriformes/")
+## TODO: update so that formatted correctly
+
+setwd("~/Documents/OneDrive - The Ohio State University/Song/XenoCanto/Passeriformes/Oscines/Hirundinidae")
 mp3files = list.files(path=getwd(),
                       pattern="\\.mp3$",full.names = T,recursive=T)
 mp3files=mp3files[!(grepl("WEIRD",mp3files))]
@@ -9,7 +11,7 @@ mp3files=mp3files[!(grepl("weird",mp3files))]
 
 #x <- file.info(mp3files)
 #mp3files=mp3files[order(x$size)]
-for(mp3 in rev(mp3files)) {
+for(mp3 in (mp3files)) {
   if(!(file.exists(paste(mp3,".wav",sep="")))) {
     print(mp3)
     r <- readMP3(mp3)  ## MP3 file in working directory
@@ -29,13 +31,13 @@ wavfiles=wavfiles[!(grepl("BAD",wavfiles))]
 wavfiles=wavfiles[!(grepl("weird",wavfiles))]
 wavfiles=wavfiles[!(grepl("tweetynet-ed",wavfiles))]
 
-outfile="/Users/kprovost/Documents/BLB.sampling.rates.14jan2022.txt"
-for(wav in sample(wavfiles)) {
-  #print(wav)
+outfile="/Users/kprovost/Documents/BLB.sampling.rates.8feb2022.txt"
+for(wav in (wavfiles)) {
+  print(wav)
   try({
     r <- tuneR::readWave(wav,from=0,units="seconds")
     if(r@samp.rate != 48000) {
-      print(wav)
+      #print(wav)
       write(paste(wav,r@samp.rate,sep="\t"),outfile,append=T)
       try({R.utils::gzip(wav,overwrite=T)})
     }
