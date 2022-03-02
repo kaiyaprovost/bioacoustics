@@ -8,7 +8,7 @@ doCentroid=T
 doMMRR=T
 doGene=F
 doCorr=F
-path="/Users/kprovost/Dropbox (AMNH)/Postdoc_Backup/Cardinalis_cardinalis/Subsets/"
+path="/Users/kprovost/Dropbox (AMNH)/Postdoc_Backup/Cardinalis_sinuatus/Subsets/"
 setwd(path)
 
 if(doCentroid==T){
@@ -43,11 +43,11 @@ write.table(as.matrix(IBD),"ibd_distances_per_individual.txt",
 library(maps)
 library(mapdata)
 
-par(mfrow=c(1,2))
-map("world",c("Canada","USA","Mexico"),
-    xlim=c(-180,0),ylim=c(0,90))
-points(metasmall[,3:2],col="red")
-plot(ape::nj(as.matrix(distdf)),"phylogram",cex=0.5)
+# par(mfrow=c(1,2))
+# map("world",c("Canada","USA","Mexico"),
+#     xlim=c(-180,0),ylim=c(0,90))
+# points(metasmall[,3:2],col="red")
+# plot(ape::nj(as.matrix(distdf)),"phylogram",cex=0.5)
 
 ## gonna get a REAL basic ecological distance matrix 
 library(raster)
@@ -132,6 +132,8 @@ MMRR<-function(Y,X,nperm=999){
   coeffs<-fit$coefficients
   summ<-summary(fit)
   r.squared<-summ$r.squared
+  confint = confint(fit)
+  
   tstat<-summ$coefficients[,"t value"]
   Fstat<-summ$fstatistic[1]
   tprob<-rep(1,length(tstat))
@@ -157,12 +159,15 @@ MMRR<-function(Y,X,nperm=999){
   names(tp)<-paste(c("Intercept",names(X)),"(p)",sep="")
   names(Fstat)<-"F-statistic"
   names(Fp)<-"F p-value"
+  #names(confint)<-"Confidence interval"
+  
   return(list(r.squared=r.squared,
               coefficients=coeffs,
               tstatistic=tstat,
               tpvalue=tp,
               Fstatistic=Fstat,
-              Fpvalue=Fp))
+              Fpvalue=Fp,
+              Conf=confint))
 }
 
 # unfold converts the lower diagonal elements of a matrix into a vector
@@ -224,7 +229,8 @@ Xmats <- list(geography=as.matrix(geoMat),ecology=as.matrix(ecoMat))
 
 # Run MMRR function using genMat as the response variable and Xmats as the explanatory variables.
 # nperm does not need to be specified, default is nperm=999)
-MMRR(as.matrix(genMat),Xmats,nperm=999)
+mmrr=MMRR(as.matrix(genMat),Xmats,nperm=999)
+print(mmrr)
 
 ## for my NOCA results: rsq = 0.14. coeffs geo = 0.52, eco = -0.22. pvals geo = 0.009, eco = 0.11. overall p 0.011
 ## for TEMPORARY zono results: rsq = 0.0019. coeffs geo = 0.000839 eco = 0.043. pvls geo = 0.991 eco = 0.274. overall p 0.43

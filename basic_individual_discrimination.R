@@ -15,10 +15,10 @@ spp_substitute = ""
 parts_of_name_to_keep = 1:4
 setwd(path)
 
-runSumstat=F
-runBigpc=F
-runCentroids=F
-runSyllables=T
+runSumstat=F ## calcualte summary statistics
+runBigpc=F ## calculate a principal components analysis
+runCentroids=F ## calculate centroid locations among individuals
+runSyllables=T ## calculate distances between syllanbes 
 
 
 outersect <- function(x, y) {
@@ -48,11 +48,6 @@ sample_rate_calculator = function(samples,seconds){
   samplerate = samples / seconds
   return(samplerate)
 }
-
-
-
-
-
 
 ## ROBUST MEASUREMENTS:
 ##Center Freq (Hz)
