@@ -15,10 +15,10 @@ spp_substitute = ""
 parts_of_name_to_keep = 1:4
 setwd(path)
 
-runSumstat=F ## calcualte summary statistics
+runSumstat=T ## calcualte summary statistics
 runBigpc=F ## calculate a principal components analysis
 runCentroids=F ## calculate centroid locations among individuals
-runSyllables=T ## calculate distances between syllanbes 
+runSyllables=F ## calculate distances between syllanbes 
 
 
 outersect <- function(x, y) {
@@ -60,7 +60,8 @@ sample_rate_calculator = function(samples,seconds){
 ## 
 
 ## can measure from warbleR? 
-## dom.freq.ts <- freq_ts(X = lbh_selec_table, path = tempdir())
+##getwd()
+##dom.freq.ts <- freq_ts(X = lbh_selec_table, path = tempdir()) -- this is a note to kaiya and should be ignored
 
 columns_to_keep = c("Selection","Begin.Time..s.","End.Time..s.",
                     "Low.Freq..Hz.","High.Freq..Hz.",
@@ -69,23 +70,22 @@ columns_to_keep = c("Selection","Begin.Time..s.","End.Time..s.",
                     "Time.5...s.","Time.95...s.")
 
 #path="/Users/kprovost/Dropbox (AMNH)/Postdoc_Backup/Zonotrichia_leucophrys/Subsets"
-metafiles = list.files(path,pattern=".Table.1.selections.txt$",full.names = T)
+## get the list of files to import
+metafiles = list.files(path,pattern=".selections.txt$",full.names = T) ## .Table.1
 metafiles=metafiles[1:length(metafiles)]
 metafiles=sub("//","/",metafiles)
-shortnames = sub(".Table.1.selections.txt","",basename(metafiles))
+shortnames = sub(".selections.txt","",basename(metafiles))
 shortnames = sub("wav_","",shortnames)
 
-
 ## CLEANING UP A PREVIOUS MISTAKE
-for(meta in metafiles){
-  print(meta)
-  df = read.table(meta,header=T,fill=T)
-  df = df[df$Low.Freq..Hz.>500,]
-  df = df[,colSums(is.na(df))!=nrow(df)]
-  write.table(df,meta,sep="\t",quote=T,row.names = F)
-}
-
-
+## DO NOT RUN THIS UNLESS YOU MADE THAT MISTAKE
+# for(meta in metafiles){
+#   print(meta)
+#   df = read.table(meta,header=T,fill=T)
+#   df = df[df$Low.Freq..Hz.>500,]
+#   df = df[,colSums(is.na(df))!=nrow(df)]
+#   write.table(df,meta,sep="\t",quote=T,row.names = F)
+# }
 
 #shortnames = sub("Cardinalis_cardinalis.BLB","",shortnames)
 shortnames = sub(spp_substitute,"",shortnames)
@@ -155,7 +155,7 @@ if(runSumstat==T){
           
           rvn.dat=do.call(plyr::rbind.fill,dat_list)
           write.table(rvn.dat,outfile,row.names = F)
-          rvn.dat.freq 
+          ##rvn.dat.freq 
         }
         colnames(rvn.dat)[1:7] = c("selec","View","Channel","start","end","bottom.freq","top.freq")
         if(!("sound.files" %in% colnames(rvn.dat))) {
@@ -257,6 +257,8 @@ if(runSumstat==T){
           ## type==1 means was tweetynet'd 
           ## type==NA means was manually done
           rvn.dat.merged = rvn.dat.merged[order(rvn.dat.merged$sound.files, rvn.dat.merged$start),] 
+          write.table(rvn.dat.merged,paste(trimfile,".merged.txt",sep=""),row.names = F)
+          ## note to self: add a write-statement 
         }
         
         ## remove sounds that are too short?
@@ -267,6 +269,8 @@ if(runSumstat==T){
           if(verbose==T){print("length")}
           ## cound the ";" in the peakfreqcontour to generate the function determining how many length.out to get
           #rvn.dat$`Peak Freq Contour (Hz)`
+          
+          ## THIS LINE MIGHT NOT WORK WITH THESE DATA RIGHT NOW
           try({length.out=as.numeric(sapply(rvn.dat$Peak.Freq.Contour..Hz.,FUN=function(i){as.numeric(stringr::str_count(i,";"))},simplify = T))})
           try({length.out=as.numeric(sapply(rvn.dat$`Peak Freq Contour (Hz)`,FUN=function(i){as.numeric(stringr::str_count(i,";"))},simplify = T))})
           rvn.dat$length.out=length.out+1

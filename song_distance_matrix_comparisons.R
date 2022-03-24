@@ -243,57 +243,119 @@ print(mmrr)
 
 ## brief moment to get genetic distances 
 if(doGene==T) {
-gene1 = "/Users/kprovost/Library/CloudStorage/OneDrive-TheOhioStateUniversity/Genetics/Birds-phylogatr-results_7dec2020/Aves/Passeriformes/Cardinalidae/Cardinalis-cardinalis/Cardinalis-cardinalis-COI.afa"
-gene2 = "/Users/kprovost/Library/CloudStorage/OneDrive-TheOhioStateUniversity/Genetics/Birds-phylogatr-results_7dec2020/Aves/Passeriformes/Cardinalidae/Cardinalis-cardinalis/Cardinalis-cardinalis-ND2.afa"
-occs = "/Users/kprovost/Library/CloudStorage/OneDrive-TheOhioStateUniversity/Genetics/Birds-phylogatr-results_7dec2020/Aves/Passeriformes/Cardinalidae/Cardinalis-cardinalis/occurrences.txt"
-raster = "/Users/kprovost/Library/CloudStorage/OneDrive-TheOhioStateUniversity/Environment/WorldClim2.1_jan2020/blank_worldclim.asc"
-bg = raster(raster)
+  library(raster)
+  raster = "/Users/kprovost/Library/CloudStorage/OneDrive-TheOhioStateUniversity/Environment/WorldClim2.1_jan2020/blank_worldclim.asc"
+  bg = raster(raster)
+  gene_folder = "/Users/kprovost/Library/CloudStorage/OneDrive-TheOhioStateUniversity/Genetics/Birds-phylogatr-results_7dec2020/Aves/"
+  occ_list = list.files(gene_folder,pattern="occurrences.txt",recursive=T,full.names = T)
+  
+  big_difference_df = data.frame()
+  r <- getData("worldclim",var="bio",res=10)
+  
+  for(i in 1:length(occ_list)){
+    print(paste("OCC",i))
+    occ = occ_list[i]
+    occ_directory=dirname(occ)
+    occdf=NULL
+    try({occdf = read.table(occ,header=T,sep="\t")}) ## failing
+    if(!(is.null(occdf))){
+    occdf$pop = paste(occdf$accession,occdf$gbif_id,sep="_")
+    cells=raster::cellFromXY(bg,occdf[,c("longitude","latitude")])
+    occdf$cells = cells
+    gene_list = list.files(occ_directory,pattern=".afa$",full.names = T,recursive = F)
+    
+    
+    points = extract(r,occdf[,c("longitude","latitude")])
+    rownames(points) = occdf$pop
+    climDist = dist(points,diag=T,upper = T)
+    IBD=as.matrix(dist(occdf[,c("longitude","latitude")],diag=T,upper=T))
+    rownames(IBD) = occdf$pop
+    colnames(IBD) = occdf$pop
+    
+    for(gene in gene_list){
+      print(paste("GENE",basename(gene)))
+      data = ape::read.dna(gene,format="fasta")
+      fasta_accessions = labels(data)
+      zono = occdf[occdf$pop %in% fasta_accessions,c("accession","latitude","longitude","gbif_id","pop","cells")]
+      total_nuc_div = pegas::nuc.div(data,variance=F,pairwise.deletion=T)
+      distances=ape::dist.gene(data,method="pairwise",pairwise.deletion = T,variance = T)
 
-occdf = read.table(occs,header=T,sep="\t")
-occdf$pop = paste(occdf$accession,occdf$gbif_id,sep="_")
-cells=raster::cellFromXY(bg,occdf[,c("longitude","latitude")])
-occdf$cells = cells
-
-map("world",c("Canada","USA","Mexico"),
-    xlim=c(-180,0),ylim=c(0,90))
-points(metasmall[,3:2],col="red")
-points(occdf$longitude,occdf$latitude,col="blue")
-
-par(mfrow=c(2,2))
-data = ape::read.dna(gene1,format="fasta")
-fasta_accessions = labels(data)
-zono = occdf[occdf$pop %in% fasta_accessions,c("accession","latitude","longitude","gbif_id","pop","cells")]
-total_nuc_div = pegas::nuc.div(data,variance=F,pairwise.deletion=T)
-distances=ape::dist.gene(data,method="pairwise",pairwise.deletion = T,variance = T)
-plot(ape::nj(as.matrix(distances)),type="phylogram",align.tip.label=T)
-corrplot::corrplot(as.matrix(distances),is.corr=F,method="color",order="alphabet")
-
-h <- pegas::haplotype(data,strict=F)
-plot(h)
-occdf$haplo1 = 0
-ind.hap<-with(
-  utils::stack(setNames(attr(h, "index"), rownames(h))),
-  table(hap=ind, pop=rownames(data)[values])
-)
-#net <- pegas::haploNet(h,getProb = F)
-#plot(net, size=attr(net, "freq"), scale.ratio=0.2, pie=ind.hap)
-#legend(-8, 0, colnames(ind.hap), col=rainbow(ncol(ind.hap)), pch=19, ncol=2)
-haps=as.matrix(t(ind.hap))
-haps=as.data.frame(haps)
-haps=haps[haps$Freq!=0,]
-occdf = merge(occdf,haps[,1:2])
-map("world",c("Canada","USA","Mexico"),
-    xlim=c(-180,0),ylim=c(0,90))
-points(occdf$longitude,occdf$latitude,col=as.numeric(as.factor(occdf$hap)),
-     pch=as.numeric(as.factor(occdf$hap)))
-
-data = ape::read.dna(gene2,format="fasta")
-fasta_accessions = labels(data)
-zono = occdf[occdf$pop %in% fasta_accessions,c("accession","latitude","longitude","gbif_id","pop","cells")]
-total_nuc_div = pegas::nuc.div(data,variance=F,pairwise.deletion=T)
-distances=ape::dist.gene(data,method="pairwise",pairwise.deletion = T,variance = T)
-plot(ape::nj(as.matrix(distances)),type="phylogram",align.tip.label=T)
-corrplot::corrplot(as.matrix(distances),is.corr=F,method="color",order="alphabet")
+      ecoMat = as.matrix(climDist)
+      genMat = as.matrix(distances)
+      geoMat = as.matrix(IBD)
+      
+      keptcols=Reduce(intersect, list(rownames(ecoMat),rownames(genMat),rownames(geoMat),
+                                      colnames(ecoMat),colnames(genMat),colnames(geoMat)))
+      
+      genMat = genMat[which(colnames(genMat) %in% keptcols),which(rownames(genMat) %in% keptcols)]
+      ecoMat = ecoMat[which(colnames(ecoMat) %in% keptcols),which(rownames(ecoMat) %in% keptcols)]
+      geoMat = geoMat[which(colnames(geoMat) %in% keptcols),which(rownames(geoMat) %in% keptcols)]
+      
+      Xmats <- list(geography=as.matrix(geoMat),ecology=as.matrix(ecoMat))
+      name_gene = basename(gene)
+      # Run MMRR function using genMat as the response variable and Xmats as the explanatory variables.
+      # nperm does not need to be specified, default is nperm=999)
+      mmrr=NULL
+      try({mmrr=MMRR(as.matrix(genMat),Xmats,nperm=999)})
+      if(is.null(mmrr)){
+        
+        newrow=cbind(name_gene,NA,NA,NA,NA,NA,NA)
+        
+      } else {
+      #print(mmrr)
+      
+      
+      newrow=cbind(name_gene,mmrr$r.squared,mmrr$coefficients[names(mmrr$coefficients)=="geography"],
+            mmrr$coefficients[names(mmrr$coefficients)=="ecology"],mmrr$tpvalue[names(mmrr$tpvalue)=="geography(p)"],
+            mmrr$tpvalue[names(mmrr$tpvalue)=="ecology(p)"],mmrr$Fpvalue)
+      }
+      colnames(newrow) = c("spp-gene","rsq","geography_coef","ecology_coef","geography_p","ecology_p","overall_p")
+      
+      big_difference_df = rbind(big_difference_df,newrow)
+    }
+    
+    }
+  }
+  
+  setwd(gene_folder)
+  write.table(big_difference_df,"gene_distances_mmrr.txt",row.names = F,quote = F)
+  
+#   
+# map("world",c("Canada","USA","Mexico"),
+#     xlim=c(-180,0),ylim=c(0,90))
+# points(metasmall[,3:2],col="red")
+# points(occdf$longitude,occdf$latitude,col="blue")
+# 
+# par(mfrow=c(2,2))
+# plot(ape::nj(as.matrix(distances)),type="phylogram",align.tip.label=T)
+# corrplot::corrplot(as.matrix(distances),is.corr=F,method="color",order="alphabet")
+# 
+# h <- pegas::haplotype(data,strict=F)
+# plot(h)
+# occdf$haplo1 = 0
+# ind.hap<-with(
+#   utils::stack(setNames(attr(h, "index"), rownames(h))),
+#   table(hap=ind, pop=rownames(data)[values])
+# )
+# #net <- pegas::haploNet(h,getProb = F)
+# #plot(net, size=attr(net, "freq"), scale.ratio=0.2, pie=ind.hap)
+# #legend(-8, 0, colnames(ind.hap), col=rainbow(ncol(ind.hap)), pch=19, ncol=2)
+# haps=as.matrix(t(ind.hap))
+# haps=as.data.frame(haps)
+# haps=haps[haps$Freq!=0,]
+# occdf = merge(occdf,haps[,1:2])
+# map("world",c("Canada","USA","Mexico"),
+#     xlim=c(-180,0),ylim=c(0,90))
+# points(occdf$longitude,occdf$latitude,col=as.numeric(as.factor(occdf$hap)),
+#      pch=as.numeric(as.factor(occdf$hap)))
+# 
+# data = ape::read.dna(gene2,format="fasta")
+# fasta_accessions = labels(data)
+# zono = occdf[occdf$pop %in% fasta_accessions,c("accession","latitude","longitude","gbif_id","pop","cells")]
+# total_nuc_div = pegas::nuc.div(data,variance=F,pairwise.deletion=T)
+# distances=ape::dist.gene(data,method="pairwise",pairwise.deletion = T,variance = T)
+# plot(ape::nj(as.matrix(distances)),type="phylogram",align.tip.label=T)
+# corrplot::corrplot(as.matrix(distances),is.corr=F,method="color",order="alphabet")
 
 }
 
