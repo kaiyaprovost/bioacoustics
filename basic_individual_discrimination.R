@@ -462,29 +462,52 @@ if(runSumstat==T){
   colnames(big_table)[colnames(big_table) %in% c("selec","sound.files","start","end","bottom.freq","top.freq")] = c("Selection","Begin File","Begin Time (s)","End Time (s)", "Low Freq (Hz)", "High Freq (Hz)")
   
   
+  big_table$`Low Freq (Hz)`[big_table$`Low Freq (Hz)` <= 10] = (big_table$`Low Freq (Hz)` * 1000)
+  big_table$`High Freq (Hz)`[big_table$`High Freq (Hz)` <= 10] = (big_table$`High Freq (Hz)` * 1000)
+  
   write.table(big_table,paste(path,"rvn.dat_trimmed_spectro_fcts_collapsed.txt",sep="/"))
   
   ## now go over the old files and update the data
   ## TODO: ACOUNT FOR THE DIFFERENCE IN FREQUENCY 
   
+  ## file mismatch:
+  ## 1. change all of the filenames that are inside the selections.txt files
+  ## 2. when you import the filename, change the filename accordingly 
+  
   for(selec.file in (unique(big_table$selec.file))){
     print(selec.file)
     to_read = list.files(path=path,pattern=selec.file,full.names = T)
+    to_read = to_read[!(grepl(".temp$",to_read))] ## removes files with .temp in them
     to_read=sub("//","/",to_read)
     #print(to_read)
     for(i in 1:length(to_read)){
       to_read_i = to_read[i]
       df_selec = read.table(to_read_i,header=T,fill=T,sep="\t",check.names =F)
+      
+      ## use the sub() function to change the filename 
+      ## "Begin File" 
+      df_selec$`Begin File` = gsub(pattern="_",replacement=".",x=df_selec$`Begin File`)
+      df_selec$`Begin File` = gsub(pattern="-",replacement=".",x=df_selec$`Begin File`)
+      df_selec$`Begin File` = gsub(pattern="BLB",replacement="BLB.",x=df_selec$`Begin File`)
+      df_selec$`Begin File` = gsub(pattern="\\.\\.",replacement=".",x=df_selec$`Begin File`)
+      
+      write.table(df_selec,to_read_i,sep="\t",row.names = F)
+      
       #print("subset")
       big_subset = big_table[big_table$selec.file==selec.file,]
       #print("merge")
-      merged = merge(df_selec,big_subset,all=T)
+      merged = merge(df_selec,big_subset,all=T) ## combine based on shared column names
+      ## will look for exact matches between data
+      ## if the data are converted wrong, they will not match 
+      
       #print("write")
       write.table(merged,paste(to_read_i,".temp",sep=""),sep="\t",quote=T,row.names = F,append=F)
     }
   }
   
 }
+
+metafiles = list.files(path,pattern=".selections.txt.temp$",full.names = T) ## edited the code so that can find the files with the sumstats we generated
 
 dflist = lapply(metafiles,FUN=function(meta){
   print(meta)
@@ -494,6 +517,7 @@ dflist = lapply(metafiles,FUN=function(meta){
   segment = split[2]
   
   df = read.table(meta,sep="\t",header=T)
+  #print(head(df)) ## worked
   df=df[order(df[,"Begin.Time..s."]),]
   df$Selection=1:nrow(df)
   try({df$Bandwidth = as.numeric(df$Freq.75...Hz.-df$Freq.25...Hz.)},silent=T)
@@ -504,6 +528,7 @@ dflist = lapply(metafiles,FUN=function(meta){
       df$Bandwidth=NA
     }
   }
+  #print(head(df))
   try({df$Time = as.numeric(df$Time.75...s.-df$Time.25...s.)},silent=T)
   if(is.null(df$Time)){
     try({df$Time = as.numeric(df$time.Q75-df$time.Q25)},silent=T)

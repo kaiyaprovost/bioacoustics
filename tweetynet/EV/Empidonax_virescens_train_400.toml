@@ -1,0 +1,37 @@
+[PREP]
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Empidonax_virescens/Wave"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/"
+audio_format = "wav"
+annot_format = "koumura"
+labelset = "1"
+train_dur = 10
+val_dur = 10
+test_dur = 10
+annot_file = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Empidonax_virescens/Annotation.xml"
+
+[SPECT_PARAMS]
+fft_size = 512
+step_size = 32
+freq_cutoffs = [ 500, 10000,]
+thresh = 6.25
+transform_type = "log_spect"
+
+[DATALOADER]
+window_size = 88
+
+[TRAIN]
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/results_220421_160541/TweetyNet/checkpoints/max-val-acc-checkpoint.pt"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/results_220421_160541/labelmap.json"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/results_220421_160541/StandardizeSpect"
+models = [ "TweetyNet",]
+root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/"
+batch_size = 3
+num_epochs = 10
+normalize_spectrograms = true
+val_step = 400
+ckpt_step = 200
+patience = 50
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/EV_Wave_prep_211110_160409_MASTER.csv"
+
+[TweetyNet.optimizer]
+lr = 0.001

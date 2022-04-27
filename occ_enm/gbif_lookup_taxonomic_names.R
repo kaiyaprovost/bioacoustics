@@ -2,8 +2,13 @@ library(subsppLabelR)
 library(spocc)
 library(taxize)
 
+## Rscript ~/Documents/GitHub/bioacoustics/occ_enm/gbif_lookup_taxonomic_names.R
+
+run_forward = F
+
 ebird_api = "f49839r87f7g"
 
+{
 if(file.exists("~/order_list_aves.txt")) {
   order_df=read.table("~/order_list_aves.txt")
 } else {
@@ -75,26 +80,29 @@ if(file.exists("~/subspecies_list_aves.txt")){
   subspecies_df=unique(subspecies_df)
   write.table(subspecies_df,"~/subspecies_list_aves.txt")
 }
+}
 
 ##  do this by species now
-
-for(order_i in (c(1:nrow(order_df)))){
+if(run_forward==T){
+for(order_i in (c(26))){
+  #for(order_i in sample(c(1:nrow(order_df)))){
   #for(order_i in sample(1:nrow(order_df))){
   order = order_df$name[order_i]
   order_dir = paste("/Users/kprovost/Documents/Postdoc_Working/GBIF/Aves/",sub(" ","-",order),"/",sep="")
   if(!(dir.exists(order_dir))){dir.create(order_dir)}
-    family_order_df = family_df[family_df$order==order,]
-  for(family_i in 1:nrow(family_order_df)){
+  ## this family order etc is not complete
+  family_order_df = family_df[family_df$order==order,]
+  for(family_i in sample(1:nrow(family_order_df))){
     family = family_order_df$name[family_i]
     family_dir = paste("/Users/kprovost/Documents/Postdoc_Working/GBIF/Aves/",sub(" ","-",order),"/",sub(" ","-",family),"/",sep="")
     if(!(dir.exists(family_dir))){dir.create(family_dir)}
-      genus_family_df = genus_df[genus_df$family==family,]
-    for(genus_i in 1:nrow(genus_family_df)){
+    genus_family_df = genus_df[genus_df$family==family,]
+    for(genus_i in sample(1:nrow(genus_family_df))){
       genus = genus_family_df$name[genus_i]
       genus_dir = paste("/Users/kprovost/Documents/Postdoc_Working/GBIF/Aves/",sub(" ","-",order),"/",sub(" ","-",family),"/",sub(" ","-",genus),"/",sep="")
       if(!(dir.exists(genus_dir))){dir.create(genus_dir)}
-        species_genus_df = species_df[species_df$genus==genus,]
-      for(i in 1:nrow(species_genus_df)){
+      species_genus_df = species_df[species_df$genus==genus,]
+      for(i in sample(1:nrow(species_genus_df))){
         spp  = species_genus_df$name[i]
         outfile=paste("/Users/kprovost/Documents/Postdoc_Working/GBIF/Aves/",sub(" ","-",order),"/",sub(" ","-",family),"/",sub(" ","-",genus),"/",sub(" ","-",spp),"_occurrences_subspplabelR.txt",sep="")
         outfile2=paste("/Users/kprovost/Documents/Postdoc_Working/GBIF/Aves/",sub(" ","-",spp),"_occurrences_subspplabelR.txt",sep="")
@@ -126,5 +134,57 @@ for(order_i in (c(1:nrow(order_df)))){
     }
   }
 }
+}
+
+## do this from the bottom up this time
+
+master = read.table("/Users/kprovost/Documents/taxonomy_ebird_master.csv",header=T,sep=",")
+master = master[,c("order","family","genus","scientific","species","subspecies")]
+#master = master[master$order=="Accipitriformes",]
+#master = master[master$family!="Muscicapidae",]
+#master=master[master$genus=="Vireo",]
+sort(table(master$order))
+
+for(spp in sample(sort(unique(master$scientific)))){
+  if(spp != ""){
+    genus = unique(master$genus[master$scientific==spp])
+    family = unique(master$family[master$genus==genus])
+    order = unique(master$order[master$family==family])
+    print(paste(spp,family,order))
+    
+    order_dir = paste("/Users/kprovost/Documents/Postdoc_Working/GBIF/Aves/",sub(" ","-",order[1]),"/",sep="")
+    if(!(dir.exists(order_dir))){dir.create(order_dir)}
+    family_dir = paste("/Users/kprovost/Documents/Postdoc_Working/GBIF/Aves/",sub(" ","-",order[1]),"/",sub(" ","-",family[1]),"/",sep="")
+    if(!(dir.exists(family_dir))){dir.create(family_dir)}
+    genus_dir = paste("/Users/kprovost/Documents/Postdoc_Working/GBIF/Aves/",sub(" ","-",order[1]),"/",sub(" ","-",family[1]),"/",sub(" ","-",genus),"/",sep="")
+    if(!(dir.exists(genus_dir))){dir.create(genus_dir)}
+    
+    outfile=paste("/Users/kprovost/Documents/Postdoc_Working/GBIF/Aves/",sub(" ","-",order[1]),"/",sub(" ","-",family[1]),"/",sub(" ","-",genus),"/",sub(" ","-",spp),"_occurrences_subspplabelR.txt",sep="")
+    outfile2=paste("/Users/kprovost/Documents/Postdoc_Working/GBIF/Aves/",sub(" ","-",spp),"_occurrences_subspplabelR.txt",sep="")
+    
+    if((file.exists(outfile2))){ file.rename(outfile2,outfile)}
+    
+    if(!(file.exists(outfile))){
+      sppDf=data.frame()
+      try({
+        test = spocc::occ(query = spp,limit = 10000,has_coords = T,
+                          from =  c("gbif","inat","bison","vertnet","ebird"),
+                          ebirdopts=list(key=ebird_api))
+        sppDf = data.frame(spocc::occ2df(test))
+        keptcols = intersect(colnames(sppDf),c("longitude","latitude","prov","date"))
+        sppDf = sppDf[,keptcols]
+        sppDf = unique(sppDf)
+      })
+      if(nrow(sppDf)>0){
+        write.table(sppDf,file=outfile)
+      } else {
+        file.create(outfile)
+      }
+    }
+  }
+}
+
+
+
 
 ## remember: derived_dataset to get a DOI for publication

@@ -1,0 +1,38 @@
+[PREP]
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Empidonax_virescens/Wave"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/"
+audio_format = "wav"
+annot_format = "koumura"
+labelset = "1"
+train_dur = 10
+val_dur = 10
+test_dur = 10
+annot_file = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Empidonax_virescens/Annotation.xml"
+
+[SPECT_PARAMS]
+fft_size = 512
+step_size = 32
+freq_cutoffs = [ 500, 10000,]
+thresh = 6.25
+transform_type = "log_spect"
+
+[DATALOADER]
+window_size = 88
+
+[LEARNCURVE]
+batch_size = 3
+ckpt_step = 200
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/EV_Wave_prep_211110_160409_MASTER.csv"
+models = [ "TweetyNet",]
+normalize_spectrograms = true
+num_epochs = 10
+num_replicates = 10
+num_workers = 4
+patience = 50
+previous_run_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/results_220421_162314"
+root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Empidonax_virescens/"
+train_set_durs = [ 10, 15, 30, 45, 70, 180, 230]
+val_step = 400
+
+[TweetyNet.optimizer]
+lr = 0.001
