@@ -28,14 +28,24 @@ module load R/4.0.2
 module load miniconda3
 
 source activate vak-env
-## vak code is here: ls ~/.conda/envs/vak-env/lib/python3.6/site-packages/vak
-# rsync -avzP ~/myvak/* ~/.conda/envs/vak-env/lib/python3.6/site-packages/vak/
-#conda activate vak-env
 
+cd "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/"
+
+## convert mp3 to wav files 
+Rscript "/users/PYS1065/kprovost/bioacoustics/mp3towav.R"
+
+## run vak 
 vak prep "/users/PYS1065/kprovost/bioacoustics/TOMLS/Aves_slurm.toml"
 vak predict "/users/PYS1065/kprovost/bioacoustics/TOMLS/Aves_slurm.toml"
 
-#sh ~/bioacoustics/TOMLS/EV/run_tweetynet_empidonax_1train_slurm.job >> logfile_vakEV.txt 2>&1
+## convert results 
+for i in /users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/*/*/*/*annot.csv; do 
+python3 "/users/PYS1065/kprovost/bioacoustics/tweetynet_output_to_raven.py" $i 10000 500 0; gzip $i; 
+done;
 
-## sbatch "/users/PYS1065/kprovost/bioacoustics/slurm_tweetynet.job"
+for i in /users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/*/*/*/*/*annot.csv; do 
+python3 "/users/PYS1065/kprovost/bioacoustics/tweetynet_output_to_raven.py" $i 10000 500 0; gzip $i; 
+done;
+
+## sbatch "/users/PYS1065/kprovost/bioacoustics/slurm_wav_processing.job"
 ## squeue -u kprovost

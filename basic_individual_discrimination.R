@@ -9,17 +9,19 @@
 ## and since boxes might be off this shouldn't be trusted
 ## start with C. cardinalis
 
-outpath = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/SUBSETS/"
-path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/SUBSETS/"
+outpath = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/"
+path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/"
 spp_substitute = ""
-parts_of_name_to_keep = 1:4
+parts_of_name_to_keep = 1:5
 setwd(path)
+#date=format(Sys.time(), "%d%b%Y")
+date="17May2022"
 
-runSumstat=T ## calcualte summary statistics
-runBigpc=F ## calculate a principal components analysis
-runCentroids=F ## calculate centroid locations among individuals
+runSumstat=F ## calcualte summary statistics
+runBigpc=T ## calculate a principal components analysis
+runCentroids=T ## calculate centroid locations among individuals
 runSyllables=F ## calculate distances between syllanbes 
-
+generatePlots=T ## make all the plots if files exist
 
 outersect <- function(x, y) {
   sort(c(setdiff(x, y),
@@ -71,7 +73,7 @@ columns_to_keep = c("Selection","Begin.Time..s.","End.Time..s.",
 
 #path="/Users/kprovost/Dropbox (AMNH)/Postdoc_Backup/Zonotrichia_leucophrys/Subsets"
 ## get the list of files to import
-metafiles = list.files(path,pattern=".selections.txt$",full.names = T) ## .Table.1
+metafiles = list.files(path,pattern=".selections.txt$",full.names = T,recursive=T) ## .Table.1
 metafiles=metafiles[1:length(metafiles)]
 metafiles=sub("//","/",metafiles)
 shortnames = sub(".selections.txt","",basename(metafiles))
@@ -100,6 +102,7 @@ calculate_freq_slope = function(x){
 
 
 if(runSumstat==T){
+  print("RUNNING SUMSTATS")
   library(Rraven)
   library(warbleR)
   generate_sumstats = function(filenames,suffix="selections.txt$",import_raven=T,
@@ -358,6 +361,9 @@ if(runSumstat==T){
       if(file.exists(fctsfile)) { 
         rvn.dat.fcts=read.table(fctsfile,header=T)
       } else {
+        ## need to remove any selections over 20 seconds long or FCTs will break
+        rvn.dat = rvn.dat[rvn.dat$difference<20,]
+        
         if(loop==T) {
           y=lapply(1:nrow(rvn.dat),
                    FUN=function(i){
@@ -432,21 +438,21 @@ if(runSumstat==T){
     }
   }
   
-  generate_sumstats(metafiles,verbose=T)
+  generate_sumstats(filenames=metafiles,verbose=T,date="16May2022")
   
   ## to get slope of PFCs, subtract the i from i-1 value, multiply by 0.1875 -- i don't know why its this number
   
   ## convert big rvn.dat to selection table by modifying file 
   
   big_files = list.files(path=path,pattern="rvn.dat_trimmed_spectro_fcts_",
-                         full.names = T)
+                         full.names = T,recursive = T)
   big_files = big_files[!(grepl("collapsed",big_files))]
   if(!(is.null(big_files))){
     if(length(big_files)==1){
       big_table = data.table::fread(big_files,data.table=F)
       big_table = unique(big_table)
     } else {
-      big_table_list = lapply(big_files,FUN=function(x){x=data.table=F})
+      big_table_list = lapply(big_files,FUN=function(x){data.table::fread(x,data.table=F)})
       big_table=do.call(gtools::smartbind,big_table_list)
       big_table = unique(big_table)
     }
@@ -465,8 +471,21 @@ if(runSumstat==T){
   big_table$`Low Freq (Hz)`[big_table$`Low Freq (Hz)` <= 10] = (big_table$`Low Freq (Hz)` * 1000)
   big_table$`High Freq (Hz)`[big_table$`High Freq (Hz)` <= 10] = (big_table$`High Freq (Hz)` * 1000)
   
-  write.table(big_table,paste(path,"rvn.dat_trimmed_spectro_fcts_collapsed.txt",sep="/"))
+  newcols_raw=lapply(big_table$`Begin File`,FUN=function(x){
+    x = sub(".wav","",x)
+    y = strsplit(x,"\\.")[[1]]
+    if(length(y)==4) {
+      z=rbind(genus=y[1],species=y[2],subspecies="unknown",database=y[3],catalog=y[4])
+    } else if (length(y)==5) {
+      z=rbind(genus=y[1],species=y[2],subspecies=y[3],database=y[4],catalog=y[5])
+    }
+    return(z)
+  })
+  newcols = do.call(cbind,newcols_raw)
+  newcols = t(newcols)
+  big_table = cbind(big_table,newcols)
   
+  write.table(big_table,paste(path,"rvn.dat_trimmed_spectro_fcts_collapsed_",date,".txt",sep=""))
   ## now go over the old files and update the data
   ## TODO: ACOUNT FOR THE DIFFERENCE IN FREQUENCY 
   
@@ -474,107 +493,130 @@ if(runSumstat==T){
   ## 1. change all of the filenames that are inside the selections.txt files
   ## 2. when you import the filename, change the filename accordingly 
   
-  for(selec.file in (unique(big_table$selec.file))){
+  for(selec.file in sort(unique(big_table$selec.file))){
     print(selec.file)
-    to_read = list.files(path=path,pattern=selec.file,full.names = T)
+    to_read = list.files(path=path,pattern=selec.file,full.names = T,recursive=T)
     to_read = to_read[!(grepl(".temp$",to_read))] ## removes files with .temp in them
     to_read=sub("//","/",to_read)
-    #print(to_read)
-    for(i in 1:length(to_read)){
-      to_read_i = to_read[i]
-      df_selec = read.table(to_read_i,header=T,fill=T,sep="\t",check.names =F)
-      
-      ## use the sub() function to change the filename 
-      ## "Begin File" 
-      df_selec$`Begin File` = gsub(pattern="_",replacement=".",x=df_selec$`Begin File`)
-      df_selec$`Begin File` = gsub(pattern="-",replacement=".",x=df_selec$`Begin File`)
-      df_selec$`Begin File` = gsub(pattern="BLB",replacement="BLB.",x=df_selec$`Begin File`)
-      df_selec$`Begin File` = gsub(pattern="\\.\\.",replacement=".",x=df_selec$`Begin File`)
-      
-      write.table(df_selec,to_read_i,sep="\t",row.names = F)
-      
-      #print("subset")
-      big_subset = big_table[big_table$selec.file==selec.file,]
-      #print("merge")
-      merged = merge(df_selec,big_subset,all=T) ## combine based on shared column names
-      ## will look for exact matches between data
-      ## if the data are converted wrong, they will not match 
-      
-      #print("write")
-      write.table(merged,paste(to_read_i,".temp",sep=""),sep="\t",quote=T,row.names = F,append=F)
+    
+    if(length(to_read)>0){
+      #print(to_read)
+      for(i in 1:length(to_read)){
+        print(i)
+        ## DO NOT check if file exists, will break
+        to_read_i = to_read[i]
+        tempfile=paste(to_read_i,".temp",sep="")
+        df_selec = read.table(to_read_i,header=T,fill=T,sep="\t",check.names =F)
+        
+        ## use the sub() function to change the filename 
+        ## "Begin File" 
+        df_selec$`Begin File` = gsub(pattern="_",replacement=".",x=df_selec$`Begin File`)
+        df_selec$`Begin File` = gsub(pattern="-",replacement=".",x=df_selec$`Begin File`)
+        df_selec$`Begin File` = gsub(pattern="BLB",replacement="BLB.",x=df_selec$`Begin File`)
+        df_selec$`Begin File` = gsub(pattern="\\.\\.",replacement=".",x=df_selec$`Begin File`)
+        
+        write.table(df_selec,to_read_i,sep="\t",row.names = F)
+        
+        #print("subset")
+        big_subset = big_table[big_table$selec.file==selec.file,]
+        #print("merge")
+        merged = merge(df_selec,big_subset,all=T) ## combine based on shared column names
+        ## will look for exact matches between data
+        ## if the data are converted wrong, they will not match 
+        
+        #print("write")
+        write.table(merged,tempfile,sep="\t",quote=T,row.names = F,append=F)
+      }
     }
   }
   
 }
 
-metafiles = list.files(path,pattern=".selections.txt.temp$",full.names = T) ## edited the code so that can find the files with the sumstats we generated
-
-dflist = lapply(metafiles,FUN=function(meta){
-  print(meta)
-  name=sub(".Table.1.selections.txt","",basename(meta))
-  split = strsplit(name,".wav_")[[1]]
-  ind = split[1]
-  segment = split[2]
-  
-  df = read.table(meta,sep="\t",header=T)
-  #print(head(df)) ## worked
-  df=df[order(df[,"Begin.Time..s."]),]
-  df$Selection=1:nrow(df)
-  try({df$Bandwidth = as.numeric(df$Freq.75...Hz.-df$Freq.25...Hz.)},silent=T)
-  if(is.null(df$Bandwidth)){
-    try({df$Bandwidth = as.numeric(df$freq.Q75-df$freq.Q25)},silent=T)
-    if(is.null(df$Bandwidth)){
-      #df$Bandwidth = df$High.Freq..Hz.-df$Low.Freq..Hz.
-      df$Bandwidth=NA
-    }
-  }
-  #print(head(df))
-  try({df$Time = as.numeric(df$Time.75...s.-df$Time.25...s.)},silent=T)
-  if(is.null(df$Time)){
-    try({df$Time = as.numeric(df$time.Q75-df$time.Q25)},silent=T)
-    if(is.null(df$Time)){
-      #df$Time = df$End.Time..s.-df$Begin.Time..s.
-      df$Time=NA
-    }
-  }
-  try({df$Center = as.numeric(df$Center.Freq..Hz.)},silent=T)
-  if(is.null(df$Center)){
-    try({df$Center = as.numeric(df$freq.median)},silent=T)
-    if(is.null(df$Center)){
-      df$Center=NA
-    }
-  }
-  try({df$Inflection = as.numeric(df$PFC.Num.Inf.Pts)},silent=T)
-  if(is.null(df$Inflection)){
-    try({df$Inflection = as.numeric(df$inflections)},silent=T)
-    if(is.null(df$Inflection)){
-      df$Inflection=NA
-    }   
-  }    
-  try({df$Slope = as.numeric(df$PFC.Avg.Slope..Hz.ms.)},silent=T)
-  if(is.null(df$Slope)){
-    try({df$Slope = as.numeric(df$mean_slope)},silent=T)
-    if(is.null(df$Slope)){
-      df$Slope=NA
-    }  
-  }      
-  df = df[,c("Selection","Bandwidth","Time","Center","Inflection","Slope")]
-  df$Individual = ind
-  df$Segment = segment
-  
-  if(sum(complete.cases(df[,c("Selection","Bandwidth","Time","Center","Inflection","Slope")]))>1){
-    return(df)
-  }
-})
-names(dflist)=basename(metafiles)
-
-species_dflist = sapply(names(dflist),FUN=function(x){
-  y=strsplit(x,"\\.")[[1]][1:2]
-  z=paste(y,sep=".",collapse = ".")
-},simplify = T)
-
 if(runBigpc==T){
-  bigdf = do.call(rbind,dflist)
+  print("RUN BIG PC")
+  bigdffile=paste(path,"bigdf_for_pca_",date,".txt",sep="")
+  if(file.exists(bigdffile)){
+    bigdf=data.table::fread(bigdffile,data.table = F)
+  } else {
+    
+    
+    print("GATHERING FILES")
+    
+    metafiles = list.files(path,pattern=".selections.txt.temp$",full.names = T,recursive = T) ## edited the code so that can find the files with the sumstats we generated
+    
+    print("GENERATING SUMSTATS")
+    
+    dflist = lapply(metafiles,FUN=function(meta){
+      print(meta)
+      name=sub(".Table.1.selections.txt","",basename(meta))
+      split = strsplit(name,".wav_")[[1]]
+      ind = split[1]
+      segment = split[2]
+      
+      #df = NULL
+      #try({df = read.table(meta,sep="\t",header=T)})
+      df = read.table(meta,sep="\t",header=T)
+      #if(!(is.null(df))){
+      #print(head(df)) ## worked
+      df=df[order(df[,"Begin.Time..s."]),]
+      df$Selection=1:nrow(df)
+      try({df$Bandwidth = as.numeric(df$Freq.75...Hz.-df$Freq.25...Hz.)},silent=T)
+      if(is.null(df$Bandwidth)){
+        try({df$Bandwidth = as.numeric(df$freq.Q75-df$freq.Q25)},silent=T)
+        if(is.null(df$Bandwidth)){
+          #df$Bandwidth = df$High.Freq..Hz.-df$Low.Freq..Hz.
+          df$Bandwidth=NA
+        }
+      }
+      #print(head(df))
+      try({df$Time = as.numeric(df$Time.75...s.-df$Time.25...s.)},silent=T)
+      if(is.null(df$Time)){
+        try({df$Time = as.numeric(df$time.Q75-df$time.Q25)},silent=T)
+        if(is.null(df$Time)){
+          #df$Time = df$End.Time..s.-df$Begin.Time..s.
+          df$Time=NA
+        }
+      }
+      try({df$Center = as.numeric(df$Center.Freq..Hz.)},silent=T)
+      if(is.null(df$Center)){
+        try({df$Center = as.numeric(df$freq.median)},silent=T)
+        if(is.null(df$Center)){
+          df$Center=NA
+        }
+      }
+      try({df$Inflection = as.numeric(df$PFC.Num.Inf.Pts)},silent=T)
+      if(is.null(df$Inflection)){
+        try({df$Inflection = as.numeric(df$inflections)},silent=T)
+        if(is.null(df$Inflection)){
+          df$Inflection=NA
+        }   
+      }    
+      try({df$Slope = as.numeric(df$PFC.Avg.Slope..Hz.ms.)},silent=T)
+      if(is.null(df$Slope)){
+        try({df$Slope = as.numeric(df$mean_slope)},silent=T)
+        if(is.null(df$Slope)){
+          df$Slope=NA
+        }  
+      }      
+      df = df[,c("Selection","Bandwidth","Time","Center","Inflection","Slope")]
+      df$Individual = ind
+      df$Segment = segment
+      
+      if(sum(complete.cases(df[,c("Selection","Bandwidth","Time","Center","Inflection","Slope")]))>1){
+        return(df)
+      }
+      #} else {return(NULL)}
+    })
+    names(dflist)=basename(metafiles)
+    
+    species_dflist = sapply(names(dflist),FUN=function(x){
+      y=strsplit(x,"\\.")[[1]][1:2]
+      z=paste(y,sep=".",collapse = ".")
+    },simplify = T)
+    
+    bigdf = do.call(rbind,dflist)
+    write.table(bigdf,bigdffile)
+  }
   #plot(bigdf[,c("Bandwidth","Time","Center","Inflection","Slope")],col=rgb(0,0,0,0.3))
   
   ## quick pca on bigdf 
@@ -587,7 +629,23 @@ if(runBigpc==T){
   big_for_pca_combo = cbind(big_for_pca,big_pca$x)
   big_for_pca_combo = merge(big_for_pca,big_for_pca_combo,all=T)
   
-  write.table(big_for_pca_combo,"combined_table_for_pca.txt",sep="\t",row.names = F)
+  newcols_raw=lapply(big_for_pca_combo$Individual,FUN=function(x){
+    #print(x)
+    x = sub(".selections.txt.temp","",x)
+    x = sub(".temp","",x)
+    y = strsplit(x,"\\.")[[1]]
+    if(length(y)==4) {
+      z=rbind(genus=y[1],species=y[2],subspecies="unknown",database=y[3],catalog=y[4])
+    } else if (length(y)>=5) {
+      z=rbind(genus=y[1],species=y[2],subspecies=y[3],database=y[4],catalog=y[5])
+    }
+    return(z)
+  })
+  newcols = do.call(cbind,newcols_raw)
+  newcols = t(newcols)
+  big_for_pca_combo = cbind(big_for_pca_combo,newcols)
+  pcacombofile=paste(path,"combined_table_for_pca_",date,".txt",sep="")
+  write.table(big_for_pca_combo,pcacombofile,sep="\t",row.names = F)
   
   #plot(as.data.frame(big_pca$x[,1:2]),col=as.numeric(as.factor(big_for_pca$Individual)))
   
@@ -599,13 +657,91 @@ if(runBigpc==T){
   #}
   #dev.off()
   
-  big_pca$rotation
-  summary(big_pca)$importance[2,] * t(big_pca$rotation)
+  write.table(big_pca$rotation,paste("rotation_table_for_pca_",date,".txt",sep=""),sep="\t",row.names = F)
+  write.table(summary(big_pca)$importance[2,] * t(big_pca$rotation),paste("importance-rotation_table_for_pca_",date,".txt",sep=""),sep="\t",row.names = F)
+  write.table(summary(big_pca)$importance,paste("importance_table_for_pca_",date,".txt",sep=""),sep="\t",row.names = F)
+  
+  print(big_pca$rotation)
+  print(summary(big_pca)$importance[2,] * t(big_pca$rotation))
   #corrplot::corrplot(summary(big_pca)$importance[2,] * t(big_pca$rotation),
   #                   method="color",is.corr=F)
 }
 
 if(runCentroids==T){
+  print("RUN CENTROIDS")
+  
+  if(!(exists("dflist"))){
+    print("GATHERING FILES")
+    
+    metafiles = list.files(path,pattern=".selections.txt.temp$",full.names = T,recursive = T) ## edited the code so that can find the files with the sumstats we generated
+    
+    print("GENERATING SUMSTATS")
+    
+    dflist = lapply(metafiles,FUN=function(meta){
+      print(meta)
+      name=sub(".Table.1.selections.txt","",basename(meta))
+      split = strsplit(name,".wav_")[[1]]
+      ind = split[1]
+      segment = split[2]
+      
+      df = read.table(meta,sep="\t",header=T)
+      #print(head(df)) ## worked
+      df=df[order(df[,"Begin.Time..s."]),]
+      df$Selection=1:nrow(df)
+      try({df$Bandwidth = as.numeric(df$Freq.75...Hz.-df$Freq.25...Hz.)},silent=T)
+      if(is.null(df$Bandwidth)){
+        try({df$Bandwidth = as.numeric(df$freq.Q75-df$freq.Q25)},silent=T)
+        if(is.null(df$Bandwidth)){
+          #df$Bandwidth = df$High.Freq..Hz.-df$Low.Freq..Hz.
+          df$Bandwidth=NA
+        }
+      }
+      #print(head(df))
+      try({df$Time = as.numeric(df$Time.75...s.-df$Time.25...s.)},silent=T)
+      if(is.null(df$Time)){
+        try({df$Time = as.numeric(df$time.Q75-df$time.Q25)},silent=T)
+        if(is.null(df$Time)){
+          #df$Time = df$End.Time..s.-df$Begin.Time..s.
+          df$Time=NA
+        }
+      }
+      try({df$Center = as.numeric(df$Center.Freq..Hz.)},silent=T)
+      if(is.null(df$Center)){
+        try({df$Center = as.numeric(df$freq.median)},silent=T)
+        if(is.null(df$Center)){
+          df$Center=NA
+        }
+      }
+      try({df$Inflection = as.numeric(df$PFC.Num.Inf.Pts)},silent=T)
+      if(is.null(df$Inflection)){
+        try({df$Inflection = as.numeric(df$inflections)},silent=T)
+        if(is.null(df$Inflection)){
+          df$Inflection=NA
+        }   
+      }    
+      try({df$Slope = as.numeric(df$PFC.Avg.Slope..Hz.ms.)},silent=T)
+      if(is.null(df$Slope)){
+        try({df$Slope = as.numeric(df$mean_slope)},silent=T)
+        if(is.null(df$Slope)){
+          df$Slope=NA
+        }  
+      }      
+      df = df[,c("Selection","Bandwidth","Time","Center","Inflection","Slope")]
+      df$Individual = ind
+      df$Segment = segment
+      
+      if(sum(complete.cases(df[,c("Selection","Bandwidth","Time","Center","Inflection","Slope")]))>1){
+        return(df)
+      }
+    })
+    names(dflist)=basename(metafiles)
+    
+    species_dflist = sapply(names(dflist),FUN=function(x){
+      y=strsplit(x,"\\.")[[1]][1:2]
+      z=paste(y,sep=".",collapse = ".")
+    },simplify = T)
+  }
+  
   this_length = length(dflist)
   ind_mean_matrix = matrix(nrow=this_length,ncol=this_length)
   centroiddf=data.frame(matrix(ncol=3,nrow=0))
@@ -640,24 +776,80 @@ if(runCentroids==T){
   }
   colnames(centroiddf) = c("Bandwidth","Time","Center","Inflection","Slope")
   centroiddf$Ind = basename(metafiles)
-  colnames(ind_mean_matrix) = inds
-  rownames(ind_mean_matrix) = inds
+  
+  ## for centroid data, calculate the species, genus, database, number, etc
+  newcols_raw=lapply(centroiddf$Ind,FUN=function(x){
+    x = sub(".selections.txt.temp","",x)
+    y = strsplit(x,"\\.")[[1]]
+    x = sub(".temp","",x)
+    if(length(y)==4) {
+      z=rbind(genus=y[1],species=y[2],subspecies="unknown",database=y[3],catalog=y[4])
+    } else if (length(y)>=5) {
+      z=rbind(genus=y[1],species=y[2],subspecies=y[3],database=y[4],catalog=y[5])
+    }
+    return(z)
+  })
+  newcols = do.call(cbind,newcols_raw)
+  newcols = t(newcols)
+  centroiddf = cbind(centroiddf,newcols)
+  
+  colnames(ind_mean_matrix) = centroiddf$Ind ## this is failing on inds so changed to Ind
+  rownames(ind_mean_matrix) = centroiddf$Ind
   #corrplot::corrplot(ind_mean_matrix,is.corr=F,method="color")
   #plot(ape::nj(ind_mean_matrix))
   
   write.table(centroiddf,
-              paste(outpath,"/centroid_locations_per_individual.txt",sep=""),
+              paste(outpath,"/centroid_locations_per_individual_",date,".txt",sep=""),
               sep="\t",quote=F,row.names = F)
   write.table(ind_mean_matrix,
-              paste(outpath,"/mean_centroid_distances_individuals.txt",sep=""),
+              paste(outpath,"/mean_centroid_distances_individuals_",date,".txt",sep=""),
               sep="\t",quote=F,row.names = T)
   
   #plot(centroiddf)
   
+  ## separate out centroid distances by species
+  centroidfilename=paste(outpath,"/mean_centroid_distances_individuals_",date,".txt",sep="")
+  centroidfilename=sub("//","/",centroidfilename)
+  ind_mean_matrix = data.table::fread(file=centroidfilename,data.table = F)
+  rownames(ind_mean_matrix) = ind_mean_matrix$V1
+  ind_mean_matrix=ind_mean_matrix[,-which(colnames(ind_mean_matrix)=="V1")]
+  
+  genera = sapply(colnames(ind_mean_matrix),function(x){strsplit(x,"\\.")[[1]][1]})
+  scientific = sapply(colnames(ind_mean_matrix),function(x){
+    y=strsplit(x,"\\.")[[1]][1:2]
+    y=paste(y,sep=".",collapse=".")
+    return(y)
+  })
+  withsubspecies = sapply(colnames(ind_mean_matrix),function(x){
+    y=strsplit(x,"\\.")[[1]][1:3]
+    if(y[3]!="unknown" & y[3] != "XC") {
+      y=paste(y,sep=".",collapse=".")
+      return(y)
+    } else {
+      return(NA)
+    }
+  })
+  
+  ## split out by genera, species, and subspcecies
+  for(genus in sort(unique(genera))) {
+    print(genus)
+    ind_mean_matrix_genus = ind_mean_matrix[which(genera == genus),which(genera == genus)]
+    write.table(ind_mean_matrix_genus,paste(outpath,"/mean_centroid_distances_individuals_",date,"_genus_",genus,".txt",sep=""))
+  }
+  for(sci in sort(unique(scientific))) {
+    print(sci)
+    ind_mean_matrix_sci = ind_mean_matrix[which(scientific == sci),which(scientific == sci)]
+    write.table(ind_mean_matrix_sci,paste(outpath,"/mean_centroid_distances_individuals_",date,"_scientific_",sci,".txt",sep=""))
+  }
+  for(subspp in sort(unique(withsubspecies))) {
+    print(subspp)
+    ind_mean_matrix_subspp = ind_mean_matrix[which(withsubspecies == subspp),which(withsubspecies == subspp)]
+    write.table(ind_mean_matrix_subspp,paste(outpath,"/mean_centroid_distances_individuals_",date,"_withsubspecies_",subspp,".txt",sep=""))
+  }
   
   ## quick pca on centroids 
   
-  cent_df = read.table(paste(outpath,"/centroid_locations_per_individual.txt",sep=""),
+  cent_df = read.table(paste(outpath,"/centroid_locations_per_individual_",date,".txt",sep=""),
                        sep="\t",header=T)
   cent_for_pca=cent_df[complete.cases(cent_df),]
   cent_pca = prcomp(cent_for_pca[,c("Bandwidth","Time","Center","Inflection","Slope")],
@@ -665,8 +857,9 @@ if(runCentroids==T){
   
   cent_df_pca = cbind(cent_for_pca,cent_pca$x)
   cent_df_pca = merge(cent_df,cent_df_pca,all=T)
+  
   write.table(cent_df_pca,
-              paste(outpath,"/centroid_locations_per_individual_PCA.txt",sep=""),
+              paste(outpath,"/centroid_locations_per_individual_PCA_",date,".txt",sep=""),
               sep="\t",quote=F,row.names = T)
   
   #plot(as.data.frame(cent_pca$x))
@@ -679,11 +872,92 @@ if(runCentroids==T){
   summary(cent_pca)$importance[2,] * t(cent_pca$rotation)
   #corrplot::corrplot(summary(cent_pca)$importance[2,] * t(cent_pca$rotation),
   #                   method="color",is.corr=F)
+  
+  
+  write.table(cent_pca$rotation,paste(outpath,"rotation_table_for_centroid_pca_",date,".txt",sep=""),sep="\t",row.names = F)
+  write.table(summary(cent_pca)$importance[2,] * t(cent_pca$rotation),paste(outpath,"importance-rotation_table_for_centroid_pca_",date,".txt",sep=""),sep="\t",row.names = F)
+  write.table(summary(cent_pca)$importance,paste(outpath,"importance_table_for_centroid_pca_",date,".txt",sep=""),sep="\t",row.names = F)
+  
+  
 }
 
 ## compare pairwise syllable-syllable between ind a, ind b 
 
 if(runSyllables==T){
+  print("RUN SYLLABLES")
+  
+  if(!(exists(dflist))){
+    print("GATHERING FILES")
+    
+    metafiles = list.files(path,pattern=".selections.txt.temp$",full.names = T,recursive = T) ## edited the code so that can find the files with the sumstats we generated
+    
+    print("GENERATING SUMSTATS")
+    
+    dflist = lapply(metafiles,FUN=function(meta){
+      print(meta)
+      name=sub(".Table.1.selections.txt","",basename(meta))
+      split = strsplit(name,".wav_")[[1]]
+      ind = split[1]
+      segment = split[2]
+      
+      df = read.table(meta,sep="\t",header=T)
+      #print(head(df)) ## worked
+      df=df[order(df[,"Begin.Time..s."]),]
+      df$Selection=1:nrow(df)
+      try({df$Bandwidth = as.numeric(df$Freq.75...Hz.-df$Freq.25...Hz.)},silent=T)
+      if(is.null(df$Bandwidth)){
+        try({df$Bandwidth = as.numeric(df$freq.Q75-df$freq.Q25)},silent=T)
+        if(is.null(df$Bandwidth)){
+          #df$Bandwidth = df$High.Freq..Hz.-df$Low.Freq..Hz.
+          df$Bandwidth=NA
+        }
+      }
+      #print(head(df))
+      try({df$Time = as.numeric(df$Time.75...s.-df$Time.25...s.)},silent=T)
+      if(is.null(df$Time)){
+        try({df$Time = as.numeric(df$time.Q75-df$time.Q25)},silent=T)
+        if(is.null(df$Time)){
+          #df$Time = df$End.Time..s.-df$Begin.Time..s.
+          df$Time=NA
+        }
+      }
+      try({df$Center = as.numeric(df$Center.Freq..Hz.)},silent=T)
+      if(is.null(df$Center)){
+        try({df$Center = as.numeric(df$freq.median)},silent=T)
+        if(is.null(df$Center)){
+          df$Center=NA
+        }
+      }
+      try({df$Inflection = as.numeric(df$PFC.Num.Inf.Pts)},silent=T)
+      if(is.null(df$Inflection)){
+        try({df$Inflection = as.numeric(df$inflections)},silent=T)
+        if(is.null(df$Inflection)){
+          df$Inflection=NA
+        }   
+      }    
+      try({df$Slope = as.numeric(df$PFC.Avg.Slope..Hz.ms.)},silent=T)
+      if(is.null(df$Slope)){
+        try({df$Slope = as.numeric(df$mean_slope)},silent=T)
+        if(is.null(df$Slope)){
+          df$Slope=NA
+        }  
+      }      
+      df = df[,c("Selection","Bandwidth","Time","Center","Inflection","Slope")]
+      df$Individual = ind
+      df$Segment = segment
+      
+      if(sum(complete.cases(df[,c("Selection","Bandwidth","Time","Center","Inflection","Slope")]))>1){
+        return(df)
+      }
+    })
+    names(dflist)=basename(metafiles)
+    
+    species_dflist = sapply(names(dflist),FUN=function(x){
+      y=strsplit(x,"\\.")[[1]][1:2]
+      z=paste(y,sep=".",collapse = ".")
+    },simplify = T)
+  }
+  
   
   for(spp in sort(unique(species_dflist))){
     print(spp)
@@ -759,10 +1033,10 @@ if(runSyllables==T){
     mean_dist_inds_df = mean_dist_inds_df[order(mean_dist_inds_df$ind1,mean_dist_inds_df$ind2),]
     
     ## the above is not quite right. resulting data is not symmetrical
-    write.table(mean_dist_inds_df,paste(outpath,"/mean_syll_distance_inds_",spp,".txt",sep=""),
+    write.table(mean_dist_inds_df,paste(outpath,"/mean_syll_distance_inds_",spp,"_",date,".txt",sep=""),
                 sep="\t",row.names = F,quote=F)
     
-    mean_dist_inds_df=read.table(paste(outpath,"/mean_syll_distance_inds_",spp,".txt",sep=""),
+    mean_dist_inds_df=read.table(paste(outpath,"/mean_syll_distance_inds_",spp,"_",date,".txt",sep=""),
                                  sep="\t",header=T)
     
     x=mean_dist_inds_df[,c(1,2,3)]; colnames(x) = c("mean_dists","ind1","ind2")
@@ -779,7 +1053,7 @@ if(runSyllables==T){
     
     #corrplot::corrplot(mean_dist_mat,is.corr=F,method="color")
     
-    write.table(mean_dist_mat,paste(outpath,"/mean_syll_distance_inds_square_",spp,".txt",sep=""),
+    write.table(mean_dist_mat,paste(outpath,"/mean_syll_distance_inds_square_",spp,"_",date,".txt",sep=""),
                 sep="\t",row.names = T,quote=F)
     
     #plot(c(ind_mean_matrix),c(mean_dist_mat)) ## basically the same it looks like.
@@ -798,6 +1072,208 @@ if(runSyllables==T){
   }
 }
 
+if(generatePlots==T){
+  print("GENERATE PLOTS")
+  ## check for each section if files exist
+  
+  ## generate distance trees for each small matrix
+  
+  matrix_files_genus = list.files(path,pattern="_genus_",recursive=T,full.names = T)
+  matrix_files_genus = matrix_files_genus[!(grepl("tree",matrix_files_genus))]
+  for(matrix_file in matrix_files_genus){
+    print(matrix_file)
+    matrix_dist = read.table(matrix_file,header=T)
+    ## remove na rows
+    if(sum(is.na(matrix_dist))>0){
+      allna=colSums(is.na(matrix_dist))
+      bad=names(which(allna==max(allna,na.rm=T)))
+      matrix_dist = matrix_dist[-which(colnames(matrix_dist) %in% bad),-which(colnames(matrix_dist) %in% bad)]
+    }
+    try({
+      njtree=ape::njs(as.dist(matrix_dist))
+      njtree$tip.label = sub(".selections.txt.temp","",njtree$tip.label)
+      #plot(njtree,type="radial")
+      ape::write.tree(njtree,paste(matrix_file,".tree",sep=""))
+    })
+  }
+  
+  matrix_files_sci = list.files(path,pattern="_scientific_",recursive=T,full.names = T)
+  matrix_files_sci = matrix_files_sci[!(grepl("tree",matrix_files_sci))]
+  for(matrix_file in matrix_files_sci){
+    print(matrix_file)
+    matrix_dist = read.table(matrix_file,header=T)
+    ## remove na rows
+    if(sum(is.na(matrix_dist))>0){
+      allna=colSums(is.na(matrix_dist))
+      bad=names(which(allna==max(allna,na.rm=T)))
+      matrix_dist = matrix_dist[-which(colnames(matrix_dist) %in% bad),-which(colnames(matrix_dist) %in% bad)]
+    }
+    try({
+      njtree=ape::njs(as.dist(matrix_dist))
+      njtree$tip.label = sub(".selections.txt.temp","",njtree$tip.label)
+      #plot(njtree,type="radial")
+      ape::write.tree(njtree,paste(matrix_file,".tree",sep=""))
+    })
+  }
+  
+  matrix_files_sub = list.files(path,pattern="_withsubspecies_",recursive=T,full.names = T)
+  matrix_files_sub = matrix_files_sub[!(grepl("tree",matrix_files_sub))]
+  for(matrix_file in matrix_files_sub){
+    print(matrix_file)
+    matrix_dist = read.table(matrix_file,header=T)
+    ## remove na rows
+    if(sum(is.na(matrix_dist))>0){
+      allna=colSums(is.na(matrix_dist))
+      bad=names(which(allna==max(allna,na.rm=T)))
+      matrix_dist = matrix_dist[-which(colnames(matrix_dist) %in% bad),-which(colnames(matrix_dist) %in% bad)]
+    }
+    try({
+      njtree=ape::njs(as.dist(matrix_dist))
+      njtree$tip.label = sub(".selections.txt.temp","",njtree$tip.label)
+      #plot(njtree,type="radial")
+      ape::write.tree(njtree,paste(matrix_file,".tree",sep=""))
+    })
+  }
+  
+  centroid_pca_file = paste("centroid_locations_per_individual_PCA_",date,".txt",sep="")
+  
+  if(file.exists(centroid_pca_file)){
+    
+    centroid_pca = read.table(centroid_pca_file,header=T)
+    centroid_pca$scientific = paste(centroid_pca$genus,centroid_pca$species)
+    
+    par(mfrow=c(2,3))
+    boxplot(centroid_pca$Bandwidth~centroid_pca$genus,las=2,main="Bandwidth")
+    boxplot(centroid_pca$Time~centroid_pca$genus,las=2,main="Time")
+    boxplot(centroid_pca$Center~centroid_pca$genus,las=2,main="Center")
+    boxplot(centroid_pca$Inflection~centroid_pca$genus,las=2,main="Inflection")
+    boxplot(centroid_pca$Slope~centroid_pca$genus,las=2,min="Slope")
+    plot(centroid_pca$Bandwidth,centroid_pca$Time,col=as.numeric(as.factor(centroid_pca$genus)),main="Bandwidth:Time")
+    
+    par(mfrow=c(2,3))
+    boxplot(centroid_pca$Bandwidth~centroid_pca$genus,las=2,main="PC1")
+    boxplot(centroid_pca$Time~centroid_pca$genus,las=2,main="PC2")
+    boxplot(centroid_pca$Center~centroid_pca$genus,las=2,main="PC3")
+    boxplot(centroid_pca$Inflection~centroid_pca$genus,las=2,main="PC4")
+    boxplot(centroid_pca$Slope~centroid_pca$genus,las=2,min="PC5")
+    plot(centroid_pca$PC1,centroid_pca$PC2,col=as.numeric(as.factor(centroid_pca$genus)),main="PC1:2")
+    
+    par(mfrow=c(2,3))
+    boxplot(centroid_pca$Bandwidth~centroid_pca$scientific,las=2,main="Bandwidth")
+    boxplot(centroid_pca$Time~centroid_pca$scientific,las=2,main="Time")
+    boxplot(centroid_pca$Center~centroid_pca$scientific,las=2,main="Center")
+    boxplot(centroid_pca$Inflection~centroid_pca$scientific,las=2,main="Inflection")
+    boxplot(centroid_pca$Slope~centroid_pca$scientific,las=2,min="Slope")
+    plot(centroid_pca$Bandwidth,centroid_pca$Time,col=as.numeric(as.factor(centroid_pca$scientific)),main="Bandwidth:Time")
+    
+    par(mfrow=c(2,3))
+    boxplot(centroid_pca$Bandwidth~centroid_pca$scientific,las=2,main="PC1")
+    boxplot(centroid_pca$Time~centroid_pca$scientific,las=2,main="PC2")
+    boxplot(centroid_pca$Center~centroid_pca$scientific,las=2,main="PC3")
+    boxplot(centroid_pca$Inflection~centroid_pca$scientific,las=2,main="PC4")
+    boxplot(centroid_pca$Slope~centroid_pca$scientific,las=2,min="PC5")
+    plot(centroid_pca$PC1,centroid_pca$PC2,col=as.numeric(as.factor(centroid_pca$scientific)),main="PC1:2")
+    
+    par(mfrow=c(3,3))
+    plot(centroid_pca$PC1,centroid_pca$PC3,col=as.numeric(as.factor(centroid_pca$genus)),main="PC1:3")
+    plot(centroid_pca$PC1,centroid_pca$PC4,col=as.numeric(as.factor(centroid_pca$genus)),main="PC1:4")
+    plot(centroid_pca$PC1,centroid_pca$PC5,col=as.numeric(as.factor(centroid_pca$genus)),main="PC1:5")
+    plot(centroid_pca$PC2,centroid_pca$PC3,col=as.numeric(as.factor(centroid_pca$genus)),main="PC2:3")
+    plot(centroid_pca$PC2,centroid_pca$PC4,col=as.numeric(as.factor(centroid_pca$genus)),main="PC2:4")
+    plot(centroid_pca$PC2,centroid_pca$PC5,col=as.numeric(as.factor(centroid_pca$genus)),main="PC2:5")
+    plot(centroid_pca$PC3,centroid_pca$PC4,col=as.numeric(as.factor(centroid_pca$genus)),main="PC3:4")
+    plot(centroid_pca$PC3,centroid_pca$PC5,col=as.numeric(as.factor(centroid_pca$genus)),main="PC3:5")
+    plot(centroid_pca$PC4,centroid_pca$PC5,col=as.numeric(as.factor(centroid_pca$genus)),main="PC4:5")
+    
+    ## let's do some stats
+    
+    
+    
+  }
+  
+  centroid_dist_file = paste("mean_centroid_distances_individuals_",date,".txt",sep="")
+  
+  if(file.exists(centroid_dist_file)){
+    
+    centroid_dist = read.table(centroid_dist_file,header=T)
+    
+    ## remove na rows
+    if(sum(is.na(centroid_dist))>0){
+      allna=colSums(is.na(centroid_dist))
+      bad=names(which(allna==max(allna,na.rm=T)))
+      centroid_dist = centroid_dist[-which(colnames(centroid_dist) %in% bad),-which(colnames(centroid_dist) %in% bad)]
+      
+    }
+    
+    
+    njtree=ape::njs(as.dist(centroid_dist))
+    ape::write.tree(njtree,paste("mean_centroid_distances_individuals_tree_",date,".tree",sep=""))
+    
+  }
+  
+  big_pca_file = paste("combined_table_for_pca_",date,".txt",sep="")
+  
+  if(file.exists(big_pca_file)){
+    
+    big_pca = read.table(big_pca_file,header=T)
+    big_pca$scientific = paste(big_pca$genus,big_pca$species)
+    
+    modelspp=aov(big_pca$PC1~big_pca$scientific)
+    summary(modelspp) ## sig
+    perspp_sig = TukeyHSD(modelspp)$`big_pca$scientific`[,4]
+    perspp_sig = TukeyHSD(modelspp)$`big_pca$scientific`[,4]
+    perspp_sig[perspp_sig==0] = min(perspp_sig[perspp_sig!=0],na.rm=T)/10
+    
+    barplot(log10(perspp_sig)*-1,las=2)
+    abline(h=log10(c(0.1,0.05,0.01,0.001))*-1,col=c("lightgrey","lightblue","blue","darkblue"))
+    
+    ## turn this into a heatmap
+    perspp_sig_df=as.data.frame(cbind(perspp_sig))
+    perspp_sig_df$comparison = rownames(perspp_sig_df)
+    perspp_sig_df$spp1= sapply(perspp_sig_df$comparison,function(x){
+      splits=strsplit(x,"-")[[1]][1]
+    })
+    perspp_sig_df$spp2= sapply(perspp_sig_df$comparison,function(x){
+      splits=strsplit(x,"-")[[1]][2]
+    })
+    perspp_sig_df$log = log10(perspp_sig_df$perspp_sig)*-1
+    sigdist=as.dist(xtabs(perspp_sig_df$perspp_sig ~ perspp_sig_df$spp1 + perspp_sig_df$spp2))
+    siglogdist=as.dist(xtabs(perspp_sig_df$log ~ perspp_sig_df$spp1 + perspp_sig_df$spp2))
+    corrplot::corrplot(as.matrix(siglogdist),is.corr=F,method="color"#,
+                       #col=colorRampPalette(c("blue","yellow","red"))(200)
+    )
+    corrplot::corrplot(as.matrix(sigdist),is.corr=F,method="color")
+    
+    
+    
+    modelgen=aov(big_pca$PC1~big_pca$genus)
+    summary(modelgen) ## sig
+    pergen_sig = TukeyHSD(modelgen)$`big_pca$genus`[,4]
+    pergen_sig[pergen_sig==0] = min(pergen_sig[pergen_sig!=0],na.rm=T)/10
+    
+    barplot(log10(pergen_sig)*-1,las=2)
+    abline(h=log10(c(0.1,0.05,0.01,0.001))*-1,col=c("lightgrey","lightblue","blue","darkblue"))
+    
+    ## turn this into a heatmap
+    pergen_sig_df=as.data.frame(cbind(pergen_sig))
+    pergen_sig_df$comparison = rownames(pergen_sig_df)
+    pergen_sig_df$spp1= sapply(pergen_sig_df$comparison,function(x){
+      splits=strsplit(x,"-")[[1]][1]
+    })
+    pergen_sig_df$spp2= sapply(pergen_sig_df$comparison,function(x){
+      splits=strsplit(x,"-")[[1]][2]
+    })
+    pergen_sig_df$log = log10(pergen_sig_df$pergen_sig)*-1
+    sigdist=as.dist(xtabs(pergen_sig_df$pergen_sig ~ pergen_sig_df$spp1 + pergen_sig_df$spp2))
+    siglogdist=as.dist(xtabs(pergen_sig_df$log ~ pergen_sig_df$spp1 + pergen_sig_df$spp2))
+    corrplot::corrplot(as.matrix(siglogdist),is.corr=F,method="number",
+                       col=colorRampPalette(c("blue","yellow","red"))(200))
+    corrplot::corrplot(as.matrix(sigdist),is.corr=F,method="number")
+  }
+  raw_stats_file = paste("rvn.dat_trimmed_spectro_fcts_collapsed_",date,".txt",sep="")
+  
+  
+}
 
 ## do we need to do discriminant function analysis? 
 ## http://www.sthda.com/english/articles/36-classification-methods-essentials/146-discriminant-analysis-essentials-in-r/

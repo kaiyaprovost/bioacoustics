@@ -1,0 +1,25 @@
+[PREP]
+audio_format = "wav"
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/phoenicus/"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/phoenicus/"
+
+[SPECT_PARAMS]
+fft_size = 512
+freq_cutoffs = [ 500, 10000,]
+step_size = 64
+thresh = 6.25
+transform_type = "log_spect"
+
+[PREDICT]
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/StandardizeSpect"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/labelmap.json"
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/max-val-acc-checkpoint.pt"
+num_workers = 1
+models = "TweetyNet"
+majority_vote = false
+batch_size = 11
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/phoenicus/"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/phoenicus/phoenicus_prep_220517_181028.csv"
+
+[TweetyNet.optimizer]
+lr = 0.001
