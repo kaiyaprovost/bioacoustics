@@ -8,6 +8,7 @@
 #SBATCH --partition=serial
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=provost.27@osu.edu
+#SBATCH --mem=16G
 
 #slurm starts job in working DIR
 cd $SLURM_SUBMIT_DIR
@@ -33,6 +34,9 @@ cd "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/"
 
 ## convert mp3 to wav files 
 Rscript "/users/PYS1065/kprovost/bioacoustics/mp3towav.R"
+
+## rename the mp3s
+python3 "/users/PYS1065/kprovost/bioacoustics/rename_xenocanto.py"
 
 ## run vak 
 vak prep "/users/PYS1065/kprovost/bioacoustics/TOMLS/Aves_slurm.toml"

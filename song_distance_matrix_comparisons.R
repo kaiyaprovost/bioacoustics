@@ -9,7 +9,7 @@ doCentroid=T
 doMMRR=T
 doGene=F
 doCorr=F
-path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/"
+path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/"
 setwd(path)
 metadf = read.table("/Users/kprovost/Library/CloudStorage/OneDrive-TheOhioStateUniversity/Song/song_metadata.txt",
                     sep="\t",header=T)

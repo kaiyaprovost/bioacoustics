@@ -4,6 +4,7 @@ library(warbleR)
 #library(raster) 
 #library(viridis)
 
+
 #list_of_species = c("Zonotrichia leucophrys","Zonotrichia albicollis","Xenops minutus","Vireo hypochryseus","Vireo gilvus","Vireo bellii","Turdus migratorius","Troglodytes aedon","Sturnus vulgaris","Setophaga striata","Setophaga ruticilla","Setophaga petechia","Setophaga coronata",
 #"Regulus calendula","Ramphocaenus melanurus","Polioptila plumbea","Polioptila caerulea","Poecile atricapillus","Phaethornis longirostris","Passer domesticus","Momotus mexicanus","Mionectes oleagineus","Microbates cinereiventris","Melospiza melodia","Melospiza lincolnii","Melanerpes chrysogenys","Leiothlypis celata","Junco hyemalis","Hirundo rustica","Henicorhina leucophrys","Habia rubica","Eremophila alpestris",
 #"Catharus ustulatus","Catharus minimus","Catharus guttatus","Cardellina pusilla","Branta canadensis","Automolus ochrolaemus","Artemisiospiza belli",
@@ -13,6 +14,12 @@ library(warbleR)
 #list_of_families = c(#"Passerellidae","Tyrannidae","Sturnidae","Troglodytidae",#"Rhipiduridae","Ramphastidae","Procellariidae",
   #"Pipridae","Phasianidae",#"Parulidae","Paridae",#"Pachycephalidae","Meliphagidae","Laridae","Icteridae","Hirundinidae","Fringillidae",
   #"Emberizidae","Cuculidae","Corvidae","Columbidae","Charadriidae","Anatidae","Alcidae","Accipitridae","Cardinalidae")
+
+
+
+## just get metadata
+test = query_xc(qword="Zonotrichia leucophrys",download=F)
+write.table(test,"~/test.txt")
 
 ## download a particular species
 path = "~/Documents/OneDrive - The Ohio State University/Song/XenoCanto/Falconiformes/"
@@ -128,8 +135,10 @@ z = querxc('nr:1-628187') ## as of 11 march 2021 there are this many recordings
 write.table(z,file="xenocanto_fullrecords_upto_628187.txt",append=T,row.names = F,col.names = T,sep="\t")
 
 ## test figure 
+filename="/Users/kprovost/Downloads/xenocanto_fullrecords_upto_628187_TRIMMED.txt"
+#filename="/Users/kprovost/OneDrive - The Ohio State University/XenoCanto/xenocanto_fullrecords_TRIMMED_2.txt"
 
-y = data.table::fread("/Users/kprovost/OneDrive - The Ohio State University/XenoCanto/xenocanto_fullrecords_TRIMMED_2.txt",header=T,sep="\t",fill=T)
+y = data.table::fread(filename,header=T,sep="\t",fill=T)
 #y = y[,1:25] ## only keep through "Uploaded"
 y = unique(y)
 y = y[y$Specific_epithet!="Mystery",]
@@ -158,25 +167,37 @@ latlong=latlong[complete.cases(latlong),]
 
 plot(unique(latlong))
 
-Env = raster::stack('/Users/kprovost/OneDrive - The Ohio State University/raw_bbs_data/bio1/bio1.bil')
-bg = Env[[1]]
+r <- getData("worldclim",var="bio",res=10)
 
-ext = raster::extent(c(#min(latlong$Longitude,na.rm = T)-1, 
-  -180,
-  #max(latlong$Longitude,na.rm = T)+1, 
-  -50,
-  #min(latlong$Latitude,na.rm = T)-1,
-  -20,
-  #max(latlong$Latitude,na.rm = T)+1
-  90
-)
-)
+pdf("worldclim.pdf")
+for(i in 1:length(names(r))){
+  print(i)
+  plot(r[[i]],main=names(r)[i],col=viridis::plasma(200))
+}
+dev.off()
+
+bg=r[[1]]
+
+#Env = raster::stack('/Users/kprovost/OneDrive - The Ohio State University/raw_bbs_data/bio1/bio1.bil')
+#bg = Env[[1]]
+
+#ext = raster::extent(c(#min(latlong$Longitude,na.rm = T)-1, 
+#  -180,
+#  #max(latlong$Longitude,na.rm = T)+1, 
+#  -50,
+#  #min(latlong$Latitude,na.rm = T)-1,
+#  -20,
+#  #max(latlong$Latitude,na.rm = T)+1
+#  90
+#)
+#)
 #bg = raster::crop(bg, ext)
 
 bg[!(is.na(bg))] = 0
-bg=raster::aggregate(bg,40)
+#bg=raster::aggregate(bg,40)
+bg=raster::aggregate(bg,10)
 
-writeRaster(bg,'/Users/kprovost/OneDrive - The Ohio State University/raw_bbs_data/bio1/bio1_AGGREGATE-40.asc',format="ascii")
+#writeRaster(bg,'/Users/kprovost/OneDrive - The Ohio State University/raw_bbs_data/bio1/bio1_AGGREGATE-40.asc',format="ascii")
 
 plot(bg)
 points(latlong)
@@ -188,18 +209,27 @@ latlongcoor = SpatialPoints(coords = latlong)
 #bg2 = aggregate(bg,fact=20)
 rasnorm = rasterize(latlong, bg,fun='count',background=10e-1,update=F,na.rm=T)
 rasnorm[is.na(bg)] = NA
-raster::writeRaster(rasnorm,"xenocanto-data_everything.asc",format="ascii",overwrite=T)
+raster::writeRaster(rasnorm,"~/xenocanto-data_everything_26May2022.asc",format="ascii",overwrite=T)
+ras=rasnorm
 values(ras) = log10(values(rasnorm))
 ras[is.na(bg)] = NA
 ras[rasnorm<0] = -0.1
-raster::writeRaster(ras,"xenocanto-data_everything_log.asc",format="ascii",overwrite=T)
+raster::writeRaster(ras,"~/xenocanto-data_everything_log_26May2022.asc",format="ascii",overwrite=T)
 
 cuts=c(-0.1,0,0.5,1,1.5,2,2.5,3,3.5,4,4.5)
 #png("usasongs.png")
-png("All_XC_songs_everything_12march2021.png")
+png("~/All_XC_songs_everything_26May2022.png")
 par(mar=c(0,0,0,0))
-plot(ras,breaks=cuts,col=c("#BBBBBBFF",plasma(9)),main="log USA songs per cell",
+plot(ras,breaks=cuts,col=c("#BBBBBBFF",viridis::plasma(9)),main="log USA songs per cell",
      #ylim=c(20,50),xlim=c(-150,-50),
+     interpolate=F,bty="n",xaxt="n",yaxt="n",col.axis="white",ann=F
+)
+dev.off()
+
+png("~/All_XC_songs_NAm_26May2022.png")
+par(mar=c(0,0,0,0))
+plot(ras,breaks=cuts,col=c("#BBBBBBFF",viridis::plasma(9)),main="log USA songs per cell",
+     ylim=c(0,90),xlim=c(-180,-50),
      interpolate=F,bty="n",xaxt="n",yaxt="n",col.axis="white",ann=F
 )
 dev.off()
@@ -207,7 +237,8 @@ dev.off()
 
 ## for the blb data:
 
-blb = read.table("/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/BLB_klp.csv",header=T,sep=",",fill=T)
+#blb = read.table("/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/BLB_klp.csv",header=T,sep=",",fill=T)
+blb = read.table("~/Downloads/BLB_klp.csv",header=T,sep=",",fill=T)
 
 
 
@@ -223,23 +254,32 @@ latlongcoor = SpatialPoints(coords = latlong)
 #bg2 = aggregate(bg,fact=20)
 normras = raster::rasterize(latlong, bg,fun='count',background=-0.1,update=F,na.rm=T)
 normras[is.na(bg)] = NA
-raster::writeRaster(normras,"blb-data.asc",format="ascii",overwrite=T)
+raster::writeRaster(normras,"~/blb-data_26May2022.asc",format="ascii",overwrite=T)
 ras=normras
 values(ras) = log10(values(normras))
 ras[is.na(bg)] = NA
-raster::writeRaster(ras,"blb-data_log.asc",format="ascii",overwrite=T)
+raster::writeRaster(ras,"~/blb-data_log_26May2022.asc",format="ascii",overwrite=T)
 
-plot(ras)
+#plot(ras)
 ras[normras<0] = -0.1
 
 points(latlong)
 cuts=c(-0.1,0,0.5,1,1.5,2,2.5,3,3.5,4) #set breaks
 #png("usasongs.png")
-png("All_BLB_songs_12march2021.png")
+png("~/All_BLB_songs_26May2022.png")
 par(mar=c(0,0,0,0))
 plot(ras,breaks=cuts,
-     col=c("#BBBBBBFF",plasma(8)),main="log USA songs per cell",
+     col=c("#BBBBBBFF",viridis::plasma(8)),main="log USA songs per cell",
      #ylim=c(20,60),xlim=c(-150,-50),
+     interpolate=F,bty="n",xaxt="n",yaxt="n",col.axis="white",ann=F
+)
+dev.off()
+
+png("~/All_BLB_songs_NAm_26May2022.png")
+par(mar=c(0,0,0,0))
+plot(ras,breaks=cuts,
+     col=c("#BBBBBBFF",viridis::plasma(8)),main="log USA songs per cell",
+     ylim=c(0,90),xlim=c(-180,-50),
      interpolate=F,bty="n",xaxt="n",yaxt="n",col.axis="white",ann=F
 )
 dev.off()

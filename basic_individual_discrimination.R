@@ -9,19 +9,22 @@
 ## and since boxes might be off this shouldn't be trusted
 ## start with C. cardinalis
 
-outpath = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/"
-path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/"
+#outpath = "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Piciformes/Ramphastidae/"
+#path="/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Accipitriformes/Accipitridae/"
+#path=outpath
+outpath = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/"
+path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/"
 spp_substitute = ""
 parts_of_name_to_keep = 1:5
 setwd(path)
 #date=format(Sys.time(), "%d%b%Y")
-date="17May2022"
+date="MASTER"
 
 runSumstat=F ## calcualte summary statistics
 runBigpc=T ## calculate a principal components analysis
-runCentroids=T ## calculate centroid locations among individuals
+runCentroids=F ## calculate centroid locations among individuals
 runSyllables=F ## calculate distances between syllanbes 
-generatePlots=T ## make all the plots if files exist
+generatePlots=F ## make all the plots if files exist
 
 outersect <- function(x, y) {
   sort(c(setdiff(x, y),
@@ -105,6 +108,8 @@ if(runSumstat==T){
   print("RUNNING SUMSTATS")
   library(Rraven)
   library(warbleR)
+  final_bigtable_file = paste(path,"rvn.dat_trimmed_spectro_fcts_collapsed_",date,".txt",sep="")
+  temp_bigtable_file = paste(path,"rvn.dat_trimmed_spectro_fcts_collapsed_",date,".txt.temp",sep="")
   generate_sumstats = function(filenames,suffix="selections.txt$",import_raven=T,
                                date=format(Sys.time(), "%d%b%Y"),make_merged=F,
                                check_correlations=F,dolength=F,loop=F,verbose=F){
@@ -120,7 +125,7 @@ if(runSumstat==T){
       print(paths)
       print("~~~~~")
     }
-    for(path in (paths[1:length(paths)])) {
+    for(path in rev(paths[1:length(paths)])) {
       setwd(path)
       if(verbose==T){print(path)}
       
@@ -299,13 +304,16 @@ if(runSumstat==T){
           raven_files = rvn.dat$sound.files
           not_here = outersect(these_files,raven_files)
           print(paste("not here:",not_here))
+          if(length(intersect(these_files,raven_files))>0){
           
           ## works on sin but not on card?
+          rvn.dat.this = rvn.dat[!(rvn.dat$sound.files %in% not_here),]
           sp <- spectro_analysis(X = rvn.dat,harmonicity = F,
                                  path=pathx,
                                  bp=c(0,22),fast=T) ## fast = 35 sec 28 cols, not fast = 3 min 15 sec
           ## harmonicity = T irrespective of fast causes a lot of errors and is estimated to take ~20 min
           return(sp)
+          }
         })
         
         sp = do.call(plyr::rbind.fill,sp_list)
@@ -363,6 +371,12 @@ if(runSumstat==T){
       } else {
         ## need to remove any selections over 20 seconds long or FCTs will break
         rvn.dat = rvn.dat[rvn.dat$difference<20,]
+        ## also remove anything that isn't in the directory
+        these_files = list.files(path,pattern="wav$")
+        raven_files = rvn.dat$sound.files
+        not_here = outersect(these_files,raven_files)
+        print(paste("not here:",not_here))
+        rvn.dat=rvn.dat[!(rvn.dat$sound.files %in% not_here),]
         
         if(loop==T) {
           y=lapply(1:nrow(rvn.dat),
@@ -438,7 +452,11 @@ if(runSumstat==T){
     }
   }
   
-  generate_sumstats(filenames=metafiles,verbose=T,date="16May2022")
+  if(!(file.exists(final_bigtable_file))) {
+  if(!(file.exists(temp_bigtable_file))){
+  
+  generate_sumstats(filenames=metafiles,verbose=T,date=date)
+  print("DONE WITH MAKING STATS")
   
   ## to get slope of PFCs, subtract the i from i-1 value, multiply by 0.1875 -- i don't know why its this number
   
@@ -466,6 +484,10 @@ if(runSumstat==T){
   big_table$ffreq = apply( big_table[ , to_paste ] , 1 , paste , collapse = ";" )
   big_table = big_table[ , !( colnames( big_table ) %in% to_paste ) ]
   colnames(big_table)[colnames(big_table) %in% c("selec","sound.files","start","end","bottom.freq","top.freq")] = c("Selection","Begin File","Begin Time (s)","End Time (s)", "Low Freq (Hz)", "High Freq (Hz)")
+  write.table(big_table,temp_bigtable_file)
+  } else {
+    big_table = read.table(temp_bigtable_file)
+  }
   
   
   big_table$`Low Freq (Hz)`[big_table$`Low Freq (Hz)` <= 10] = (big_table$`Low Freq (Hz)` * 1000)
@@ -485,7 +507,11 @@ if(runSumstat==T){
   newcols = t(newcols)
   big_table = cbind(big_table,newcols)
   
-  write.table(big_table,paste(path,"rvn.dat_trimmed_spectro_fcts_collapsed_",date,".txt",sep=""))
+  
+  write.table(big_table,final_bigtable_file)
+  } else {
+  big_table=read.table(final_bigtable_file)
+}
   ## now go over the old files and update the data
   ## TODO: ACOUNT FOR THE DIFFERENCE IN FREQUENCY 
   
@@ -620,8 +646,8 @@ if(runBigpc==T){
   #plot(bigdf[,c("Bandwidth","Time","Center","Inflection","Slope")],col=rgb(0,0,0,0.3))
   
   ## quick pca on bigdf 
-  big_for_pca=bigdf[complete.cases(bigdf[,c("Selection","Individual","Bandwidth","Time","Center","Inflection","Slope")]),
-                    c("Selection","Individual","Bandwidth","Time","Center","Inflection","Slope")]
+  
+  big_for_pca=bigdf[complete.cases(bigdf[,c("Selection","Bandwidth","Time","Center","Inflection","Slope")]),]
   
   big_pca = prcomp(big_for_pca[,c("Bandwidth","Time","Center","Inflection","Slope")],
                    center = T,scale. = T)
@@ -644,6 +670,7 @@ if(runBigpc==T){
   newcols = do.call(cbind,newcols_raw)
   newcols = t(newcols)
   big_for_pca_combo = cbind(big_for_pca_combo,newcols)
+  #big_for_pca_combo = big_for_pca
   pcacombofile=paste(path,"combined_table_for_pca_",date,".txt",sep="")
   write.table(big_for_pca_combo,pcacombofile,sep="\t",row.names = F)
   
@@ -665,10 +692,57 @@ if(runBigpc==T){
   print(summary(big_pca)$importance[2,] * t(big_pca$rotation))
   #corrplot::corrplot(summary(big_pca)$importance[2,] * t(big_pca$rotation),
   #                   method="color",is.corr=F)
+  
+  
+  ## generate a centroid
+  agg = aggregate(cbind(big_for_pca_combo$Bandwidth,big_for_pca_combo$Time,big_for_pca_combo$Center,big_for_pca_combo$Inflection,
+                        big_for_pca_combo$Slope,big_for_pca_combo$PC1,big_for_pca_combo$PC2,big_for_pca_combo$PC3,big_for_pca_combo$PC4,big_for_pca_combo$PC5)
+                  ~big_for_pca_combo$genus+big_for_pca_combo$species+big_for_pca_combo$subspecies+big_for_pca_combo$database+big_for_pca_combo$catalog,
+                  FUN=function(x){mean(x,na.rm=T)})
+  colnames(agg) = c("genus","species","subspecies","database","catalog",
+                    "Bandwidth","Time","Center","Inflection","Slope",
+                    "PC1","PC2","PC3","PC4","PC5")
+  bigcentfile=paste(path,"centroids_per_individual_bigpca_",date,".txt",sep="")
+  write.table(agg,bigcentfile,row.names = F,sep="\t",quote=F)
+  
+  aggspp = aggregate(cbind(big_for_pca_combo$Bandwidth,big_for_pca_combo$Time,big_for_pca_combo$Center,big_for_pca_combo$Inflection,
+                        big_for_pca_combo$Slope,big_for_pca_combo$PC1,big_for_pca_combo$PC2,big_for_pca_combo$PC3,big_for_pca_combo$PC4,big_for_pca_combo$PC5)
+                  ~big_for_pca_combo$genus+big_for_pca_combo$species+big_for_pca_combo$subspecies,
+                  FUN=function(x){mean(x,na.rm=T)})
+  colnames(aggspp) = c("genus","species","subspecies",
+                    "Bandwidth","Time","Center","Inflection","Slope",
+                    "PC1","PC2","PC3","PC4","PC5")
+  bigcentfile=paste(path,"centroids_per_subspecies_bigpca_",date,".txt",sep="")
+  write.table(aggspp,bigcentfile,row.names = F,sep="\t",quote=F)
+  
+  aggspp2 = aggregate(cbind(big_for_pca_combo$Bandwidth,big_for_pca_combo$Time,big_for_pca_combo$Center,big_for_pca_combo$Inflection,
+                           big_for_pca_combo$Slope,big_for_pca_combo$PC1,big_for_pca_combo$PC2,big_for_pca_combo$PC3,big_for_pca_combo$PC4,big_for_pca_combo$PC5)
+                     ~big_for_pca_combo$genus+big_for_pca_combo$species,
+                     FUN=function(x){mean(x,na.rm=T)})
+  colnames(aggspp2) = c("genus","species",
+                    "Bandwidth","Time","Center","Inflection","Slope",
+                    "PC1","PC2","PC3","PC4","PC5")
+  bigcentfile=paste(path,"centroids_per_species_bigpca_",date,".txt",sep="")
+  write.table(aggspp2,bigcentfile,row.names = F,sep="\t",quote=F)
+
+  agggen = aggregate(cbind(big_for_pca_combo$Bandwidth,big_for_pca_combo$Time,big_for_pca_combo$Center,big_for_pca_combo$Inflection,
+                            big_for_pca_combo$Slope,big_for_pca_combo$PC1,big_for_pca_combo$PC2,big_for_pca_combo$PC3,big_for_pca_combo$PC4,big_for_pca_combo$PC5)
+                      ~big_for_pca_combo$genus,
+                      FUN=function(x){mean(x,na.rm=T)})
+  colnames(agggen) = c("genus",
+                        "Bandwidth","Time","Center","Inflection","Slope",
+                        "PC1","PC2","PC3","PC4","PC5")
+  bigcentfile=paste(path,"centroids_per_genus_bigpca_",date,".txt",sep="")
+  write.table(agggen,bigcentfile,row.names = F,sep="\t",quote=F)
 }
 
 if(runCentroids==T){
   print("RUN CENTROIDS")
+  
+  
+  
+  
+  
   
   if(!(exists("dflist"))){
     print("GATHERING FILES")

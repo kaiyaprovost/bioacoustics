@@ -2,7 +2,7 @@ library(tuneR)
 
 ## TODO: update so that formatted correctly
 
-setwd("/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/")
+setwd("/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Apodiformes/")
 #setwd("/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Paridae/")
 mp3files = list.files(path=getwd(),
                       pattern="\\.mp3$",full.names = T,recursive=T)
