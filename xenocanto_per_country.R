@@ -1,8 +1,52 @@
 #library(warbleR)
-devtools::install_github("maRce10/warbleR")
+#devtools::install_github("maRce10/warbleR")
 library(warbleR)
 #library(raster) 
 #library(viridis)
+
+
+## download a particular species
+path = "~/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/"
+#path = "/Users/kprovost/Documents/XenoCanto/0_DONE/"
+list_of_families=c("Cardinalidae")
+#genera=sample(c("Ammodramus maritimus"))
+genera=c("Passerina")
+species=c("cyanea","amoena")
+setwd(path)
+for(family in rev(list_of_families)) {
+  if(!(dir.exists(paste(path,family,sep="/")))) {
+    dir.create(paste(path,family,sep="/"))
+  } 
+  setwd(paste(path,family,sep="/"))
+  print(paste(path,family,sep="/"))
+  #x = query_xc(qword=paste(family,"q:A",sep=" "),download=F)
+  #x = query_xc(qword=paste(family,"type:song",sep=" "),download=F)
+  #genera=sort(unique(x$Genus))
+  print(genera)
+  for(genus in (genera)) {
+    if(!(dir.exists(paste(path,family,genus,sep="/")))) {
+      dir.create(paste(path,family,genus,sep="/"))
+    }
+    setwd(paste(path,family,genus,sep="/"))
+    print(genus)
+    #x = query_xc(qword=paste(genus,"type:song",sep=" "),download=F)
+    #species=sort(unique(x$Specific_epithet[x$Genus==genus]))
+    for(spp in rev(species)){
+      print(spp)
+      if(!(dir.exists(paste(path,family,genus,spp,sep="/")))) {
+        dir.create(paste(path,family,genus,spp,sep="/"))
+      }
+      setwd(paste(path,family,genus,spp,sep="/"))
+      try({y = query_xc(qword=paste("gen:",genus," ",spp," type:song",sep=""),download=T,
+                        file.name=c("Genus","Specific_epithet","Subspecies"))})
+      
+      #try({x = query_xc(qword=paste("gen:",genus," q:A type:song area:america",sep=""),download=T)})
+      
+    }
+    
+  }
+  #x = query_xc(qword=paste(species,"q:A type:song",sep=" "),download=T)
+}
 
 
 #list_of_species = c("Zonotrichia leucophrys","Zonotrichia albicollis","Xenops minutus","Vireo hypochryseus","Vireo gilvus","Vireo bellii","Turdus migratorius","Troglodytes aedon","Sturnus vulgaris","Setophaga striata","Setophaga ruticilla","Setophaga petechia","Setophaga coronata",
@@ -12,46 +56,39 @@ library(warbleR)
 #list_of_genera = c(#"Zonotrichia","Xiphorhynchus","Troglodytes","Tringa","Thamnophilus","Tangara","Sterna","Spinus","Sitta","Regulus","Accipiter","Eremophila","Anas","Aythya","Branta","Egretta","Ardea","Momotus","Certhia","Vireo","Melanerpes","Picoides","Passerina","Habia","Cardinalis",#"Pyrocephalus","Myiarchus","Empidonax",#"Setophaga","Cardellina","Dendrocincla","Automolus",#"Geothlypis","Ramphocaenus","Corvus",#"Charadrius",#"Leiothlypis",
 #"Artemisiospiza","Melospiza","Junco","Pipilo",#"Polioptila",#"Acanthis",#"Jacana",#"Larus",#"Lanius",#"Catharus","Anthus",#"Passer",#"Lagopus",#"Falco",#"Rallus",#"Poecile",#"Calidris",##"Icterus",##"Phaethornis",##"Henicorhina",##"Turdus"#)
 #list_of_families = c(#"Passerellidae","Tyrannidae","Sturnidae","Troglodytidae",#"Rhipiduridae","Ramphastidae","Procellariidae",
-  #"Pipridae","Phasianidae",#"Parulidae","Paridae",#"Pachycephalidae","Meliphagidae","Laridae","Icteridae","Hirundinidae","Fringillidae",
-  #"Emberizidae","Cuculidae","Corvidae","Columbidae","Charadriidae","Anatidae","Alcidae","Accipitridae","Cardinalidae")
+#"Pipridae","Phasianidae",#"Parulidae","Paridae",#"Pachycephalidae","Meliphagidae","Laridae","Icteridae","Hirundinidae","Fringillidae",
+#"Emberizidae","Cuculidae","Corvidae","Columbidae","Charadriidae","Anatidae","Alcidae","Accipitridae","Cardinalidae")
 
 
 
 ## just get metadata
-test = query_xc(qword="Zonotrichia leucophrys",download=F)
+#test = query_xc(qword="area:america",download=F)
+test = query_xc(qword="nr:1",download=F)
 write.table(test,"~/test.txt")
 
-## download a particular species
-path = "~/Documents/OneDrive - The Ohio State University/Song/XenoCanto/Falconiformes/"
-#path = "/Users/kprovost/Documents/XenoCanto/0_DONE/"
-list_of_families=c("Falconidae")
-genera=sample(c("Falco"))
-setwd(path)
-for(family in rev(list_of_families)) {
-  if(!(dir.exists(paste(path,family,sep="/")))) {
-    dir.create(paste(path,family,sep="/"))
-  } 
-  setwd(paste(path,family,sep="/"))
-  print(paste(path,family,sep="/"))
-  #x = query_xc(qword=paste(family,"q:A",sep=" "),download=F)
-  #x = query_xc(qword=paste(family,"q:A type:song area:america",sep=" "),download=F)
-  #genera=sort(unique(x$Genus))
-  print(genera)
-  for(genus in genera) {
-    if(!(dir.exists(paste(path,family,genus,sep="/")))) {
-      dir.create(paste(path,family,genus,sep="/"))
-    }
-    setwd(paste(path,family,genus,sep="/"))
-    print(genus)
-    #try({x = query_xc(qword=paste("gen:",genus," q:A type:song area:america",sep=""),download=T)})
-    #try({x = query_xc(qword=paste("gen:",genus," q:B type:song area:america",sep=""),download=T)})
-    #try({x = query_xc(qword=paste("gen:",genus," type:song area:america",sep=""),download=T)})
-    try({x = query_xc(qword=paste("gen:",genus," type:song area:america",sep=""),download=T)})
-    
-  }
-  #x = query_xc(qword=paste(species,"q:A type:song",sep=" "),download=T)
+df2 = read.table("/Users/kprovost/Documents/song_metadata_edited_7jun2022.txt",header=T,sep="\t")
+df2 = df2[df2$COLLECTION=="XC",]
+df2=df2[,c("ID","LATITUDE","LONGITUDE")]
+df2=df2[complete.cases(df2),]
+summary(df2$ID)
+## 732291 as of 16 jun 2022
+for(i in seq(321849,732291,10000)){
+  #for(i in 83:732291) {
+  #if(!(i %in% unique(df2$ID))){
+  print(paste(i,"/",732291))
+  test2 = query_xc(qword=paste("area:america nr:",i,"-",i+10000,sep=""),download=F)
+  try({test=gtools::smartbind	(test,test2)})
+  #}
 }
+summary(as.numeric(test$Recording_ID))
+test = unique(test)
+write.table(test,"~/xeno_canto_america_update_16Jun2022.txt",sep="\t",quote=F,row.names = F)
 
+
+
+
+
+## do this from a list of species etc
 
 
 

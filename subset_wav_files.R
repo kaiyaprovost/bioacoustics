@@ -2,7 +2,7 @@ library(tuneR)
 
 ## TODO: update so that formatted correctly
 
-mypath="~/Documents/OneDrive - The Ohio State University/Song/BLB_Data/Aves/"
+mypath="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations"
 
 ## look for files with selections and see if they fit the criteria
 metafiles = list.files(path=mypath,
@@ -10,6 +10,7 @@ metafiles = list.files(path=mypath,
 #   file = "/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/batch2/annotated/BLB23326.wav"
 # meta = "/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/batch2/annotated/BLB23326.Table.1.selections.txt"
 metafiles=metafiles[!(grepl("wav_",metafiles))]
+metafiles=metafiles[(grepl("amoena",metafiles))]
 for(meta in metafiles){
   print(meta)
   wavfile = sub(".Table.1.selections.txt",".wav",meta)

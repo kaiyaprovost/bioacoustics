@@ -9,12 +9,14 @@ doCentroid=T
 doMMRR=T
 doGene=F
 doCorr=F
-path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/"
+path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/"
 setwd(path)
 metadf = read.table("/Users/kprovost/Library/CloudStorage/OneDrive-TheOhioStateUniversity/Song/song_metadata.txt",
                     sep="\t",header=T)
 metadf$SUBSPECIES[metadf$SUBSPECIES==""] = "unknown"
 metadf$ID2 = paste(metadf$GENUS,metadf$SPECIES,metadf$SUBSPECIES,metadf$COLLECTION,metadf$ID,sep=".") 
+metadf$ID2 = paste(metadf$GENUS,metadf$SPECIES,#metadf$SUBSPECIES,
+                   metadf$COLLECTION,metadf$ID,sep=".") 
 
 # MMRR performs Multiple Matrix Regression with Randomization analysis
 # Y is a dependent distance matrix
@@ -91,12 +93,14 @@ if(eachFolder==F){
   distdf = as.matrix(distdf)
   
   
-  metadf$ID2 = paste(metadf$COLLECTION,metadf$ID,sep=".") 
+  #metadf$ID2 = paste(metadf$COLLECTION,metadf$ID,sep=".") 
   ## may need to change this to match the filenames 
   row.names(distdf)
   metadf = metadf[metadf$ID2 %in% (row.names(distdf)),]
   metasmall = metadf[,c("ID2","LATITUDE","LONGITUDE")]
   colnames(metasmall) = c("ID","LATITUDE","LONGITUDE")
+  metasmall=metasmall[complete.cases(metasmall),]
+  metasmall=unique(metasmall)
   rownames(metasmall) = metasmall$ID
   metasmall = metasmall[order(as.character(metasmall$ID)),]
   
@@ -182,6 +186,14 @@ if(eachFolder==F){
     abline(mod,col="red")
     summary(mod)
     mod2=lm(data$ClimDist[data$IBD>0]~data$IBD[data$IBD>0])
+    abline(mod2,col="blue")
+    summary(mod2)
+    
+    plot(data$ClimDist,data$IBD)
+    mod=lm(data$IBD~data$ClimDist)
+    abline(mod,col="red")
+    summary(mod)
+    mod2=lm(data$IBD[data$IBD>0]~data$ClimDist[data$IBD>0])
     abline(mod2,col="blue")
     summary(mod2)
   }
@@ -372,9 +384,11 @@ if(eachFolder==F){
   ## interpolate genetic distances over space somehow
   ## assign individual songs to their closest individual sequence 
 } else {
-  matrix_list = list.files(path=path,pattern="mean_centroid_distances_individuals",full.names = T,recursive = T)
+  matrix_list = list.files(path=path,pattern="mean_centroid_distances_",full.names = T,recursive = F)
   matrix_list = matrix_list[!(grepl("tree",matrix_list))]
-  matrix_list = matrix_list[(grepl("genus",matrix_list))] ## genus, withsubspecies, scientific
+  x <- file.info(matrix_list)
+  matrix_list=rownames(x[order(x$size),])
+  #matrix_list = matrix_list[(grepl("genus",matrix_list))] ## genus, withsubspecies, scientific
   for(matrix_file in matrix_list[1:length(matrix_list)]){
     print(matrix_file)
     thispath = dirname(matrix_file)

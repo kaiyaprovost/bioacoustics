@@ -1,7 +1,7 @@
 [PREP]
 audio_format = "wav"
-data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/tricolor/"
-output_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/tricolor/"
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Melospiza/georgiana/B/"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Melospiza/georgiana/B/"
 
 [SPECT_PARAMS]
 fft_size = 512
@@ -18,8 +18,10 @@ num_workers = 1
 models = "TweetyNet"
 majority_vote = false
 batch_size = 11
-output_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/tricolor/"
-csv_path = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/tricolor/tricolor_prep_220517_181103.csv"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Melospiza/georgiana/B/"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Melospiza/georgiana/B/B_prep_220713_143739.csv"
+min_segment_dur = 0.05
+save_net_outputs = false
 
 [TweetyNet.optimizer]
 lr = 0.001

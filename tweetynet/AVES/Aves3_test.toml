@@ -1,7 +1,7 @@
 [PREP]
 audio_format = "wav"
-data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/phoenicus/"
-output_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/phoenicus/"
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Melozone/cabanisi/"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Melozone/cabanisi/"
 
 [SPECT_PARAMS]
 fft_size = 512
@@ -11,15 +11,17 @@ thresh = 6.25
 transform_type = "log_spect"
 
 [PREDICT]
-spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/StandardizeSpect"
-labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/labelmap.json"
-checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/max-val-acc-checkpoint.pt"
-num_workers = 1
-models = "TweetyNet"
-majority_vote = false
 batch_size = 11
-output_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/phoenicus/"
-csv_path = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/FULL/Oscines/Icteridae/Agelaius/phoenicus/phoenicus_prep_220517_181028.csv"
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/max-val-acc-checkpoint.pt"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Melozone/cabanisi/cabanisi_prep_220713_143812.csv"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/labelmap.json"
+majority_vote = false
+min_segment_dur = 0.05
+models = "TweetyNet"
+num_workers = 1
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Melozone/cabanisi/"
+save_net_outputs = false
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/StandardizeSpect"
 
 [TweetyNet.optimizer]
 lr = 0.001

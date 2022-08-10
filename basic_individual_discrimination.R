@@ -1,3 +1,5 @@
+rm(list = ls())
+
 ## really simple r stuff
 
 ## TODO: something is going wrong with the fcts code. its outputting 
@@ -12,17 +14,17 @@
 #outpath = "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Piciformes/Ramphastidae/"
 #path="/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Accipitriformes/Accipitridae/"
 #path=outpath
-outpath = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/"
-path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/"
+outpath = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Ammodramus/maritimus/"
+path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Ammodramus/maritimus/"
 spp_substitute = ""
-parts_of_name_to_keep = 1:5
+parts_of_name_to_keep = 1:4
 setwd(path)
 #date=format(Sys.time(), "%d%b%Y")
-date="MASTER"
+date="qABC"
 
-runSumstat=F ## calcualte summary statistics
+runSumstat=T ## calcualte summary statistics
 runBigpc=T ## calculate a principal components analysis
-runCentroids=F ## calculate centroid locations among individuals
+runCentroids=T ## calculate centroid locations among individuals
 runSyllables=F ## calculate distances between syllanbes 
 generatePlots=F ## make all the plots if files exist
 
@@ -478,6 +480,8 @@ if(runSumstat==T){
   }
   
   big_table = big_table[ , !( colnames( big_table ) %in% c("V1") ) ]
+  big_table = as.data.frame(big_table)
+  colnames(big_table)=gsub('\\"','',colnames(big_table))
   
   ##  convert the ffreq cols to one col
   to_paste=colnames(big_table)[grepl("ffreq-",colnames(big_table))]
@@ -486,7 +490,7 @@ if(runSumstat==T){
   colnames(big_table)[colnames(big_table) %in% c("selec","sound.files","start","end","bottom.freq","top.freq")] = c("Selection","Begin File","Begin Time (s)","End Time (s)", "Low Freq (Hz)", "High Freq (Hz)")
   write.table(big_table,temp_bigtable_file)
   } else {
-    big_table = read.table(temp_bigtable_file)
+    big_table = read.table(temp_bigtable_file,header=T,check.names = F)
   }
   
   
@@ -551,7 +555,7 @@ if(runSumstat==T){
         ## if the data are converted wrong, they will not match 
         
         #print("write")
-        write.table(merged,tempfile,sep="\t",quote=T,row.names = F,append=F)
+        write.table(merged,tempfile,sep="\t",quote=F,row.names = F,append=F)
       }
     }
   }
@@ -952,7 +956,6 @@ if(runCentroids==T){
   write.table(summary(cent_pca)$importance[2,] * t(cent_pca$rotation),paste(outpath,"importance-rotation_table_for_centroid_pca_",date,".txt",sep=""),sep="\t",row.names = F)
   write.table(summary(cent_pca)$importance,paste(outpath,"importance_table_for_centroid_pca_",date,".txt",sep=""),sep="\t",row.names = F)
   
-  
 }
 
 ## compare pairwise syllable-syllable between ind a, ind b 
@@ -1152,9 +1155,9 @@ if(generatePlots==T){
   
   ## generate distance trees for each small matrix
   
-  matrix_files_genus = list.files(path,pattern="_genus_",recursive=T,full.names = T)
+  matrix_files_genus = list.files(path,pattern="_genus_",recursive=F,full.names = T)
   matrix_files_genus = matrix_files_genus[!(grepl("tree",matrix_files_genus))]
-  for(matrix_file in matrix_files_genus){
+  for(matrix_file in rev(matrix_files_genus)){
     print(matrix_file)
     matrix_dist = read.table(matrix_file,header=T)
     ## remove na rows

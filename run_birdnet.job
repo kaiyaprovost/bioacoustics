@@ -1,0 +1,29 @@
+#!/bin/bash
+
+## valid names: checkpoints/V2.1/BirdNET_GLOBAL_2K_V2.1_Labels.txt
+
+#conda create -n birdnet-env python=3.8
+source activate birdnet-env
+#pip3 install tensorflow
+#pip3 install librosa
+#pip3 install pywebview
+
+
+## generate raven labels
+python3 /Users/kprovost/Documents/GitHub/BirdNET-Analyzer/analyze.py \
+--i /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Cardinalidae/Passerina/amoena \
+--o /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Cardinalidae/Passerina/amoena \
+--slist /Users/kprovost/Documents/species_list.txt \
+--sensitivity 1.0 \
+--min_conf 0.1 \
+--overlap 0.0 \
+--rtype 'table' \
+--sf_thresh 0.03
+
+## get embeddings
+python3 /Users/kprovost/Documents/GitHub/BirdNET-Analyzer/embeddings.py \
+--i /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Cardinalidae/Passerina/amoena \
+--o /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Cardinalidae/Passerina/amoena \
+--overlap 0.0 \
+--batchsize 1 \
+--threads 1

@@ -15,7 +15,7 @@ import pandas as pd
 
 # python3 "/Users/kprovost/Documents/GitHub/bioacoustics/tweetynet_output_to_raven.py" "/Users/kprovost/Documents/TweetyNet/testing_wcs/Melozone_fusca_onlytest/Wave_prep_210920_140148.annot.csv"
 
-# for i in /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/*annot.csv; do python3 "/Users/kprovost/Documents/GitHub/bioacoustics/tweetynet_output_to_raven.py" $i 10000 500 0; gzip $i; done;
+# for i in /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/*/*/*/*annot.csv; do python3 "/Users/kprovost/Documents/GitHub/bioacoustics/tweetynet_output_to_raven.py" $i 10000 500 0; gzip $i; done;
 
 try:
 	csvfile = sys.argv[1]

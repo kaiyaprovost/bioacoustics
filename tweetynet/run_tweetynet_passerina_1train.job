@@ -1,0 +1,94 @@
+#!/bin/bash
+
+## command to run this file in terminal
+# sudo launchctl limit maxfiles unlimited unlimited; ## added this to see if stop the file error
+# conda activate vak-env; 
+# sh /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/run_tweetynet_passerina_1train.job
+
+## set flags
+TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S` ## get date and time
+makexml=0 ## make xml files from raven
+comboxml=0 ## make Annotation.xml
+checkpoint=0 ## run train_checkpoint (vs run train)
+runprep=1 ## run the prep step yes/no
+runtrain=0 ## run the train step yes/no
+folder="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Passerina.amoena/"
+
+## one folder for all of the subsetted wav files as well as the Annotation.xml file 
+
+if [ "$checkpoint" == "0" ]; then
+	logfile="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Passerina.amoena/PA_trainlog_$TIMESTAMP.txt"
+else
+	logfile="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Passerina.amoena/PA_trainlog_checkpoint_$TIMESTAMP.txt"
+fi
+echo $logfile
+
+## change this folder as needed
+cd $folder
+
+## 
+export OMP_NUM_THREADS=1; echo "OMP_NUM_THREADS 1" >> $logfile 2>&1; ## tried removing this to see if stop the file error
+#conda activate vak-env
+
+## before running the "prep" steps from scratch, remember to remove the csv_path entries
+if [ "$makexml" == "1" ]; then
+	## create xmls if needed
+	cd $folder
+	for i in *.selections.txt; do
+		python -u /Users/kprovost/Documents/GitHub/bioacoustics/raven2xml.py $i
+	done
+	#mkdir converted
+	#mv *selections.txt ./converted
+fi
+
+if [ "$comboxml" == "1" ]; then
+	## combine xmls if needed
+	python /Users/kprovost/Documents/GitHub/bioacoustics/combine_xmls.py $folder
+fi
+
+if [ "$checkpoint" == "0" ]; then
+	echo "NO TRANSFER" >> $logfile 2>&1
+	if [ "$runprep" == "1" ]; then
+		echo "START TRAIN PREP" >> $logfile 2>&1 ## give both outputs and errors to this file
+		date >> $logfile 2>&1
+		vak prep /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Passerina.amoena_13July2022_train.toml >> $logfile 2>&1
+	else
+		echo "SKIP PREP STEP" >> $logfile 2>&1
+	fi
+	if [ "$runtrain" == "1" ]; then
+		echo "START TRAIN" >> $logfile 2>&1
+		date >> $logfile 2>&1
+		vak train /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Passerina.amoena_13July2022_train.toml >> $logfile 2>&1
+		echo "FINISHED TRAIN" >> $logfile 2>&1
+		date >> $logfile 2>&1
+	else
+		echo "SKIP TRAIN" >> $logfile 2>&1
+		date >> $logfile 2>&1
+	fi
+else
+	echo "TRANSFER, SKIP PREP STEP" >> $logfile 2>&1
+	if [ "$runtrain" == "1" ]; then
+		echo "START TRAIN_CHECKPOINT" >> $logfile 2>&1
+		date >> $logfile 2>&1
+		vak train_checkpoint /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/CC/Passerina.amoena_train_checkpoint_50-0.toml >> $logfile 2>&1 
+		echo "FINISHED TRAIN" >> $logfile 2>&1
+		date >> $logfile 2>&1
+	else
+		echo "SKIP TRAIN" >> $logfile 2>&1
+		date >> $logfile 2>&1
+	fi
+fi
+
+echo "DONE" >> $logfile 2>&1
+date >> $logfile 2>&1
+
+
+
+
+
+
+
+
+
+
+
