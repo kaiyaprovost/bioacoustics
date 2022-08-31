@@ -28,7 +28,7 @@ num_epochs = 10
 patience = 100
 val_step = 400
 root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Passerina.amoena/"
-csv_path = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Passerina.amoena/Wave_prep_220810_130413.csv"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Passerina.amoena/PA_Wave_prep_220811_133846_MASTER.csv"
 
 [TweetyNet.optimizer]
 lr = 0.001

@@ -1,0 +1,37 @@
+[PREP]
+data_dir = "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Cardinalis.cardinalis/Wave"
+output_dir = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/Cardinalis.cardinalis/"
+audio_format = "wav"
+annot_format = "birdsong-recognition-dataset"
+labelset = "1"
+train_dur = 10
+val_dur = 10
+test_dur = 10
+annot_file = "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Cardinalis.cardinalis/Annotation.xml"
+
+[SPECT_PARAMS]
+fft_size = 512
+step_size = 32
+freq_cutoffs = [ 500, 15000,]
+thresh = 6.25
+transform_type = "log_spect"
+
+[DATALOADER]
+window_size = 88
+
+[TRAIN]
+batch_size = 10
+ckpt_step = 200
+models = [ "TweetyNet",]
+normalize_spectrograms = true
+num_epochs = 10
+patience = 100
+root_results_dir = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/Cardinalis.cardinalis/"
+val_step = 400
+csv_path = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/Cardinalis.cardinalis/CC_Wave_prep_211110_171034_MASTER_osc.csv"
+checkpoint_path = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/Cardinalis.cardinalis/results_220811_161944/TweetyNet/checkpoints/max-val-acc-checkpoint.pt"
+labelmap_path = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/Cardinalis.cardinalis/results_220811_161944/labelmap.json"
+spect_scaler_path = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/Cardinalis.cardinalis/results_220811_161944/StandardizeSpect"
+
+[TweetyNet.optimizer]
+lr = 0.001

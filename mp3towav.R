@@ -3,7 +3,7 @@ library(tuneR)
 ## TODO: update so that formatted correctly
 
 #setwd("/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Apodiformes/")
-setwd("/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Cardinalidae/Passerina/cyanea")
+setwd("/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/")
 mp3files = list.files(path=getwd(),
                       pattern="\\.mp3$",full.names = T,recursive=T)
 mp3files=mp3files[!(grepl("WEIRD",mp3files))]
@@ -35,8 +35,8 @@ wavfiles=wavfiles[!(grepl("tweetynet-ed",wavfiles))]
 #wavfiles=wavfiles[grepl("255595",wavfiles)]
 
 #outfile="/Users/kprovost/Documents/BLB.sampling.rates.13may2022.txt"
-for(wav in sort(wavfiles)) {
-  
+for(wav in (sort(wavfiles))) {
+  print(wav)
   try({
     r <- tuneR::readWave(wav,from=0,units="seconds")
     if(r@stereo) {
@@ -44,7 +44,7 @@ for(wav in sort(wavfiles)) {
     }
     #if(r@samp.rate != 48000) {
     if(sound::rate(wav) != 48000) {
-      print(wav)
+      
       #r = sound::loadSample(wav)
       #r <- tuneR::readWave(wav,from=0,units="seconds")
       #print(r)

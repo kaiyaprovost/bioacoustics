@@ -21,7 +21,7 @@ window_size = 88
 
 [EVAL]
 batch_size = 10
-csv_path = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Poecile.carolinensis/PC_Wave_prep_220803_165018_MASTER.csv"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Poecile.carolinensis/PC_Wave_prep_220803_165018_MASTER.csv"
 output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Poecile.carolinensis/"
 device = "cpu"
 models = [ "TweetyNet",]

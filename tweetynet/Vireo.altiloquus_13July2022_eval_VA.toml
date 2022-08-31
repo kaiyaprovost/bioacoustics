@@ -21,7 +21,7 @@ window_size = 88
 
 [EVAL]
 batch_size = 10
-csv_path = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Vireo.altiloquus/VA_Wave_prep_220802_170211.MASTER.csv"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Vireo.altiloquus/VA_Wave_prep_220802_170211.MASTER.csv"
 device = "cpu"
 models = [ "TweetyNet",]
 output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Vireo.altiloquus/"

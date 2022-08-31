@@ -28,7 +28,7 @@ num_epochs = 10
 patience = 100
 val_step = 400
 root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Melozone.fusca/"
-csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Melozone.fusca/MF_Wave_prep_211110_172807_MASTER.csv"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Melozone.fusca/Wave_prep_220819_162243.csv"
 
 [TweetyNet.optimizer]
 lr = 0.001

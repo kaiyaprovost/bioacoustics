@@ -1,0 +1,33 @@
+#!/bin/bash
+#SBATCH --time=100:00:00
+#SBATCH --nodes=1 
+#SBATCH --ntasks-per-node=1 
+#SBATCH --gpus-per-node=0
+#SBATCH --job-name=train9
+#SBATCH --account=PAA0202
+#SBATCH --partition=serial
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=provost.27@osu.edu
+#SBATCH --mem=16G
+
+#slurm starts job in working DIR
+cd $SLURM_SUBMIT_DIR
+
+module load gnu/9.1.0
+module load openmpi/1.10.7
+module load mkl/2019.0.5
+module load R/4.0.2
+module load miniconda3
+
+source activate vak-env
+
+TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S` ## get date and time
+logfile="/users/PYS1065/kprovost/bioacoustics/Finished_Models/9SppBalanced_trainlog_$TIMESTAMP.txt"
+
+cd "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/"
+
+## run vak 
+vak train "/users/PYS1065/kprovost/bioacoustics/tweetynet/9SppBalanced_13July2022_train_osc.toml" >> $logfile 2>&1;
+
+## sbatch "/users/PYS1065/kprovost/bioacoustics/slurm_run_train.job"
+## squeue -u kprovost

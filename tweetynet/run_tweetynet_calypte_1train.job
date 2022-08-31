@@ -51,14 +51,14 @@ if [ "$checkpoint" == "0" ]; then
 	if [ "$runprep" == "1" ]; then
 		echo "START TRAIN PREP" >> $logfile 2>&1 ## give both outputs and errors to this file
 		date >> $logfile 2>&1
-		vak prep /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Calypte.anna_13July2022_train.toml >> $logfile 2>&1
+		vak prep /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Calypte.anna_17August2022_train.toml >> $logfile 2>&1
 	else
 		echo "SKIP PREP STEP" >> $logfile 2>&1
 	fi
 	if [ "$runtrain" == "1" ]; then
 		echo "START TRAIN" >> $logfile 2>&1
 		date >> $logfile 2>&1
-		vak train /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Calypte.anna_13July2022_train.toml >> $logfile 2>&1
+		vak train /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/Calypte.anna_17August2022_train.toml >> $logfile 2>&1
 		echo "FINISHED TRAIN" >> $logfile 2>&1
 		date >> $logfile 2>&1
 	else

@@ -2,7 +2,7 @@
 ## Made by Kaiya L Provost
 ## Last updated 13 January 2021
 ## TODO: 
-# sudo python3 /Users/kprovost/Documents/GitHub/bioacoustics/combine_xmls.py /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Zonotrichia.leucophrys/Wave/; 
+# sudo python3 /Users/kprovost/Documents/GitHub/bioacoustics/combine_xmls.py /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Melo*/Wave/; 
 import sys
 import glob
 import os 

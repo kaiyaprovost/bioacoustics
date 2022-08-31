@@ -1,7 +1,8 @@
 #!/bin/bash
 
 ## command to run this file in terminal
-# conda activate vak-env; sudo launchctl limit maxfiles unlimited unlimited; ## added this to see if stop the file error
+# sudo launchctl limit maxfiles unlimited unlimited; ## added this to see if stop the file error
+# conda activate vak-env; 
 # sh /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/run_tweetynet_cardinalis_1train.job
 
 ## set flags

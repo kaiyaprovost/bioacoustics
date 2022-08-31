@@ -1,4 +1,5 @@
 library(tuneR)
+check_rate = F
 
 ## TODO: update so that formatted correctly
 
@@ -10,21 +11,22 @@ metafiles = list.files(path=mypath,
 #   file = "/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/batch2/annotated/BLB23326.wav"
 # meta = "/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/batch2/annotated/BLB23326.Table.1.selections.txt"
 metafiles=metafiles[!(grepl("wav_",metafiles))]
-metafiles=metafiles[(grepl("amoena",metafiles))]
-for(meta in metafiles){
-  print(meta)
-  wavfile = sub(".Table.1.selections.txt",".wav",meta)
-  if(file.exists(wavfile)) {
-  wav = readWave(wavfile,units = "samples",from=0)
-  samples_per_ms=wav@samp.rate
-  if(samples_per_ms!=48000){
-    print(samples_per_ms)
-    try({R.utils::gzip(wavfile,overwrite=T)})
-  }
+if(check_rate==T){
+  for(meta in metafiles){
+    print(meta)
+    wavfile = sub(".Table.1.selections.txt",".wav",meta)
+    if(file.exists(wavfile)) {
+      wav = readWave(wavfile,units = "samples",from=0)
+      samples_per_ms=wav@samp.rate
+      if(samples_per_ms!=48000){
+        print(samples_per_ms)
+        try({R.utils::gzip(wavfile,overwrite=T)})
+      }
+    }
   }
 }
 
-for(meta in rev(metafiles)) {
+for(meta in (metafiles)) {
   print(meta)
   file = sub(".Table.1.selections.txt",".wav",meta)
   
@@ -80,25 +82,31 @@ for(meta in rev(metafiles)) {
         row[2]=full_duration
         seconds[2]=full_duration/samples_per_ms
       }
-      this_buffer/samples_per_ms ## this is the amount of time between start of recording and start of first annotation
-      
       newfile = paste(file,"_",row[1],"-",row[2],".wav",sep="")
-      writeWave(wav[row[1]:row[2]],newfile,extensible = F)
-
-      
-      ## THIS SUBSET IS NOT WORKING AND I DON'T KNOW WHY   
-      subset_df = df[df[,4]>=seconds[1] & df[,5]<=seconds[2],] ## begin time is col 4, end time is col 5
-      subset_df = subset_df[,1:7]
-      
-      seconds[2]-seconds[1]
-      
-      subset_df[,4] = subset_df[,4]-(seconds[1])
-      subset_df[,5] = subset_df[,5]-(seconds[1])
-      
       newmeta = paste(file,"_",row[1],"-",row[2],".Table.1.selections.txt",sep="")
-      write.table(subset_df,newmeta,quote=F,sep="\t",row.names = F)
+      if(!(file.exists(newmeta))){
+        this_buffer/samples_per_ms ## this is the amount of time between start of recording and start of first annotation
+        
+        
+        writeWave(wav[row[1]:row[2]],newfile,extensible = F)
+        
+        
+        ## THIS SUBSET IS NOT WORKING AND I DON'T KNOW WHY   
+        subset_df = df[df[,4]>=seconds[1] & df[,5]<=seconds[2],] ## begin time is col 4, end time is col 5
+        subset_df = subset_df[,1:7]
+        
+        seconds[2]-seconds[1]
+        
+        subset_df[,4] = subset_df[,4]-(seconds[1])
+        subset_df[,5] = subset_df[,5]-(seconds[1])
+        
+        
+        write.table(subset_df,newmeta,quote=F,sep="\t",row.names = F)
+      } else {print("SKIPPING")}
+      
+      
       
     }
   }
 }
-
+beepr::beep(sound = 3)

@@ -29,9 +29,9 @@ patience = 100
 root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.cardinalis/"
 val_step = 400
 csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.cardinalis/CC_Wave_prep_211110_171034_MASTER.csv"
-checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.cardinalis/results_220726_105626/TweetyNet/checkpoints/max-val-acc-checkpoint.pt"
-labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.cardinalis/results_220726_105626/labelmap.json"
-spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.cardinalis/results_220726_105626/StandardizeSpect"
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.cardinalis/results_220811_161944/TweetyNet/checkpoints/max-val-acc-checkpoint.pt"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.cardinalis/results_220811_161944/labelmap.json"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.cardinalis/results_220811_161944/StandardizeSpect"
 
 [TweetyNet.optimizer]
 lr = 0.001

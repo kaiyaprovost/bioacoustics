@@ -21,14 +21,14 @@ window_size = 88
 
 [EVAL]
 batch_size = 10
-checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Calypte.anna/CA_100Ckpt_400_results_220715_130154/TweetyNet/checkpoints/max-val-acc-checkpoint.pt"
 csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Calypte.anna/CA_Wave_prep_211110_170103_MASTER.csv"
 device = "cpu"
-labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Calypte.anna/CA_100Ckpt_400_results_220715_130154/labelmap.json"
 models = [ "TweetyNet",]
 num_workers = 1
 output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Calypte.anna/"
-spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Calypte.anna/CA_100Ckpt_400_results_220715_130154/StandardizeSpect"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Calypte.anna/results_220810_111100/StandardizeSpect"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Calypte.anna/results_220810_111100/labelmap.json"
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Calypte.anna/results_220810_111100/TweetyNet/checkpoints/max-val-acc-checkpoint.pt"
 
 [TweetyNet.optimizer]
 lr = 0.001

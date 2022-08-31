@@ -1,7 +1,7 @@
 library(SoundShape)
 
 ## align the wavfiles 
-path="~/Documents/Postdoc_Working/JY_Project/Soundshape/"
+path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Poecile.carolinensis/Wave/"
 setwd(path)
 
 # Create temporary folder to store ".wav" files

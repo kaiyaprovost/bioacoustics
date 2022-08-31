@@ -622,7 +622,7 @@ if(do_soundshape==T){
     
   } #end function
   
-  eigensound.custom <- function (analysis.type = threeDshape, wav.at = NULL, store.at = wav.at, 
+  eigensound.custom <- function (analysis.type = "threeDshape", wav.at = NULL, store.at = wav.at, 
                                  dBlevel = 25, flim = c(0, 10), tlim = c(0, 1), trel = tlim, 
                                  x.length = 80, y.length = 60, log.scale = TRUE, back.amp = 35, 
                                  add.points = FALSE, add.contour = TRUE, lwd = 1, EQ = c(0.05,0.15, 0.3, 0.5, 0.7, 0.85, 0.95), mag.time = 1, f = 44100, 
@@ -678,6 +678,7 @@ if(do_soundshape==T){
           
           threeD <- tuneR::readWave(paste(wav.at, "/", file, 
                                           sep = ""))
+          e = NULL
           e <- seewave::spectro(threeD, f = f, wl = wl, ovlp = ovlp, 
                                 flim = flim, tlim = tlim, plot = F)
           freq.seq <- seq(1, length(e$freq), length = y.length)

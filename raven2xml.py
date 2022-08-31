@@ -5,9 +5,10 @@
 ## TODO: audacity, chipper, raven all seem to have different time units 
 
 ## run in terminal: take the "#" off of the beginning first and change the folders 
-# for i in /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Poecile.carolinensis/Wave/*.Table.1.selections.txt; do 
+# for i in /Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Melozone*/Wave/*.Table.1.selections.txt; do 
 # python3 /Users/kprovost/Documents/GitHub/bioacoustics/raven2xml.py "${i}" 48; 
 # done;
+
 
 ## below here is python code
 import sys
@@ -35,7 +36,7 @@ if os.path.exists(output_filepath):
     print("File exists: skipping")
 else:
 
-    add_labels = True
+    add_labels = False
 
 
     with open(infile,"r") as input:
@@ -75,7 +76,7 @@ else:
                 label = 1
             ## onset is the same as position
             length = int(offset)-int(onset)
-            output_string += "\n\t<Note><Position>"+str(onset)+"</Position><Length>"+str(length)+"</Length><Label>"+str(label)+"</Label></Note>"
+            output_string += "\n\t<Note><Position>"+str(onset)+"</Position><Length>"+str(length)+"</Length></Note>"
         
     
 
@@ -91,13 +92,13 @@ else:
     <Sequences><NumSequence>571</NumSequence>
     <Sequence><WaveFileName>0.wav</WaveFileName><Position>32000</Position><Length>43168</Length>
     <NumNote>8</NumNote>
-            <Note><Position>2240</Position><Length>2688</Length><Label>0</Label></Note>
-            <Note><Position>8256</Position><Length>2784</Length><Label>0</Label></Note>
-            <Note><Position>14944</Position><Length>2816</Length><Label>0</Label></Note>
-            <Note><Position>21088</Position><Length>2336</Length><Label>1</Label></Note>
-            <Note><Position>26048</Position><Length>2048</Length><Label>0</Label></Note>
-            <Note><Position>30176</Position><Length>2400</Length><Label>0</Label></Note>
-            <Note><Position>34688</Position><Length>2688</Length><Label>1</Label></Note>
-            <Note><Position>39456</Position><Length>2592</Length><Label>0</Label></Note></Sequence>
+            <Note><Position>2240</Position><Length>2688</Length></Note>
+            <Note><Position>8256</Position><Length>2784</Length></Note>
+            <Note><Position>14944</Position><Length>2816</Length></Note>
+            <Note><Position>21088</Position><Length>2336</Length></Note>
+            <Note><Position>26048</Position><Length>2048</Length></Note>
+            <Note><Position>30176</Position><Length>2400</Length></Note>
+            <Note><Position>34688</Position><Length>2688</Length></Note>
+            <Note><Position>39456</Position><Length>2592</Length></Note></Sequence>
     </Sequences>
     '''
