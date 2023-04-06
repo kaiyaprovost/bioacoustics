@@ -1,0 +1,26 @@
+[PREP]
+audio_format = "wav"
+data_dir = "/users/PYS1065/kprovost/bioacoustics/WAVS/Arremonops.rufivirgatus.verticalis/Wave"
+output_dir = "/users/PYS1065/kprovost/bioacoustics/WAVS/Arremonops.rufivirgatus.verticalis"
+
+[SPECT_PARAMS]
+fft_size = 512
+step_size = 32
+freq_cutoffs = [ 500, 15000,]
+thresh = 6.25
+transform_type = "log_spect"
+
+[PREDICT]
+batch_size = 11
+checkpoint_path = "/users/PYS1065/kprovost/bioacoustics/Performance_FineTune_NoMFZL/max-val-acc-checkpoint.pt"
+labelmap_path = "/users/PYS1065/kprovost/bioacoustics/Performance_FineTune_NoMFZL/labelmap.json"
+majority_vote = false
+min_segment_dur = 0.05
+models = "TweetyNet"
+num_workers = 1
+output_dir = "/users/PYS1065/kprovost/bioacoustics/WAVS/Arremonops.rufivirgatus.verticalis"
+save_net_outputs = false
+spect_scaler_path = "/users/PYS1065/kprovost/bioacoustics/Performance_FineTune_NoMFZL/StandardizeSpect"
+
+[TweetyNet.optimizer]
+lr = 0.001

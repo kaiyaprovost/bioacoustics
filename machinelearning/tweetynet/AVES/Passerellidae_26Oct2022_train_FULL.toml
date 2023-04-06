@@ -1,0 +1,37 @@
+[PREP]
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/MMRR/WAVS/Wave/"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/MMRR/Performance_FineTune_All/"
+audio_format = "wav"
+annot_format = "birdsong-recognition-dataset"
+labelset = "1"
+train_dur = 1
+val_dur = 1
+test_dur = 1
+annot_file = "/Users/kprovost/Documents/Postdoc_Working/MMRR/WAVS/Annotation.xml"
+
+[SPECT_PARAMS]
+fft_size = 512
+step_size = 32
+freq_cutoffs = [ 500, 15000,]
+thresh = 6.25
+transform_type = "log_spect"
+
+[DATALOADER]
+window_size = 88
+
+[TRAIN]
+batch_size = 10
+ckpt_step = 200
+models = [ "TweetyNet",]
+normalize_spectrograms = true
+num_epochs = 10
+patience = 10
+val_step = 400
+root_results_dir = "/Users/kprovost/Documents/Postdoc_Working/MMRR/Performance_FineTune_All/"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/MMRR/9SppBalanced_checkpoints/StandardizeSpect"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/MMRR/9SppBalanced_checkpoints/labelmap.json"
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/MMRR/9SppBalanced_checkpoints/max-val-acc-checkpoint.pt"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/MMRR/WAVS/FULL.csv"
+
+[TweetyNet.optimizer]
+lr = 0.001

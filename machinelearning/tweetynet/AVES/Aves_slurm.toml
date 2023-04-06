@@ -1,0 +1,26 @@
+[PREP]
+audio_format = "wav"
+data_dir = "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Passeriformes/"
+output_dir = "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Passeriformes/"
+
+[SPECT_PARAMS]
+fft_size = 512
+freq_cutoffs = [ 500, 10000,]
+step_size = 64
+thresh = 6.25
+transform_type = "log_spect"
+
+[PREDICT]
+spect_scaler_path = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/StandardizeSpect"
+labelmap_path = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/labelmap.json"
+checkpoint_path = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/5SpeciesBalanced/5SppBalanced_Patience50_Model_results_220107_112909/max-val-acc-checkpoint.pt"
+num_workers = 1
+models = "TweetyNet"
+majority_vote = false
+batch_size = 11
+output_dir = "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Passeriformes/"
+min_segment_dur = 0.05
+save_net_outputs = false
+
+[TweetyNet.optimizer]
+lr = 0.001

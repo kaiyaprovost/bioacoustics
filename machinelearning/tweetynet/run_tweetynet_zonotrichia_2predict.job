@@ -1,0 +1,53 @@
+#!/bin/bash
+
+## command to run this file in terminal
+# conda activate vak-env; sudo launchctl limit maxfiles unlimited unlimited; ## added this to see if stop the file error
+# sh /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/run_tweetynet_zonotrichia_2predict.job
+
+## set flags
+TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S` ## get date and time
+folder="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia.leucophrys/"
+
+TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S`
+folder="/Users/kprovost/Documents/Postdoc_Working/JY_project/"
+
+logfile="/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia.leucophrys/ZL_testlog_$TIMESTAMP.txt"
+echo $logfile
+
+## change this folder as needed
+cd $folder
+
+export OMP_NUM_THREADS=1
+
+## before running the "prep" steps from scratch, remember to remove the csv_path entries
+echo "START TEST PREP" >> $logfile 2>&1
+date >> $logfile 2>&1
+
+vak prep /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/JY_project/Zonotrichia.leucophrys_13July2022_test_ZL.toml >> $logfile 2>&1
+echo "START TEST" >> $logfile 2>&1
+date >> $logfile 2>&1
+vak predict /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/JY_project/Zonotrichia.leucophrys_13July2022_test_ZL.toml >> $logfile 2>&1
+echo "FINISHED TEST" >> $logfile 2>&1
+date >> $logfile 2>&1
+
+
+
+vak train /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/ >> $logfile 2>&1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

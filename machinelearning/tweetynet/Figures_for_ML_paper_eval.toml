@@ -1,0 +1,34 @@
+[PREP]
+annot_file = "/Users/kprovost/Documents/Postdoc_Working/FOR_FIGURES_ONLY/Annotation.xml"
+audio_format = "wav"
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/FOR_FIGURES_ONLY/Wave"
+labelset = "1"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/FOR_FIGURES_ONLY"
+test_dur = 10
+train_dur = 10
+val_dur = 10
+annot_format = "koumura"
+
+[SPECT_PARAMS]
+fft_size = 512
+freq_cutoffs = [ 500, 10000,]
+step_size = 32
+thresh = 6.25
+transform_type = "log_spect"
+
+[DATALOADER]
+window_size = 88
+
+[EVAL]
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/max-val-acc-checkpoint.pt"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/labelmap.json"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Zonotrichia_leucophrys/ZL_Patience5_Model_results_211116_111859/StandardizeSpect"
+batch_size = 11
+device = "cpu"
+models = "TweetyNet"
+num_workers = 4
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/FOR_FIGURES_ONLY"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/FOR_FIGURES_ONLY/Wave_prep_220203_161754.csv"
+
+[TweetyNet.optimizer]
+lr = 0.001

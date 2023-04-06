@@ -1,0 +1,58 @@
+#!/bin/bash
+
+## set flags
+
+## conda activate vak-env; sh /Users/kprovost/Documents/TweetyNet/testing_wcs/JOBFILES_TOMLFILES/run_tweetynet_zonotrichia_2predict.job
+
+
+TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S`
+checkpoint=0
+runeval=0
+folder="/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/"
+
+if [ "$checkpoint" == "0" ]; then
+logfile="/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/Zonotrichia_leucophrys_testlog_$TIMESTAMP.txt"
+else
+logfile="/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/Zonotrichia_leucophrys_testlog_Multiple_$TIMESTAMP.txt"
+fi
+echo $logfile
+
+## change this folder as needed
+cd $folder
+
+export OMP_NUM_THREADS=1
+#conda activate vak-env
+
+if [ "$runeval" == "1" ]; then
+echo "START EVAL" >> $logfile 2>&1
+date >> $logfile 2>&1
+if [ "$checkpoint" == "0" ]; then
+echo "NO TRANSFER" >> $logfile 2>&1
+vak eval /Users/kprovost/Documents/TweetyNet/testing_wcs/JOBFILES_TOMLFILES/Zonotrichia_leucophrys/Zonotrichia_leucophrys_eval.toml >> $logfile 2>&1
+else
+echo "TRANSFER" >> $logfile 2>&1
+vak eval /Users/kprovost/Documents/TweetyNet/testing_wcs/JOBFILES_TOMLFILES/Zonotrichia_leucophrys/Zonotrichia_leucophrys_eval_Multiple.toml >> $logfile 2>&1 
+fi
+fi
+
+## before running the "prep" steps from scratch, remember to remove the csv_path entries
+
+echo "START TEST PREP" >> $logfile 2>&1
+date >> $logfile 2>&1
+
+if [ "$checkpoint" == "0" ]; then
+echo "NO TRANSFER" >> $logfile 2>&1
+vak prep /Users/kprovost/Documents/TweetyNet/testing_wcs/JOBFILES_TOMLFILES/Zonotrichia_leucophrys/Zonotrichia_leucophrys_test.toml >> $logfile 2>&1
+echo "START TEST" >> $logfile 2>&1
+date >> $logfile 2>&1
+vak predict /Users/kprovost/Documents/TweetyNet/testing_wcs/JOBFILES_TOMLFILES/Zonotrichia_leucophrys/Zonotrichia_leucophrys_test.toml >> $logfile 2>&1
+else
+echo "TRANSFER" >> $logfile 2>&1
+vak prep /Users/kprovost/Documents/TweetyNet/testing_wcs/JOBFILES_TOMLFILES/Zonotrichia_leucophrys/Zonotrichia_leucophrys_test_Multiple.toml >> $logfile 2>&1 
+echo "START TEST" >> $logfile 2>&1
+date >> $logfile 2>&1
+vak predict /Users/kprovost/Documents/TweetyNet/testing_wcs/JOBFILES_TOMLFILES/Zonotrichia_leucophrys/Zonotrichia_leucophrys_test_Multiple.toml >> $logfile 2>&1 
+fi
+
+echo "FINISHED TEST" >> $logfile 2>&1
+date >> $logfile 2>&1

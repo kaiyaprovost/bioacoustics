@@ -1,0 +1,30 @@
+[PREP]
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Cardinalis.sinuatus/Wave"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.sinuatus/"
+audio_format = "wav"
+
+[SPECT_PARAMS]
+fft_size = 512
+step_size = 32
+freq_cutoffs = [ 500, 15000,]
+thresh = 6.25
+transform_type = "log_spect"
+
+[DATALOADER]
+window_size = 88
+
+[PREDICT]
+batch_size = 1
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.sinuatus/results_220811_112545_DEBUG/TweetyNet/checkpoints/max-val-acc-checkpoint.pt"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.sinuatus/Wave_prep_220913_171424.csv"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.sinuatus/results_220811_112545_DEBUG/labelmap.json"
+majority_vote = false
+min_segment_dur = 0.02
+models = [ "TweetyNet",]
+num_workers = 1
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.sinuatus/"
+save_net_outputs = true
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.sinuatus/results_220811_112545_DEBUG/StandardizeSpect"
+
+[TweetyNet.optimizer]
+lr = 0.001

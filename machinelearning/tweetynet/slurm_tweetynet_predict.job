@@ -1,0 +1,60 @@
+#!/bin/bash
+#SBATCH --time=4:00:00
+#SBATCH --nodes=1 
+#SBATCH --ntasks-per-node=1 
+#SBATCH --gpus-per-node=0
+#SBATCH --job-name=vak.Passerella.unalaschcensis
+#SBATCH --mem=36GB
+#SBATCH --account=PAA0202
+#SBATCH --partition=serial
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=provost.27@osu.edu
+
+cd $SLURM_SUBMIT_DIR
+
+module load gnu/9.1.0
+module load openmpi/1.10.7
+module load mkl/2019.0.5
+module load R/4.0.2
+module load miniconda3
+
+source activate vak-env
+
+## ammodramus, contronyx
+
+cd "/users/PYS1065/kprovost/bioacoustics/WAVS/"
+for i in Zonotrichia.leucophrys.unknown*/; do 
+echo; echo $i;
+cd $i;
+gunzip -fv *wav.gz
+mkdir ./Wave/
+mv *wav /users/PYS1065/kprovost/bioacoustics/WAVS/${i%/}/Wave/;
+echo; echo "python 1"
+python /users/PYS1065/kprovost/bioacoustics/make_toml_file.py /users/PYS1065/kprovost/bioacoustics/Passerellidae_26Oct2022_predict_9SppB_OSC_TEMPLATE.toml /users/PYS1065/kprovost/bioacoustics/WAVS/${i%/};
+echo; echo "prep 1"
+vak prep /users/PYS1065/kprovost/bioacoustics/Passerellidae_26Oct2022_predict_9SppB_OSC_${i%/}.toml
+echo; echo "predict 1"
+vak predict /users/PYS1065/kprovost/bioacoustics/Passerellidae_26Oct2022_predict_9SppB_OSC_${i%/}.toml
+rm ./Wave/spec*/*npz;
+echo; echo "python 2"
+python /users/PYS1065/kprovost/bioacoustics/make_toml_file.py /users/PYS1065/kprovost/bioacoustics/Passerellidae_26Oct2022_predict_Full_OSC_TEMPLATE.toml /users/PYS1065/kprovost/bioacoustics/WAVS/${i%/};
+echo; echo "prep 2"
+vak prep /users/PYS1065/kprovost/bioacoustics/Passerellidae_26Oct2022_predict_Full_OSC_${i%/}.toml
+echo; echo "predict 2"
+vak predict /users/PYS1065/kprovost/bioacoustics/Passerellidae_26Oct2022_predict_Full_OSC_${i%/}.toml
+rm ./Wave/spec*/*npz;
+echo; echo "python 3"
+python /users/PYS1065/kprovost/bioacoustics/make_toml_file.py /users/PYS1065/kprovost/bioacoustics/Passerellidae_26Oct2022_predict_FullNoMF_OSC_TEMPLATE.toml /users/PYS1065/kprovost/bioacoustics/WAVS/${i%/};
+echo; echo "prep 3"
+vak prep /users/PYS1065/kprovost/bioacoustics/Passerellidae_26Oct2022_predict_FullNoMF_OSC_${i%/}.toml
+echo; echo "predict 3"
+vak predict /users/PYS1065/kprovost/bioacoustics/Passerellidae_26Oct2022_predict_FullNoMF_OSC_${i%/}.toml
+rm ./Wave/spec*/*npz;
+mv ./Wave/*wav /users/PYS1065/kprovost/bioacoustics/WAVS/$i;
+gzip -fv *wav
+cd "/users/PYS1065/kprovost/bioacoustics/WAVS/";
+done;
+
+
+## sbatch "/users/PYS1065/kprovost/bioacoustics/slurm_tweetynet_predict.job"
+## squeue -u kprovost

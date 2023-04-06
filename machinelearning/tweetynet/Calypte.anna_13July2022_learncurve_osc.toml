@@ -1,0 +1,37 @@
+[PREP]
+data_dir = "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Calypte.anna/Wave"
+output_dir = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/Calypte.anna/"
+audio_format = "wav"
+annot_format = "birdsong-recognition-dataset"
+labelset = "1"
+train_dur = 10
+val_dur = 10
+test_dur = 10
+annot_file = "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Calypte.anna/Annotation.xml"
+
+[SPECT_PARAMS]
+fft_size = 512
+step_size = 32
+freq_cutoffs = [ 500, 15000,]
+thresh = 6.25
+transform_type = "log_spect"
+
+[DATALOADER]
+window_size = 88
+
+[LEARNCURVE]
+batch_size = 10
+ckpt_step = 400
+csv_path = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/Calypte.anna/CA_Wave_prep_211110_170103_MASTER_osc.csv"
+models = [ "TweetyNet",]
+normalize_spectrograms = true
+num_epochs = 10
+num_replicates = 10
+num_workers = 1
+patience = 5
+root_results_dir = "/users/PYS1065/kprovost/bioacoustics/Finished_Models/Calypte.anna/"
+train_set_durs = [ 50, 100, 150, 200 ]
+val_step = 400
+
+[TweetyNet.optimizer]
+lr = 0.001

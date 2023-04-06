@@ -1,0 +1,25 @@
+[PREP]
+audio_format = "wav"
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/FOR_FIGURES_ONLY"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/FOR_FIGURES_ONLY"
+
+[SPECT_PARAMS]
+fft_size = 512
+freq_cutoffs = [ 500, 10000,]
+step_size = 64
+thresh = 6.25
+transform_type = "log_spect"
+
+[PREDICT]
+batch_size = 11
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalancedMF/5SpeciesBalancedMF_Patience5_results_220107_125529/max-val-acc-checkpoint.pt"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalancedMF/5SpeciesBalancedMF_Patience5_results_220107_125529/labelmap.json"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/5SpeciesBalancedMF/5SpeciesBalancedMF_Patience5_results_220107_125529/StandardizeSpect"
+majority_vote = false
+models = "TweetyNet"
+num_workers = 4
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/FOR_FIGURES_ONLY"
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/FOR_FIGURES_ONLY/FOR_FIGURES_ONLY_prep_220203_153121.csv"
+
+[TweetyNet.optimizer]
+lr = 0.001

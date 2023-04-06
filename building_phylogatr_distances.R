@@ -1,7 +1,7 @@
 ## TO DO: fix color scheme on mean/stdv plots. output mean/stdev plots 
 
 library(pegas)
-library(raster)
+#library(raster)
 library(tidyr)
 library(gstat)
 
@@ -11,7 +11,6 @@ njtree=F
 outputraster=F
 diversity=F
 relative_diversity=T
-relative_diversity_positive=T
 
 occ = read.table("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/Birds-phylogatr-results_7dec2020/ALLONEFILE/master_occurrence.txt",
                  header=T,sep="\t")
@@ -21,20 +20,11 @@ occ$pop = paste(occ$accession,occ$gbif_id,sep="_")
 cols=colorRampPalette(RColorBrewer::brewer.pal(9,"Blues"))
 
 
-
-
 background = raster::raster("/Users/kprovost/OneDrive - The Ohio State University/raw_bbs_data/bio1/bio1.bil")
 bg = background 
 bg[!(is.na(bg))] = 0
-writeRaster(bg,"/Users/kprovost/OneDrive - The Ohio State University/blank_worldclim_.asc",format="ascii")
 
-#bg=raster::aggregate(bg,40)
-#writeRaster(bg,"/Users/kprovost/OneDrive - The Ohio State University/blank_worldclim_agg40.asc",format="ascii")
-
-bg=raster::aggregate(bg,100)
-writeRaster(bg,"/Users/kprovost/OneDrive - The Ohio State University/blank_worldclim_agg100.asc",format="ascii")
-bg = raster("/Users/kprovost/OneDrive - The Ohio State University/blank_worldclim_agg100.asc")
-
+bg=raster::aggregate(bg,40)
 # plot(bg)
 
 bg_all = bg
@@ -260,53 +250,37 @@ for(fasta in fasta_files[1:length(fasta_files)]) {
     
     splitfasta = (strsplit(basename(fasta),"-")[[1]])
     species=paste(splitfasta[1:2],collapse="-")
-    gene=paste(splitfasta[3:length(splitfasta)],sep="",collapse="")
-    gene=strsplit(gene,"\\.")[[1]][1]
+    gene=strsplit(splitfasta[3],"\\.")[[1]][1]
     
     full_nucdiv = all_nuc_div$NUCLEOTIDE_DIVERSITY[all_nuc_div$SCIENTIFIC==species & all_nuc_div$GENE==gene]
     cells=zono$cells
-    #difference_raster = bg
-    #difference_raster[!(is.na(difference_raster))] = NA
-    #relative_raster = bg
-    #relative_raster[!(is.na(relative_raster))] = NA
-    proportion_raster = bg
-    proportion_raster[!(is.na(proportion_raster))] = NA
+    difference_raster = bg
+    difference_raster[!(is.na(difference_raster))] = NA
+    relative_raster = bg
+    relative_raster[!(is.na(relative_raster))] = NA
     for(cell in sort(unique(cells))) {
-      #print(cell)
-      ## include and exclude that cell
-      #accs_exc = zono$pop[zono$cells!=cell]
-      accs_inc = zono$pop[zono$cells==cell]
-      #accs_exc = accs_exc[complete.cases(accs_exc)]
-      accs_inc = accs_inc[complete.cases(accs_inc)]
-      #newdiv_exc = nuc.div(data[accs_exc,],variance=F,pairwise.deletion = T)
-      newdiv_inc = nuc.div(data[accs_inc,],variance=F,pairwise.deletion = T)
-      #difference = newdiv_exc-full_nucdiv
-      #relativedifference = difference/(newdiv_exc+full_nucdiv)
-      #difference_raster[cell] = difference
-      #relative_raster[cell] = relativedifference
+      ## exclude that cell
+      accs = zono$pop[zono$cells!=cell]
+      accs = accs[complete.cases(accs)]
+      newdiv = nuc.div(data[accs,],variance=F,pairwise.deletion = T)
+      difference = newdiv-full_nucdiv
+      relativedifference = difference/(newdiv+full_nucdiv)
+      difference_raster[cell] = difference
+      relative_raster[cell] = relativedifference
       
-      proportion = newdiv_inc/full_nucdiv
-      proportion_raster[cell] = proportion
     }
     
-    #raster::writeRaster(difference_raster,paste(fasta,"_nucdiv_difference.asc",sep=""),
-    #                    format="ascii",overwrite=T)
-    #raster::writeRaster(relative_raster,paste(fasta,"_nucdiv_relative_difference.asc",sep=""),
-    #                    format="ascii",overwrite=T)
-    raster::writeRaster(proportion_raster,paste(fasta,"_nucdiv_proportion.asc",sep=""),
+    raster::writeRaster(difference_raster,paste(fasta,"_nucdiv_difference.asc",sep=""),
+                        format="ascii",overwrite=T)
+    raster::writeRaster(relative_raster,paste(fasta,"_nucdiv_relative_difference.asc",sep=""),
                         format="ascii",overwrite=T)
     
-    
-    
-    
   }
-  
-
   
 }
 
 ## get the ascii files in a stack
-genes = c("AK1", "ATP6", "ATP8", "BRM", "CHD","CHDW","CHDZ", "COII", "COIII", 
+genes = c("AK1", "ATP6", "ATP8", "BRM", "CHD", "COII", "COIII", 
           "DRD4", "EEF2", "ENO1", "FGB", "G3PDH", "GAPDH", "GH1", "GRIN1", "HBA", 
           "HBA1", "HBA2", "HBB", "HBBA", "HBD", "LDHA", "LMNA", "MC1R",
           "MUSK", 
@@ -314,7 +288,7 @@ genes = c("AK1", "ATP6", "ATP8", "BRM", "CHD","CHDW","CHDZ", "COII", "COIII",
           "ND3", "ND4", "ND5", "ND6", "OD",
           "ODC", "ODC1", "PCK1", "PEPCK", "RHO", "RI2", "SERT", "SLC30A5", 
           "TGFB2", "VLDL9R","ND2","CYTB","COI")
-filetype = "proportion" ## can be nucdiv, nucdiv_difference, numhaplo, nucdiv_relative_difference, proportion
+filetype = "nucdiv_difference" ## can be nucdiv, nucdiv_difference, numhaplo, nucdiv_relative_difference
 ascii_files = list.files(path=folder,pattern=paste(filetype,".asc$",sep=""),full.names = T,recursive = T)
 
 ## for NUCDIV only
@@ -395,45 +369,34 @@ dev.off()
 
 ## looking at change in pi when remove a value? 
 ## this works for both the difference and relative difference
-## will also work for proportion?
 for(gene in c("COI")) {
   print(gene)
   ascii_subset = ascii_files[grepl(gene,ascii_files)]
   print(length(ascii_subset))
   
   if(length(ascii_subset)>0){
+    stack = raster::stack(ascii_subset)
+    raster::writeRaster(stack,filename=paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_rasters.tif",sep=""),
+                        format="GTiff",overwrite=T)
     
-    if(file.exists(paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_rasters.tif",sep=""))) {
-      stack = raster(paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_rasters.tif",sep=""))
-    } else {
-      stack = raster::stack(ascii_subset)
-      raster::writeRaster(stack,filename=paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_rasters.tif",sep=""),
-                          format="GTiff",overwrite=T)
-    }
-
     print("means")
-    if(file.exists(paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_MEAN.asc",sep=""))) {
-      means=raster(paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_MEAN.asc",sep=""))
-    } else {
-      means = raster::calc(stack,fun=function(x){mean(x,na.rm=T)})
-      raster::writeRaster(means,filename=paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_MEAN.asc",sep=""),
-                          format="ascii",overwrite=T)
-    }
+    means = raster::calc(stack,fun=function(x){mean(x,na.rm=T)})
+    raster::writeRaster(means,filename=paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_MEAN.asc",sep=""),
+                        format="ascii",overwrite=T)
     print("sds")
-    if(file.exists(paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_STDEV.asc",sep=""))) {
-      sds=raster(paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_STDEV.asc",sep=""))
-    } else {
-      sds = raster::calc(stack,fun=function(x){sd(x,na.rm=T)})
-      raster::writeRaster(sds,filename=paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_STDEV.asc",sep=""),
-                          format="ascii",overwrite=T)
-    }
+    sds = raster::calc(stack,fun=function(x){sd(x,na.rm=T)})
+    raster::writeRaster(sds,filename=paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_STDEV.asc",sep=""),
+                        format="ascii",overwrite=T)
     
     pdf(paste("/Users/kprovost/OneDrive - The Ohio State University/Phylogatr_Data/",gene,"_",filetype,"_rasters.pdf",sep=""))
     plot(bg,col="pink",colNA="grey",main=paste("means, N =",length(ascii_subset)),legend=F)
-    plot(means,col=cols(100),add=T,zlim=c(0,1))
+    plot(means,col=cols(100),add=T,zlim=c(-1,1))
     plot(bg,col="pink",colNA="grey",main=paste("sdvs, N =",length(ascii_subset)),legend=F)
     plot(sds,col=cols(100),add=T)
     dev.off()
   } 
 }
+
+
+
 

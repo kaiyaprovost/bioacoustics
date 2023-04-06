@@ -1,0 +1,24 @@
+[PREP]
+data_dir = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/Wave"
+output_dir = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train"
+audio_format = "wav"
+
+[SPECT_PARAMS]
+fft_size = 512
+step_size = 64
+freq_cutoffs = [ 500, 10000,]
+thresh = 6.25
+transform_type = "log_spect"
+
+[PREDICT]
+checkpoint_path = "/Users/kprovost/Documents/TweetyNet/FINISHED_MODELS_BY_SPECIES/Zonotrichia_leucophrys/210602_142402_Zonotrichia_leucophrys_notransfer/max-val-acc-checkpoint.pt"
+labelmap_path = "/Users/kprovost/Documents/TweetyNet/FINISHED_MODELS_BY_SPECIES/Zonotrichia_leucophrys/210602_142402_Zonotrichia_leucophrys_notransfer/labelmap.json"
+models = "TweetyNet"
+batch_size = 11
+num_workers = 4
+spect_scaler_path = "/Users/kprovost/Documents/TweetyNet/FINISHED_MODELS_BY_SPECIES/Zonotrichia_leucophrys/210602_142402_Zonotrichia_leucophrys_notransfer/StandardizeSpect"
+output_dir = "/Users/kprovost/Documents/TweetyNet/testing_wcs/Zonotrichia_leucophrys_train/Predictions"
+majority_vote = false
+
+[TweetyNet.optimizer]
+lr = 0.001

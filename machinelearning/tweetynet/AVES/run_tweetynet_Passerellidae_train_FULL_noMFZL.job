@@ -1,0 +1,33 @@
+#!/bin/bash
+
+## command to run this file in terminal
+# sudo launchctl limit maxfiles unlimited unlimited; ## added this to see if stop the file error
+# conda activate vak-env; 
+# sh /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/AVES/run_tweetynet_Passerellidae_train_FULL_noMFZL.job
+
+## set flags
+TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S` ## get date and time
+folder="/Users/kprovost/Documents/Postdoc_Working/MMRR/Performance_FineTune_NoMFZL/"
+
+## one folder for all of the subsetted wav files as well as the Annotation.xml file 
+
+logfile="Passerellidae_FULL_noMFZL_trainlog_$TIMESTAMP.txt"
+echo $logfile
+## change this folder as needed
+cd $folder
+echo "START TRAIN" >> $logfile 2>&1
+date >> $logfile 2>&1
+vak train /Users/kprovost/Documents/GitHub/bioacoustics/tweetynet/AVES/Passerellidae_26Oct2022_train_FULL_noMFZL.toml >> $logfile 2>&1
+echo "DONE" >> $logfile 2>&1
+date >> $logfile 2>&1
+
+
+
+
+
+
+
+
+
+
+

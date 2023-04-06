@@ -1,0 +1,34 @@
+[PREP]
+data_dir = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/9SppBalanced/"
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/9SppBalanced/"
+audio_format = "wav"
+annot_format = "birdsong-recognition-dataset"
+labelset = "1"
+train_dur = 10
+val_dur = 10
+test_dur = 10
+annot_file = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/9SppBalanced//Annotation.xml"
+
+[SPECT_PARAMS]
+fft_size = 512
+freq_cutoffs = [ 500, 15000,]
+step_size = 32
+thresh = 6.25
+transform_type = "log_spect"
+
+[DATALOADER]
+window_size = 88
+
+[EVAL]
+batch_size = 10
+csv_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/9SppBalanced/9SppBalanced_prep_220822_133718_MASTER.csv"
+device = "cpu"
+models = [ "TweetyNet",]
+num_workers = 1
+output_dir = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/9SppBalanced/"
+checkpoint_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.sinuatus/results_220811_112545/TweetyNet/checkpoints/max-val-acc-checkpoint.pt"
+labelmap_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.sinuatus/results_220811_112545/labelmap.json"
+spect_scaler_path = "/Users/kprovost/Documents/Postdoc_Working/Finished_Models/Cardinalis.sinuatus/results_220811_112545/StandardizeSpect"
+
+[TweetyNet.optimizer]
+lr = 0.001
