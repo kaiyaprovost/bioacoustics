@@ -558,6 +558,41 @@ t.test(cowbird_urban_song$cropland[cowbird_urban_song$COUNTY=="Franklin"],
 boxplot(cowbird_urban_song$Prop.PC1~cowbird_urban_song$MONTH_COLLECTED)
 
 
+## MAPS
+library(raster)
+shp=raster::shapefile("/Users/kprovost/Downloads/cb_2016_us_state_500k/cb_2016_us_state_500k.shp")
+plot(shp,xlim=c(-85,-80),ylim=c(38,42))
+cowbird_song =read.table("/Users/kprovost/Downloads/combined_cowbird_metadata_shape_properties.txt",
+                         header=T)
+points(cowbird_song$Long,cowbird_song$Lat)
+
+wcdata = getData("worldclim",download=T,res=10,var="bio")
+
+
+
+png(filename="/Users/kprovost/Downloads/climate_and_cowbird_ohio_map.png",
+    width=600,height=600)
+plot(wcdata[[1]],xlim=c(-85,-80),ylim=c(38,42)) 
+## we can change this to the urbanization data if we want
+plot(shp,xlim=c(-85,-80),ylim=c(38,42),add=T,col="grey") 
+points(cowbird_song$Long,cowbird_song$Lat,col="red")
+dev.off()
+
+#stack_1940 = raster::raster("~/Desktop/stack_1940AD.tif")
+stack_1940 = raster::stack("~/Desktop/stack_1940AD.tif")
+stack_2017 = raster::stack("~/Desktop/stack_2017AD.tif")
+plot(stack_1940[[1]],xlim=c(-85,-80),ylim=c(38,42)) 
+
+## panels
+par(mfrow=c(2,2))
+plot(stack_1940[[1]],xlim=c(-85,-80),ylim=c(38,42),main="cropland, 1940AD") 
+plot(stack_1940[[2]],xlim=c(-85,-80),ylim=c(38,42),main="grazing, 1940AD") 
+#plot(stack_1940[[3]],xlim=c(-85,-80),ylim=c(38,42),main="rice irrigation, 1940AD") 
+plot(stack_1940[[4]],xlim=c(-85,-80),ylim=c(38,42),main="census population, 1940AD") 
+#plot(stack_1940[[5]],xlim=c(-85,-80),ylim=c(38,42),main="total irrigation, 1940AD") 
+plot(stack_1940[[6]],xlim=c(-85,-80),ylim=c(38,42),main="urban occupancy, 1940AD") 
+
+
 ## kaiya doing some stuff that Kristen does not have to do 
 {
 ## 25 shape PCAs to get over 50%
@@ -620,3 +655,6 @@ id=1322
 small = shape_prop_pca_small[shape_prop_pca_small$ID==id,]
 plot(small$Shp.PC1,small$Shp.PC2)
 }
+
+
+

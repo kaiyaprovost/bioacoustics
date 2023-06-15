@@ -1,21 +1,23 @@
-# Rscript "/Users/kprovost/Documents/GitHub/bioacoustics/mmrr_redo.R" "Pipilo"
+# Rscript "/Users/kprovost/Documents/GitHub/bioacoustics/mmrr_redo.R" "Zonotrichia.txt"
 
-rm(list=ls())
+#rm(list=ls())
+#Rprof("~/Rprof.out")
 args = commandArgs(trailingOnly=TRUE)
 do_mmrr = T
-doX2 = F
-nperm=1000
+doX1=F
+doX2=F
+doX3=T
+pcaOnly=F
+group_to_pick_for_mmrr="Passerellidae.qA.txt"
+nperm=100
+print(paste("START SCRIPT",format(Sys.time(), "%a %b %d %X %Y")))
 
 ## import command line values or default to own species
-if (length(args)<=0) {
-  group_to_pick_for_mmrr=".txt"
-  pcaOnly=F
-} else if (length(args)==1) {
+if (length(args)==1) {
   group_to_pick_for_mmrr=args[1]
-  pcaOnly=F
 } else {
   group_to_pick_for_mmrr=args[1]
-  pcaOnly=T
+  nperm=as.numeric(args[2])
 }
 
 if(do_mmrr==F){
@@ -274,12 +276,15 @@ if(do_mmrr==F){
   
   ## loop over the response df list while doing mmrr on the predictor df list 
   
-  MMRR<-function(Y,X,nperm=1000,center=T,scale=T){
+  MMRRoriginal<-function(Y,X,nperm=1000,center=T,scale=T,verbose=T,tempout="~/temp_mmrr_out.txt"){
     #compute regression coefficients and test statistics
     nrowsY<-nrow(Y)
+    if(verbose==T){print(paste("unfold",format(Sys.time(), "%a %b %d %X %Y")))}
     y<-unfold(Y,center=center,scale=scale) 
     if(is.null(names(X)))names(X)<-paste("X",1:length(X),sep="")
+    if(verbose==T){print(paste("xmats",format(Sys.time(), "%a %b %d %X %Y")))}
     Xmats<-sapply(X,FUN=function(x){unfold(x,center=center,scale=scale)})
+    if(verbose==T){print(paste("fit",format(Sys.time(), "%a %b %d %X %Y")))}
     fit<-lm(y~Xmats)
     coeffs<-fit$coefficients
     summ<-summary(fit)
@@ -290,9 +295,10 @@ if(do_mmrr==F){
     Fstat<-summ$fstatistic[1]
     tprob<-rep(1,length(tstat))
     Fprob<-1
-    
+    if(verbose==T){print(paste("start nperm",format(Sys.time(), "%a %b %d %X %Y")))}
     #perform permutations
     for(i in 1:nperm){
+      #if(verbose==T){print(paste(i,nperm))}
       rand<-sample(1:nrowsY)
       Yperm<-Y[rand,rand]
       yperm<-unfold(Yperm)
@@ -300,11 +306,13 @@ if(do_mmrr==F){
       summ<-summary(fit)
       Fprob<-Fprob+as.numeric(summ$fstatistic[1]>=Fstat)
       tprob<-tprob+as.numeric(abs(summ$coefficients[,"t value"])>=abs(tstat))
+      temp = cbind(i,nperm,Fprob,tprob,format(Sys.time(), "%a %b %d %X %Y"))
+      write.table(temp,file=tempout,append=T,quote=F,sep="\t",row.names=F)
     }
-    
+    if(verbose==T){print(paste("out",format(Sys.time(), "%a %b %d %X %Y")))}
     #return values
-    tp<-tprob/(nperm+1)
-    Fp<-Fprob/(nperm+1)
+    tp<-tprob/(as.numeric(nperm)+1)
+    Fp<-Fprob/(as.numeric(nperm)+1)
     names(r.squared)<-"r.squared"
     names(coeffs)<-c("Intercept",names(X))
     names(tstat)<-paste(c("Intercept",names(X)),"(t)",sep="")
@@ -322,14 +330,84 @@ if(do_mmrr==F){
                 Conf=confint))
   }
   
-  unfold<-function(X,center=T,scale=T){
+  MMRR<-function(Y,X,nperm=1000,center=T,scale=T,verbose=T,tempout="~/temp_mmrr_out.txt"){
+    #compute regression coefficients and test statistics
+    nrowsY<-nrow(Y)
+    if(verbose==T){print(paste("unfold",format(Sys.time(), "%a %b %d %X %Y")))}
+    y<-unfold(Y,center=center,scale=scale) 
+    if(is.null(names(X)))names(X)<-paste("X",1:length(X),sep="")
+    if(verbose==T){print(paste("xmats",format(Sys.time(), "%a %b %d %X %Y")))}
+    Xmats<-sapply(X,FUN=function(x){unfold(x,center=center,scale=scale)})
+    if(verbose==T){print(paste("fit",format(Sys.time(), "%a %b %d %X %Y")))}
+    fit<-lm(y~Xmats)
+    coeffs<-fit$coefficients
+    summ<-summary(fit)
+    r.squared<-summ$r.squared
+    confint = confint(fit)
+    
+    tstat<-summ$coefficients[,"t value"]
+    Fstat<-summ$fstatistic[1]
+    tprob<-rep(1,length(tstat))
+    Fprob<-1
+    if(verbose==T){print(paste("start nperm",format(Sys.time(), "%a %b %d %X %Y")))}
+    #perform permutations
+    
+    FtDFlist=lapply(1:nperm,FUN=function(x){
+      if(verbose==T){print(paste(x,"/",nperm,format(Sys.time(), "%a %b %d %X %Y")))}
+      rand<-sample(1:nrowsY)
+      Yperm<-Y[rand,rand]
+      yperm<-unfold(Yperm)
+      fit<-lm(yperm~Xmats)
+      summ<-summary(fit)
+      Fprob_i = as.numeric(summ$fstatistic[1]>=Fstat)
+      tprob_i = as.numeric(abs(summ$coefficients[,"t value"])>=abs(tstat))
+      return(c(Fprob_i,tprob_i))
+    })
+    ## first of FtDF is F, rest of FtDF is t
+    FtDF = do.call(rbind,FtDFlist)
+    FtDFsum = colSums(FtDF)
+    Fprob = Fprob+FtDFsum[1]
+    tprob = tprob+FtDFsum[-1]
+    if(verbose==T){print(paste("out",format(Sys.time(), "%a %b %d %X %Y")))}
+    #return values
+    tp<-tprob/(as.numeric(nperm)+1)
+    Fp<-Fprob/(as.numeric(nperm)+1)
+    names(r.squared)<-"r.squared"
+    names(coeffs)<-c("Intercept",names(X))
+    names(tstat)<-paste(c("Intercept",names(X)),".t",sep="")
+    names(tp)<-paste(c("Intercept",names(X)),".p",sep="")
+    names(Fstat)<-"F.statistic"
+    names(Fp)<-"F.p"
+    names(tprob)<-paste(c("Intercept",names(X)),".p.raw",sep="")
+    names(Fprob)<-"F.p.raw"
+    #names(confint)<-"Confidence interval"
+    
+    return(list(r.squared=r.squared,
+                coefficients=coeffs,
+                tstatistic=tstat,
+                tpvalue=tp,
+                Fstatistic=Fstat,
+                Fpvalue=Fp,
+                Conf=confint,
+                Fprob=Fprob,
+                tprob=tprob))
+  }
+  
+  
+  unfoldoriginal<-function(X,center=T,scale=T){
     # unfold converts the lower diagonal elements of a matrix into a vector
     # unfold is called by MMRR
     x<-vector()
+    ## this line is copying x every time it needs to
     for(i in 2:nrow(X)) x<-c(x,X[i,1:i-1])
     x = unlist(x)
     x<-scale(x, center=center, scale=scale)  # Comment this line out if you wish to perform the analysis without standardizing the distance matrices! 
     return(x)
+  }
+  
+  unfold = function(Y,center=T,scale=T) {
+    y = Y[lower.tri(Y)]
+    y = scale(y,center=center,scale=scale)
   }
   
   
@@ -385,6 +463,7 @@ if(do_mmrr==F){
     Fpval = mmrr$Fpvalue
     confmat = c(mmrr$Conf)
     confnames = c()
+
     for(j in 1:ncol(mmrr$Conf)){
       for(i in 1:nrow(mmrr$Conf)){
         row_i = rownames(mmrr$Conf)[i]
@@ -394,35 +473,42 @@ if(do_mmrr==F){
       }
     }
     names(confmat) = confnames
-    newmmrr=rbind(c(rsq,coeff,tstat,tpval,Fstat,Fpval,confmat))
+    Fprob=mmrr$Fprob
+    tprob=mmrr$tprob
+    newmmrr=rbind(c(rsq,coeff,tstat,tpval,Fstat,Fpval,confmat,Fprob,tprob))
     return(newmmrr)
   }
   
   ## need to  loop over Y and  need to loop over X combinations
   run_mmrr_full_1spp = function(predictor_df_list,response_df_list,nperm=1000,
-                                outfile="/Users/kprovost/Documents/Postdoc_Working/mmrr_results_31Mar2023.txt"){
+                                outfile="/Users/kprovost/Documents/Postdoc_Working/mmrr_results_1May2023.txt"){
     numX=length(predictor_df_list)
     numY=length(response_df_list)
     for(resp_i in 1:numY){
       #for(resp_i in 1:numY){
       Y=response_df_list[[resp_i]]
-      for(pred_j1 in 1:numX){
-        print(paste(resp_i,pred_j1))
-        X_1 = predictor_df_list[pred_j1]
-        ## mmrr with just one variable
-        try({
-          mmrr1=run_mmrr_set(Y=Y,X=X_1,nperm=nperm)
-          mmrr1f=format_mmrr(mmrr1) 
-          rownames(mmrr1f) = paste(names(response_df_list)[resp_i],
-                                   names(predictor_df_list[pred_j1]),
-                                   nperm)
-          data.table::fwrite(as.data.frame(mmrr1f),paste(outfile,"_",group_to_pick_for_mmrr,"_X1.txt",sep=""),quote=F,sep="\t",append=T,row.names = T,col.names=T)
-        })
-        ## mmrr with two variables because we don't have all day
-        if(doX2==T){
-          for(pred_j2 in (pred_j1+1):numX){
+      if(doX1==T){
+        for(pred_j1 in 1:numX){
+          print(paste(resp_i,pred_j1))
+          X_1 = predictor_df_list[pred_j1]
+          ## mmrr with just one variable
+          try({
+            mmrr1=run_mmrr_set(Y=Y,X=X_1,nperm=nperm)
+            mmrr1f=format_mmrr(mmrr1) 
+            rownames(mmrr1f) = paste(names(response_df_list)[resp_i],
+                                     names(predictor_df_list[pred_j1]),
+                                     nperm)
+            data.table::fwrite(as.data.frame(mmrr1f),paste(outfile,"_",group_to_pick_for_mmrr,"_X1.txt",sep=""),quote=F,sep="\t",append=T,row.names = T,col.names=T)
+          })
+        }
+      }
+      ## mmrr with two variables because we don't have all day
+      if(doX2==T){
+        for(pred_j1 in 1:numX){
+          #X_1 = predictor_df_list[pred_j1]
+          for(pred_j2 in 1:numX){
             print(paste(resp_i,pred_j1,pred_j2))
-            if(pred_j1!=pred_j2 & pred_j2 <= numX){
+            if(pred_j1<pred_j2){
               
               X_2 = predictor_df_list[c(pred_j1,pred_j2)]
               try({
@@ -438,14 +524,40 @@ if(do_mmrr==F){
           }
         }
       }
+      
+      if(doX3==T){
+        for(pred_j1 in 1:numX){
+          for(pred_j2 in 1:numX){
+            for(pred_j3 in 1:numX){
+              
+              if(pred_j1<pred_j2 & pred_j1<pred_j3 & pred_j2<pred_j3){
+                print(paste(resp_i,pred_j1,pred_j2,pred_j3))
+                X_3 = predictor_df_list[c(pred_j1,pred_j2,pred_j3)]
+                try({
+                  mmrr3=run_mmrr_set(Y=Y,X=X_3,nperm=nperm)
+                  mmrr3f=format_mmrr(mmrr3)
+                  rownames(mmrr3f) = paste(names(response_df_list)[resp_i],
+                                           names(predictor_df_list)[pred_j1],
+                                           names(predictor_df_list)[pred_j2],
+                                           names(predictor_df_list)[pred_j3],
+                                           nperm)
+                  data.table::fwrite(as.data.frame(mmrr3f),paste(outfile,"_",group_to_pick_for_mmrr,"_X3.txt",sep=""),quote=F,sep="\t",append=T,row.names = T,col.names=T)
+                })
+              }
+            }
+          }
+        }
+      }
+      
     }
-    
   }
+  
+  
   
   ## get list of species 
   
   path="/Users/kprovost/Documents/Postdoc_Working/"
-  pattern="df_pca_env_ll_EDITED_29Mar2023_"
+  pattern="df_pca_env_ll_EDITED_"
   dist_files = list.files(path=path,pattern=pattern,
                           full.names =T)
   dist_files = dist_files[grepl("dist",dist_files)]
@@ -509,3 +621,5 @@ if(do_mmrr==F){
     generate_mmrr_species(dist_files,this_species=spp,nperm)
   }
 }
+#summaryRprof()
+#Rprof(NULL)

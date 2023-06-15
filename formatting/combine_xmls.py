@@ -2,7 +2,7 @@
 ## Made by Kaiya L Provost
 ## Last updated 13 January 2021
 ## TODO: 
-# sudo python3 /Users/kprovost/Documents/GitHub/bioacoustics/combine_xmls.py /Users/kprovost/Documents/Postdoc_Working/MMRR/WAVS/; 
+# sudo python3 /Users/kprovost/Documents/GitHub/bioacoustics/formatting/combine_xmls.py /Users/kprovost/Documents/Postdoc_Working/Halkin/Wave/; 
 import sys
 import glob
 import os 

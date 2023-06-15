@@ -22,12 +22,12 @@ module load miniconda3
 source activate vak-env
 
 TIMESTAMP=`date +%Y-%m-%d_%H-%M-%S` ## get date and time
-logfile="/users/PYS1065/kprovost/bioacoustics/Finished_Models/9SppBalanced_trainlog_$TIMESTAMP.txt"
+logfile="/users/PYS1065/kprovost/bioacoustics/ZL2023_trainlog_cpt61.100.6_$TIMESTAMP.txt"
 
-cd "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/"
+cd "/users/PYS1065/kprovost/bioacoustics/"
 
 ## run vak 
-vak train "/users/PYS1065/kprovost/bioacoustics/tweetynet/9SppBalanced_13July2022_train_osc.toml" >> $logfile 2>&1;
+vak train "/users/PYS1065/kprovost/bioacoustics/Zonotrichia.leucophrys.2023.train.SLURM.toml" >> $logfile 2>&1;
 
 ## sbatch "/users/PYS1065/kprovost/bioacoustics/slurm_run_train.job"
 ## squeue -u kprovost

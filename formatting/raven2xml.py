@@ -5,8 +5,11 @@
 ## TODO: audacity, chipper, raven all seem to have different time units 
 
 ## run in terminal: take the "#" off of the beginning first and change the folders 
-# for i in /Users/kprovost/Documents/Postdoc_Working/MMRR/WAVS/SUBSETS/Zon*leu*unk*.Table.1.selections.txt; do 
-# python3 /Users/kprovost/Documents/GitHub/bioacoustics/raven2xml.py "${i}" 48; 
+# for i in /Users/kprovost/Documents/Postdoc_Working/JY_project/2023_Zonotrichia_Model/*.Table.1.selections.txt; do 
+# python3 /Users/kprovost/Documents/GitHub/bioacoustics/formatting/raven2xml.py "${i}" 48; 
+# done;
+# for i in /Users/kprovost/Documents/Postdoc_Working/Halkin/*.Table.1.selections.txt; do 
+# python3 /Users/kprovost/Documents/GitHub/bioacoustics/formatting/raven2xml.py "${i}" 44.1; 
 # done;
 
 
@@ -25,7 +28,7 @@ except:
     #infile="/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/BLB11543.Table.1.selections.txt"
     
 try:
-    samples_per_ms = int(sys.argv[2])
+    samples_per_ms = float(sys.argv[2])
     print("\tSamples per ms is:",samples_per_ms)
 except:
     print("\tSamples per ms not given or invalid. Defaulting to 48 (or 48000 / second)")
@@ -36,7 +39,7 @@ if os.path.exists(output_filepath):
     print("File exists: skipping")
 else:
 
-    add_labels = False
+    add_labels = True
 
 
     with open(infile,"r") as input:
@@ -69,6 +72,7 @@ else:
             ## need to subtract the first_onset and then convert to samples not seconds
             onset = int(round((float(split[3]) - float(first_onset))*1000*samples_per_ms))
             offset = int(round((float(split[4]) - float(first_onset))*1000*samples_per_ms))
+            #print("len split"+str(len(split)))
             if len(split) > 7 and add_labels == True:
                 label = split[-1] ## this means an annotation was manually set
             else:
@@ -76,13 +80,14 @@ else:
                 label = 1
             ## onset is the same as position
             length = int(offset)-int(onset)
-            output_string += "\n\t<Note><Position>"+str(onset)+"</Position><Length>"+str(length)+"</Length></Note>"
+            #output_string += "\n\t<Note><Position>"+str(onset)+"</Position><Length>"+str(length)+"</Length></Note>"
+            output_string += "\n\t<Note><Position>"+str(onset)+"</Position><Length>"+str(length)+"</Length><Label>"+str(label)+"</Label></Note>"
         
     
 
 
-    output_string += "</Sequence>"
-    output_string += "</Sequences>"
+    output_string += "\n</Sequence>"
+    output_string += "\n</Sequences>"
 
     with open(output_filepath,"w") as output:
         _ = output.write(output_string)
