@@ -50,6 +50,22 @@ for (item in colnames(BLB26.full)) {
   }
 }
 
+## check for correlation
+r = cor(BLB26.full) ## gives you R
+r2 = r^2
+## take ones out that are highly correlated
+## usually we do R2 = 0.75 cutoff
+## check where the maximums are, that aren't the diagonal
+diag(r2) = NA
+r2[r2<0.75] = NA ## this messes up your total correlation
+max(r2,na.rm=T)
+colSums(r2,na.rm=T)
+## check the R
+## convert to R2
+## remove one by one any R2 greater than the cutoff (0.75) -- but not the diagonals
+## remove the variable in the pair that has a higher sum of correlations
+## then do the PCA
+
 ## run our pca
 pca = prcomp(BLB26.full, center = TRUE, scale. = FALSE)
 ## we need to scale this
@@ -532,12 +548,45 @@ barplot(cowbird$cropland)
 barplot(table(cowbird$SEX))
 barplot(table(cowbird$YEAR_COLLECTED))
 
-cowbird_urban=read.table("/Users/kprovost/cowbird_dif_urban.txt")
-cowbird_song =read.table("/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections/combined_cowbird_metadata_shape_properties.txt",
-                         header=T)
+cowbird_urban=read.table("/Users/kprovost/Documents/Cowbird/cowbird data metadata urbanization - Sheet1.csv",header=T,sep=",")
+cowbird_song =read.table("/Users/kprovost/Documents/Cowbird/cowbird raw and sumstats pca data - raw+pca.csv",
+                         header=T,sep=",")
+cowbird_urban = cowbird_urban[,c("BLB_ID","Selection",
+                                 "cropland.old","cropland.new","cropland.dif",
+                                 "grazing.old","grazing.new","grazing.dif",
+                                 "popc.old","popc.new","popc.dif",
+                                 "uopp.old","uopp.new","uopp.dif")]
 
-cowbird_urban_song = merge(cowbird_urban,cowbird_song)
+cowbird_urban_song = merge(cowbird_urban,cowbird_song,all=T)
 head(cowbird_urban_song)
+dim(cowbird_urban_song)
+cowbird_urban_song = cowbird_urban_song[,c("BLB_ID","Selection",
+                                           "cropland.old","cropland.new","cropland.dif",
+                                           "YEAR","MONTH","Long","Lat","COUNTY",
+                                           "Shp.PC1","Shp.PC2","Shp.PC3","Shp.PC4","Shp.PC5",
+                                           "PC1","PC2","PC3")]
+cowbird_urban_song = unique(cowbird_urban_song)
+cowbird_urban_song = cowbird_urban_song[!(is.na(cowbird_urban_song$Selection)),]
+write.table(cowbird_urban_song,"/Users/kprovost/Documents/Cowbird/cowbird_data_for_lms_and_aovs.txt",sep="\t",
+            quote=F,row.names = F)
+
+#mod = aov(cowbird_urban_song$Shp.PC3~cowbird_urban_song$MONTH)
+mod = lm(cowbird_urban_song$Shp.PC3~cowbird_urban_song$Long*cowbird_urban_song$Lat)
+summary(mod)
+
+mod = lm(cowbird_urban_song$Shp.PC5~cowbird_urban_song$Lat+cowbird_urban_song$Long+
+         cowbird_urban_song$cropland.new+cowbird_urban_song$cropland.dif+
+         cowbird_urban_song$YEAR)
+summary(mod)
+
+mod = aov(cowbird_urban_song$PC1~cowbird_urban_song$Lat+cowbird_urban_song$Long+
+           cowbird_urban_song$cropland.new+cowbird_urban_song$cropland.dif+
+           cowbird_urban_song$YEAR+cowbird_urban_song$MONTH+cowbird_urban_song$COUNTY)
+summary(mod)
+
+mod = aov(cowbird_urban_song$cropland.new~cowbird_urban_song$COUNTY)
+summary(mod)
+TukeyHSD(mod)
 
 plot(cowbird_urban_song$cropland,cowbird_urban_song$Prop.PC1,col="red") ## note about what i found
 plot(cowbird_urban_song$cropland,cowbird_urban_song$Prop.PC1,col=as.numeric(as.factor(cowbird_urban_song$SEX))) ## note about what i found
