@@ -1,3 +1,13 @@
+## broken stick function
+brokenstick = function(n) {
+  to_sum = 1/(1:n)
+  sums = sapply(1:n,FUN=function(i){
+    sum(to_sum[i:n])
+  })
+  broken = sums/n
+  return(broken)
+}
+x = brokenstick(1040)
 
 ## generate PCA for biostats
 
@@ -109,7 +119,9 @@ write.table(
   sep = "\t",
   row.names = F
 )
+new_file = "~/Work/Molothrus.ater.combined.Table.1.selections.txt"
 
+big_blb_data = read.table(new_file,sep="\t",header=T)
 
 big_blb_data$Begin.Time..s.
 plot(big_blb_data$Begin.Time..s.)
@@ -156,6 +168,63 @@ badcolumns2 <-
   which(sapply(big_blb_data.full, dplyr::n_distinct) == 1)
 big_blb_data.full <- big_blb_data.full[,-badcolumns2]
 
+## check for highly correlated variables
+big_blb_data.full = big_blb_data.full[,!(colnames(big_blb_data.full) %in% cols_to_remove)]
+r = cor(big_blb_data.full)
+r2 = r^2
+corrplot::corrplot(r2,"ellipse",order="hclust")
+diag(r2) = 0
+r2_thresh = r2
+r2_thresh[r2_thresh<0.75] =0
+#corrplot::corrplot(r2_thresh,"ellipse",order="hclust",diag=F)
+
+colsum=colSums(r2)
+x=lapply(1:ncol(r2_thresh),FUN=function(i){
+  coln = r2_thresh[,i]
+  maxn=round(max(coln,na.rm=T),2)
+  if(maxn!=0){
+    bad = c(colnames(r2_thresh)[i],maxn,":",names(which(coln == maxn)))
+    print(bad)
+    return(bad)
+  }
+})
+which(r2_thresh == max(r2_thresh,na.rm=T))
+
+## list of ones to remove
+cols_to_remove = c("Begin.Clock.Time",
+                   "Begin.Date.Time",
+                   "File.Offset..s.",
+                   "Beg.File.Samp..samples.",
+                   "Begin.Time..s.",
+                   "Begin.Sample..samples.",
+                   "Time.5...s.",
+                   "Time.25...s.",
+                   "Center.Time..s.",
+                   "Max.Time..s.",
+                   "Peak.Time..s.",
+                   "Time.75...s.",
+                   "Time.95...s.",
+                   "End.Sample..samples.",
+                   "End.File.Samp..samples.",
+                   "End.Time..s.",
+                   "End.Clock.Time",
+                   "Length..frames.",
+                   "Sample.Length..samples.",
+                   "Delta.Time..s.",
+                   "Dur.90...s.",
+                   "Dur.50...s.",
+                   "PFC.Min.Slope..Hz.ms.",
+                   "High.Freq..Hz.",
+                   "Low.Freq..Hz.",
+                   "Inband.Power..dB.FS.",
+                   "Peak.Power.Density..dB.FS.Hz.",
+                   "Energy..dB.FS.",
+                   "Freq.25...Hz.",
+                   "Freq.75...Hz.",
+                   "Center.Freq..Hz.",
+                   "Max.Freq..Hz."
+                   )
+
 ## run our pca
 pca2 = prcomp(big_blb_data.full, center = TRUE, scale. = TRUE)
 str(pca2)
@@ -163,6 +232,12 @@ summary(pca2)
 rotation2 = pca2$rotation
 importance2 = summary(pca2)$importance
 data2 = pca2$x
+
+write.table(rotation2,"~/Work/cowbird_rotation_pca_fix_28Nov2023.txt",sep="\t")
+write.table(importance2,"~/Work/cowbird_importance_pca_fix_28Nov2023.txt",sep="\t")
+write.table(pca2$sdev,"~/Work/cowbird_sdev_pca_fix_28Nov2023.txt",sep="\t")
+write.table(pca2$center,"~/Work/cowbird_center_pca_fix_28Nov2023.txt",sep="\t")
+write.table(pca2$scale,"~/Work/cowbird_scale_pca_fix_28Nov2023.txt",sep="\t")
 
 ## oops these need to be dataframes
 data2 = as.data.frame(data2)
@@ -173,9 +248,12 @@ pca_plus_big_data = cbind(big_blb_data.full, data2)
 
 ## note to self: add the full raw data to this as well
 ## merge
+big_blb_data = read.table(new_file,sep="\t",header=T)
 merged_data = merge(big_blb_data, pca_plus_big_data, all = T)
+meta = read.delim("~/Work/cowbird data metadata urbanization - Sheet1.tsv")
+merged_data = merge(meta,merged_data, all = T)
 
-new_file_pca = "/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections/Molothrus.ater.combined.PCA.merged.txt"
+new_file_pca = "~/Work/Molothrus.ater.combined.PCA.merged_nocorrelations_metadata_28Nov2023.txt"
 write.table(
   merged_data,
   new_file_pca,
@@ -592,6 +670,119 @@ plot(stack_1940[[4]],xlim=c(-85,-80),ylim=c(38,42),main="census population, 1940
 #plot(stack_1940[[5]],xlim=c(-85,-80),ylim=c(38,42),main="total irrigation, 1940AD") 
 plot(stack_1940[[6]],xlim=c(-85,-80),ylim=c(38,42),main="urban occupancy, 1940AD") 
 
+
+
+## going to redo some analyses 
+cowbird_data <- read.delim("~/Work/OSU/Molothrus ater/cowbird pca and anthromes data 5Dec2023.txt")
+## lms and aovs
+## make sure correct for latitude
+
+
+m1 = lm(cowbird_data$PC2~cowbird_data$cropland.new*cowbird_data$Lat)
+summary(m1)
+par(mfrow=c(1,2))
+plot(cowbird_data$Lat,cowbird_data$PC2)
+abline(lm(cowbird_data$PC2~cowbird_data$Lat),col="red")
+plot(cowbird_data$cropland.new,cowbird_data$PC2)
+abline(lm(cowbird_data$PC2~cowbird_data$cropland.new),col="red")
+
+par(mfrow=c(1,1))
+plot(cowbird_data$Lat,cowbird_data$cropland.dif)
+
+par(mfrow=c(1,2))
+boxplot(cowbird_data$PC2~cowbird_data$COUNTY)
+boxplot(cowbird_data$PC2~cowbird_data$MONTH)
+
+
+
+sink(file="~/Work/OSU/Molothrus ater/test_aovs.txt")
+for(i in c(1:4,9:18,21:41)) {
+  print(i)
+  print(colnames(cowbird_data)[i])
+  as1=aov(cowbird_data$Shp.PC1~cowbird_data[,i])
+  as2=aov(cowbird_data$Shp.PC2~cowbird_data[,i])
+  as3=aov(cowbird_data$Shp.PC3~cowbird_data[,i])
+  as4=aov(cowbird_data$Shp.PC4~cowbird_data[,i])
+  as5=aov(cowbird_data$Shp.PC5~cowbird_data[,i])
+  ap1=aov(cowbird_data$PC1~cowbird_data[,i])
+  ap2=aov(cowbird_data$PC2~cowbird_data[,i])
+  ap3=aov(cowbird_data$PC3~cowbird_data[,i])
+  print(summary(as1))
+  print(summary(as2))
+  print(summary(as3))
+  print(summary(as4))
+  print(summary(as5))
+  print(summary(ap1))
+  print(summary(ap2))
+  print(summary(ap3))
+}
+sink(file=NULL)
+sink(file="~/Work/OSU/Molothrus ater/test_lms.txt")
+for(i in c(1:4,9:18,21:41)) {
+  print(i)
+  print(colnames(cowbird_data)[i])
+  as1=lm(cowbird_data$Shp.PC1~cowbird_data[,i])
+  as2=lm(cowbird_data$Shp.PC2~cowbird_data[,i])
+  as3=lm(cowbird_data$Shp.PC3~cowbird_data[,i])
+  as4=lm(cowbird_data$Shp.PC4~cowbird_data[,i])
+  as5=lm(cowbird_data$Shp.PC5~cowbird_data[,i])
+  ap1=lm(cowbird_data$PC1~cowbird_data[,i])
+  ap2=lm(cowbird_data$PC2~cowbird_data[,i])
+  ap3=lm(cowbird_data$PC3~cowbird_data[,i])
+  print(summary(as1))
+  print(summary(as2))
+  print(summary(as3))
+  print(summary(as4))
+  print(summary(as5))
+  print(summary(ap1))
+  print(summary(ap2))
+  print(summary(ap3))
+}
+sink(file=NULL)
+sink(file="~/Work/OSU/Molothrus ater/test_aovs_latitude.txt")
+for(i in c(1:4,9:18,21:41)) {
+  print(i)
+  print(colnames(cowbird_data)[i])
+  as1=aov(cowbird_data$Shp.PC1~cowbird_data[,i]+cowbird_data$Lat)
+  as2=aov(cowbird_data$Shp.PC2~cowbird_data[,i]+cowbird_data$Lat)
+  as3=aov(cowbird_data$Shp.PC3~cowbird_data[,i]+cowbird_data$Lat)
+  as4=aov(cowbird_data$Shp.PC4~cowbird_data[,i]+cowbird_data$Lat)
+  as5=aov(cowbird_data$Shp.PC5~cowbird_data[,i]+cowbird_data$Lat)
+  ap1=aov(cowbird_data$PC1~cowbird_data[,i]+cowbird_data$Lat)
+  ap2=aov(cowbird_data$PC2~cowbird_data[,i]+cowbird_data$Lat)
+  ap3=aov(cowbird_data$PC3~cowbird_data[,i]+cowbird_data$Lat)
+  print(summary(as1))
+  print(summary(as2))
+  print(summary(as3))
+  print(summary(as4))
+  print(summary(as5))
+  print(summary(ap1))
+  print(summary(ap2))
+  print(summary(ap3))
+}
+sink(file=NULL)
+sink(file="~/Work/OSU/Molothrus ater/test_lms_latitude.txt")
+for(i in c(1:4,9:18,21:41)) {
+  print(i)
+  print(colnames(cowbird_data)[i])
+  as1=lm(cowbird_data$Shp.PC1~cowbird_data[,i]+cowbird_data$Lat)
+  as2=lm(cowbird_data$Shp.PC2~cowbird_data[,i]+cowbird_data$Lat)
+  as3=lm(cowbird_data$Shp.PC3~cowbird_data[,i]+cowbird_data$Lat)
+  as4=lm(cowbird_data$Shp.PC4~cowbird_data[,i]+cowbird_data$Lat)
+  as5=lm(cowbird_data$Shp.PC5~cowbird_data[,i]+cowbird_data$Lat)
+  ap1=lm(cowbird_data$PC1~cowbird_data[,i]+cowbird_data$Lat)
+  ap2=lm(cowbird_data$PC2~cowbird_data[,i]+cowbird_data$Lat)
+  ap3=lm(cowbird_data$PC3~cowbird_data[,i]+cowbird_data$Lat)
+  print(summary(as1))
+  print(summary(as2))
+  print(summary(as3))
+  print(summary(as4))
+  print(summary(as5))
+  print(summary(ap1))
+  print(summary(ap2))
+  print(summary(ap3))
+}
+sink(file=NULL)
 
 ## kaiya doing some stuff that Kristen does not have to do 
 {
