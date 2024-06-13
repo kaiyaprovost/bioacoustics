@@ -641,6 +641,28 @@ plot(stack_1940[[4]],xlim=c(-85,-80),ylim=c(38,42),main="census population, 1940
 #plot(stack_1940[[5]],xlim=c(-85,-80),ylim=c(38,42),main="total irrigation, 1940AD") 
 plot(stack_1940[[6]],xlim=c(-85,-80),ylim=c(38,42),main="urban occupancy, 1940AD") 
 
+library(raster)
+library(sf)
+library(rgdal)
+r = raster::stack("/Users/kprovost/Documents/Research/Cowbird/cropland.tif")
+r2 = r$X2017AD
+r3 = r$X2017AD-r$X1940AD
+x=read.table("/Users/kprovost/Documents/Research/Cowbird/cowbird data metadata urbanization - Sheet1.csv",header=T,
+             sep=",")
+poly = readOGR("/Users/kprovost/Documents/Research/Cowbird/cb_2016_us_state_500k/cb_2016_us_state_500k.shp")
+library(RColorBrewer)
+display.brewer.all(colorblindFriendly = T)
+par(mfrow=c(1,2),mar=c(2,2,0,4))
+pal1=colorRampPalette(brewer.pal(9,"YlGn"))
+plot(r2,ylim=c(38,42),xlim=c(-85,-80),zlim=c(0,100),
+     col=pal1(100))
+points(x$Long,x$Lat)
+plot(poly,add=T)
+pal2=colorRampPalette(brewer.pal(11,"RdYlBu"))
+plot(r3,ylim=c(38,42),xlim=c(-85,-80),
+     zlim=c(-50,50),col=pal2(100))
+points(x$Long,x$Lat)
+plot(poly,add=T)
 
 ## kaiya doing some stuff that Kristen does not have to do 
 {
