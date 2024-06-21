@@ -13,7 +13,7 @@ getwd()
 setwd("/Users/kprovost/Documents/Chondestes_grammacus/")
 getwd()
 
-test = query_xc(qword="Chondestes grammacus type:song q:A", download = FALSE)
+test = query_xc(qword="Chondestes grammacus type:song q:A", download = T)
 
 write.table(test,"/Users/kprovost/Documents/Chondestes_grammacus/testDownload2.csv",
             sep=",",row.names = FALSE)
