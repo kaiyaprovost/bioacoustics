@@ -161,3 +161,53 @@ boxplot(meansd_df_meta$meanPF ~ meansd_df_meta$State)
 ## make a lat long plot, xy plot
 plot(meansd_df_meta$Longitude,
      meansd_df_meta$Latitude)
+
+
+
+
+## 18 Jun 2024
+## modify the above code to calculate the sum of the number of seconds
+## across each file
+
+## folder that the tables are in
+folder = "~/Documents/Chondestes_grammacus/"
+
+## get a list of all the tables in that folder
+my_files = list.files(path=folder,
+                      pattern="Table.1.selections.txt",
+                      full.names = TRUE)
+
+## for every file with song data in it, calculate the duration of each syllable,
+## and then sum them all 
+## then take the sum of the sums
+
+## initialize my running total of sums
+running_sum = 0 
+
+for (file in my_files) {
+  ## print the name of the file
+  print(paste("My file is:",file))
+  
+  ## read in the file
+  song_df = read.delim(file)
+  
+  ## calculate the duration of each syllable
+  ## duration is the end time minus the start time
+  end_time = song_df$End.Time..s.
+  start_time = song_df$Begin.Time..s.
+  duration = abs(end_time - start_time)
+  
+  ## sum the durations of each syllable
+  my_sum = sum(duration,na.rm=TRUE)
+  
+  ## print my_sum
+  print(paste("My sum is:",my_sum))
+  
+  ## add my_sum to my running_sum 
+  running_sum = my_sum + running_sum
+  
+}
+print(paste("My running sum is:",running_sum))
+
+
+
