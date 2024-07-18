@@ -1,22 +1,38 @@
 library(warbleR)
 
-#code == "i am code, but i don't wanna run
+#code == "i am code, but i don't wanna run right now"
 ## something == "i am a note to the programmer"
 #path = "~/bioacoustics/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/"
 #setwd(path)
 
-?query_xc
+?query_xc ## gives us a help page for this function
 
-lasp_xc_recordings = query_xc(qword="Chondestes grammacus") ## give me all recorded by Passerllidae
+#lasp_xc_recordings = query_xc(qword="Chondestes grammacus") ## give me all recorded by Passerllidae
+#warbleR::query_xc() ## r formatted
+#warbleR.query_xc() python formatting
+
+eaph_xc_recordings <- query_xc(qword = "Sayornis phoebe")
+View(eaph_xc_recordings)
 
 getwd()
-setwd("/Users/kprovost/Documents/Chondestes_grammacus/")
+setwd("/Users/kprovost/Documents/Sayornis_phoebe/")
+#setwd("/Users/kprovost/Documents/Chondestes_grammacus/")
 getwd()
 
-test = query_xc(qword="Chondestes grammacus type:song q:A", download = T)
+test = query_xc(qword = "Sayornis phoebe type:song q:A sex:male",download = TRUE)
+View(test)
+#test = query_xc(qword="Chondestes grammacus type:song q:A", download = T)
+write.csv(x=test, file="/Users/kprovost/Documents/Sayornis_phoebe/testDownload.csv",
+          row.names=FALSE)
+#write.table(test,"/Users/kprovost/Documents/Chondestes_grammacus/testDownload2.csv",
+#            sep=",",row.names = FALSE)
 
-write.table(test,"/Users/kprovost/Documents/Chondestes_grammacus/testDownload2.csv",
-            sep=",",row.names = FALSE)
+
+
+
+
+
+
 
 ## BELOW HERE: messing around with dataframes
 
