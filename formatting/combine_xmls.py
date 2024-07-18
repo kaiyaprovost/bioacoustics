@@ -3,10 +3,12 @@
 ## Last updated 13 January 2021
 ## TODO: 
 # sudo python3 /Users/kprovost/Documents/GitHub/bioacoustics/formatting/combine_xmls.py /Users/kprovost/Documents/Postdoc_Working/Halkin/Wave/; 
+
 import sys
 import glob
 import os 
 import re
+
 try:
     directory = sys.argv[1]
     print("Directory given: ",directory)
@@ -15,27 +17,39 @@ except:
     exit()
     
 os.chdir(directory)
-lines = []
+lines = [] ## generates a blank list to add things to
+
 listfiles = glob.glob("*.xml",recursive=False)
 #listfiles = glob.glob("/**/*.xml",recursive=True)
 numfiles = len(listfiles)
+
+## make sure that all the xml files in the folder are only one line
 for xmlfile in listfiles:
     print(xmlfile)
+    
+    ## read the whole file into python
     with open(xmlfile,"r") as infile:
         full = infile.read()
+        
+    ## remove all of the line breaks from the file
+    ## which makes each xml only one line long
     full = full.replace("\n","")
     with open(xmlfile,"w") as outfile:
         outfile.write(full)
+        
+## loops over the xml files and gets all the lines of the files separately
 for xmlfile in listfiles:
     print(xmlfile)
     with open(xmlfile,"r") as infile:
         lines += infile.readlines()
+
 ## each line of lines should be one file
 ## need to extract the "<Sequences><NumSequence>*</NumSequence>" and remove it, and then remove "</Sequences>"
 total_sequences = 0
 for i in range(len(lines)):
     try:
-        total_sequences += int(lines[i].replace(">","<").split("<")[4]) ## gets the number of the sequences in here. should be one but might not be
+        total_sequences += int(lines[i].replace(">","<").split("<")[4]) 
+        ## gets the number of the sequences in here. should be one but might not be
     except:
         print("ERROR")
         print(i)
