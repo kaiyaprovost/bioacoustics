@@ -54,7 +54,7 @@ else:
     ## each line should have three things separated by tabs: onset, offset, labels
     #Selection    View            Channel    Begin Time (s)    End Time (s)    Low Freq (Hz)    High Freq (Hz)
     #1            Spectrogram 1    1        0.575812500        0.849843750        3508.8            4421.1
-    ## all these seconds need to be multiplied by 1000 and then by samples_per_ms and then rounded to ints 
+    ## all these seconds need to be multiplied by 1000 and then by samples_per_ms and then rounded to integers 
 
     ## to get the longest_length need to process lines[0] and lines[-1]
 
