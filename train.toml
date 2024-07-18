@@ -1,0 +1,33 @@
+[PREP]
+data_dir = "Sounds_and_Annotations/Cardinalis_cardinalis/Wave"
+output_dir = "Finished_Models/Cardinalis_cardinalis/"
+audio_format = "wav"
+annot_format = "koumura"
+labelset = "1"
+train_dur = 10
+val_dur = 10
+test_dur = 10
+annot_file = "Sounds_and_Annotations/Cardinalis_cardinalis/Annotation.xml"
+
+[SPECT_PARAMS]
+fft_size = 512
+step_size = 32
+freq_cutoffs = [ 500, 10000,]
+thresh = 6.25
+transform_type = "log_spect"
+
+[DATALOADER]
+window_size = 88
+
+[TRAIN]
+models = [ "TweetyNet",]
+root_results_dir = "Finished_Models/Cardinalis_cardinalis/"
+batch_size = 3
+num_epochs = 10
+normalize_spectrograms = true
+val_step = 50
+ckpt_step = 200
+patience = 5
+
+[TweetyNet.optimizer]
+lr = 0.001
