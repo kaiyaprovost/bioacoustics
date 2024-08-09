@@ -1,23 +1,16 @@
 library(tuneR)
 check_rate = F
-
-## TODO: update so that formatted correctly
-
-#mypath="/Users/kprovost/Documents/Postdoc_Working/JY_project/Zonotrichia/LEUCOPHRYS/"
-mypath="/Users/kprovost/Documents/Postdoc_Working/Halkin/"
-mypattern = ".Table.1.selections.txt"
-#mypattern = ".selections.MASTER.txt"
-
 seconds_separated = 0.4
 buffer = 0.05
+mypath = "/Users/kprovost/Documents/Tyrannidae/"
+mypattern = ".Table.1.selections.txt"
+
+## TODO: update so that formatted correctly
 
 ## look for files with selections and see if they fit the criteria
 metafiles = list.files(path=mypath,
                        pattern=paste(mypattern,"$",sep=""),recursive = T,full.names = T)
-#   file = "/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/batch2/annotated/BLB23326.wav"
-# meta = "/Users/kprovost/OneDrive - The Ohio State University/BLB_Data/batch2/annotated/BLB23326.Table.1.selections.txt"
 metafiles=metafiles[!(grepl("wav_",metafiles))]
-#metafiles = metafiles[grepl("Junco",metafiles)]
 if(check_rate==T){
   for(meta in metafiles){
     print(meta)
@@ -37,6 +30,8 @@ for(meta in (metafiles)) {
   print(meta)
   file = sub(mypattern,".wav",meta)
   gzfile =  sub(mypattern,".wav.gz",meta)
+  print(file)
+  print(gzfile)
   
   try({
     

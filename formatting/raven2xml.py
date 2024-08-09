@@ -5,11 +5,8 @@
 ## TODO: audacity, chipper, raven all seem to have different time units 
 
 ## run in terminal: take the "#" off of the beginning first and change the folders 
-# for i in /Users/kprovost/Documents/Postdoc_Working/JY_project/2023_Zonotrichia_Model/*.Table.1.selections.txt; do 
+# for i in /Users/kprovost/Documents/Tyrannidae/Wave/*.Table.1.selections.txt; do 
 # python3 /Users/kprovost/Documents/GitHub/bioacoustics/formatting/raven2xml.py "${i}" 48; 
-# done;
-# for i in /Users/kprovost/Documents/Postdoc_Working/Halkin/*.Table.1.selections.txt; do 
-# python3 /Users/kprovost/Documents/GitHub/bioacoustics/formatting/raven2xml.py "${i}" 44.1; 
 # done;
 
 
