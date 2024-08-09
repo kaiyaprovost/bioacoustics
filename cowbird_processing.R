@@ -1,3 +1,108 @@
+## 16 July 2024
+## after first revision
+
+## import the data and metadata we already have
+library(raster)
+df <- read.delim("~/Work/OSU/Molothrus ater/Data/Molothrus.ater.combined.PCA.merged_nocorrelations_metadata_28Nov2023.txt")
+raw_anthromes_folder = "~/Work/OSU/Molothrus ater/Data/anthromes/"
+setwd(raw_anthromes_folder)
+raw_anthromes_files = list.files(path=raw_anthromes_folder,
+                 pattern="AD.tif",full.names = T)
+raw_anthromes_files = raw_anthromes_files[!grepl("stack",raw_anthromes_files)]
+years = c("1940AD","1950AD","1960AD","1970AD","1980AD","1990AD","2000AD")
+
+for(year in years) {
+  print(year)
+  this_year = raw_anthromes_files[grepl(year,raw_anthromes_files)]
+  this_year_stack = raster::stack(this_year)
+  name_this_year = paste("stack_",year,".tif",sep="")
+  try({
+    raster::writeRaster(this_year_stack,name_this_year,overwrite=T,format="GTiff")
+  })
+}
+
+## import the data for each year between 1940 and 2000 from the unique lat-longs
+df_latlong = df[,c("Long","Lat")]
+df_latlong = unique(df_latlong)
+df_latlong = df_latlong[complete.cases(df_latlong),]
+
+
+stack_anthromes_files = list.files(path=raw_anthromes_folder,
+                                   pattern="stack",full.names=T)
+
+for(stack_file in stack_anthromes_files) {
+  this_stack = stack(stack_file)
+  names(this_stack) = c("cropland","grazing","ir_rice","popc","tot_irri","uopp")
+  names(this_stack) = paste(names(this_stack),basename(stack_file),sep=".")
+  cells = cellFromXY(this_stack,df_latlong)
+  new_data = extract(this_stack,cells)
+  df_latlong = cbind(df_latlong,new_data)
+}
+
+df_merged = merge(df,df_latlong,all=T)
+
+write.table(df_merged,"~/Work/OSU/Molothrus ater/Data/Molothrus.ater.combined.PCA.merged_nocorrelations_metadata_16July2024.txt",
+            sep="\t",row.names = F)
+
+## use a general linear mixed model for each principal component that includes 
+## time, urbanization, and their interaction as fixed effects and location as a random effect,
+## This should allow you to assess whether songs change across time and with cropland cover, 
+## while controlling for location. 
+
+## read in the edited version 
+df_edit = read.table("~/Work/OSU/Molothrus ater/Data/Molothrus.ater.combined.PCA.merged_nocorrelations_metadata_16July2024_EDITED.csv",
+                     sep=",",header=T)
+keep_colnames = c("BLB_ID","COUNTY","Lat","Long","YEAR","Shp.PC1","Shp.PC2","Shp.PC3","Shp.PC4",
+                  "Shp.PC5","Prop.PC1","Prop.PC2","Prop.PC3","Prop.PC4","Prop.PC5",
+                  "cropland_year","grazing_year","popc_year","uopp_year")
+
+df_edit = df_edit[,keep_colnames]
+
+library(lme4)
+library(lmerTest)
+prop_pc1_glm = lmer(Prop.PC1~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit)
+prop_pc2_glm = lmer(Prop.PC2~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit) ## singular fit?
+prop_pc3_glm = lmer(Prop.PC3~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit) 
+prop_pc4_glm = lmer(Prop.PC4~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit)
+prop_pc5_glm = lmer(Prop.PC5~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit) 
+summary(prop_pc1_glm)
+summary(prop_pc2_glm)
+summary(prop_pc3_glm)
+summary(prop_pc4_glm)
+summary(prop_pc5_glm)
+
+prop_pc2_glm_A = lmer(Prop.PC2~cropland_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit) ## singular fit?
+summary(prop_pc2_glm_A)
+
+shp_pc1_glm = lmer(Shp.PC1~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit)
+shp_pc2_glm = lmer(Shp.PC2~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit) 
+shp_pc3_glm = lmer(Shp.PC3~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit) 
+shp_pc4_glm = lmer(Shp.PC4~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit)
+shp_pc5_glm = lmer(Shp.PC5~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit) 
+summary(shp_pc1_glm)
+summary(shp_pc2_glm)
+summary(shp_pc3_glm)
+summary(shp_pc4_glm)
+summary(shp_pc5_glm)
+
+
+
+
+
+library(AICcmodavg)
+AICc(prop_pc1_glm)
+
+corx=cor(df_edit[,c("Lat","Long","YEAR","Shp.PC1","Shp.PC2","Shp.PC3","Shp.PC4",
+               "Shp.PC5","Prop.PC1","Prop.PC2","Prop.PC3","Prop.PC4","Prop.PC5",
+               "cropland_year","grazing_year","uopp_year")],
+    use ="everything")
+corrplot::corrplot(corx,method = "number")
+
+
+
+## below is from first submission
+## TODO: clean this up when finished
+
 ## broken stick function
 brokenstick = function(n) {
   to_sum = 1/(1:n)
@@ -848,4 +953,35 @@ plot(small$Shp.PC1,small$Shp.PC2)
 }
 
 
+### code from 2 July 2024
+df <- read.delim("~/Work/OSU/Molothrus ater/Data/combined_cowbird_metadata_shape_properties.txt")
 
+## need to extract the env data
+
+## run a generalized linear mixed model for each pc
+## time*urb + 1|lat + 1|lon + 1|recording
+
+library(raster)
+ras_files = list.files(path="~/Work/OSU/Molothrus ater/Data/anthromes/raw-data/HYDE",
+                       pattern="*.tif$",full.names = T)
+
+for(file in ras_files[6]) {
+  ## iterate over each raster in the folder
+  print(file)
+  r = stack(file)
+  r_names = sub("X","",names(r))
+  
+  ## iterate over each layer
+  for(i in 1:dim(r)[3]){
+    cat(i)
+    ri = r[[i]]
+   
+    ## generate a filename
+    ri_filename = sub("tif",paste(r_names[i],".tif",sep=""),file)
+    
+    ## write out the single layer as its own raster
+   writeRaster(ri,ri_filename,format="GTiff",overwrite=T)
+  }
+}
+## gzip anything with BC in the name?
+#R.utils::gzip()
