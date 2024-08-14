@@ -11,9 +11,9 @@ import pandas as pd
 
 ## to run this code: copy the line below and paste into terminal 
 
-# python3 "/Users/kprovost/Documents/GitHub/bioacoustics/formatting/tweetynet_output_to_raven.py" "/Users/kprovost/Documents/Research/Tyrannidae/predictresults/predicted.annot.csv" 10000 500 0
+# python3 "/Users/kprovost/Documents/GitHub/bioacoustics/formatting/tweetynet_1.0.0_output_to_raven.py" "/Users/kprovost/Documents/Research/Tyrannidae/predictresults/predicted_qualityB.annot.csv" 10000 500 0
 
-# for i in /Users/kprovost/Documents/Postdoc_Working/JY_project/2023_Zonotrichia_Model/PREDICTED/*.annot.csv; do python3 "/Users/kprovost/Documents/GitHub/bioacoustics/formatting/tweetynet_output_to_raven.py" $i 10000 500 0; gzip $i; done;
+# for i in /Users/kprovost/Documents/Research/*/*/*.annot.csv; do python3 "/Users/kprovost/Documents/GitHub/bioacoustics/formatting/tweetynet_1.0.0_output_to_raven.py" $i 10000 500 0; gzip $i; done;
 
 try:
     csvfile = sys.argv[1]
@@ -51,7 +51,7 @@ except:
 annot_base = os.path.basename(csvfile)
 annot_path = os.path.dirname(csvfile)
 
-## header is: label,onset_s,offset_s,onset_Hz,offset_Hz,audio_path,annot_path,sequence,annotation
+## header is: label,onset_s,offset_s,notated_path,annot_path,sequence,annotation
 ## header needs to be: Selection    View    Channel    Begin Time (s)    End Time (s)    Low Freq (Hz)    High Freq (Hz)    Begin File    type
 
 ## view = "Spectrogram"
@@ -61,25 +61,21 @@ annot_path = os.path.dirname(csvfile)
 ## audiopath and annotpath determines file name
 ## annotation = which file it is 
 ## not sure what sequence is 
-## label = type
+## label = annotation
 df = pd.read_csv(csvfile)
 
 df["View"] = "Spectrogram"
 df["Channel"] = "1"
+df["onset_Hz"] = lower_hz
+df["offset_Hz"] = upper_hz
 
-try:
-    df = df.rename(columns={"onset_ind": "onset_Hz", "offset_ind": "offset_Hz"})
-    df.loc[df["onset_Hz"] == "None","onset_Hz"] = lower_hz
-    df.loc[df["offset_Hz"] == "None","offset_Hz"] = upper_hz
-except:
-    df.loc[df["onset_Hz"] == "None","onset_Hz"] = lower_hz
-    df.loc[df["offset_Hz"] == "None","offset_Hz"] = upper_hz
+df = df.rename(columns={"onset_s": "Begin Time (s)", "offset_s": "End Time (s)",
+    "onset_Hz": "Low Freq (Hz)", "offset_Hz": "High Freq (Hz)","notated_path":"Begin File"})
 
-df = df.rename(columns={"label": "type", "onset_s": "Begin Time (s)", "offset_s": "End Time (s)",
-    "onset_Hz": "Low Freq (Hz)", "offset_Hz": "High Freq (Hz)","audio_path":"Begin File"})
+## header needs to be: Selection    View    Channel    Begin Time (s)    End Time (s)    Low Freq (Hz)    High Freq (Hz)    Begin File    annotation
+df = df[["View","Channel","Begin Time (s)","End Time (s)","Low Freq (Hz)","High Freq (Hz)","label","Begin File","annot_path"]]
 
-## header needs to be: Selection    View    Channel    Begin Time (s)    End Time (s)    Low Freq (Hz)    High Freq (Hz)    Begin File    type
-df = df[["View","Channel","Begin Time (s)","End Time (s)","Low Freq (Hz)","High Freq (Hz)","type","Begin File","annot_path"]]
+df = df.rename(columns={"label": "annotation"})
 
 ## need to iterate through each subset by the audiopath
 ## selection = i
@@ -92,7 +88,7 @@ for audio_path in df["Begin File"].unique():
         outfile=annot_path+"/"+audio_path[:-4]+"."+annot_base+".selections.txt"
     else:
         outfile = annot_path+"/"+audio_path[:-4]+".selections.txt"
-    subset = subset[["Selection","View","Channel","Begin Time (s)","End Time (s)","Low Freq (Hz)","High Freq (Hz)","Begin File","type"]]
+    subset = subset[["Selection","View","Channel","Begin Time (s)","End Time (s)","Low Freq (Hz)","High Freq (Hz)","Begin File","annotation"]]
     subset.to_csv(outfile,sep="\t",index=False)
     
     

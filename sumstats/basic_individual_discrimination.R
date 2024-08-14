@@ -1,12 +1,15 @@
-## for i in /Users/kprovost/Documents/Postdoc_Working/MMRR/WAVS/Wave/0STATSDONE/*/Z*.l*.u*/; do echo $i; Rscript /Users/kprovost/Documents/GitHub/bioacoustics/sumstats/basic_individual_discrimination.R "$i"; done;
+# for i in /Users/kprovost/Documents/Research/Tyrannidae/Wave/; 
+# do echo $i; 
+# Rscript /Users/kprovost/Documents/GitHub/bioacoustics/sumstats/basic_individual_discrimination.R "$i"; 
+# done;
 
 rm(list = ls())
 
 args = commandArgs(trailingOnly=TRUE)
 print(length(args))
 if (length(args)<=0) {
-  outpath = "/Users/kprovost/Documents/Postdoc_Working/MMRR/WAVS/Wave/0STATSDONE/"
-  path="/Users/kprovost/Documents/Postdoc_Working/MMRR/WAVS/Wave/0STATSDONE/"
+  outpath = "/Users/kprovost/Documents/Research/Tyrannidae/Wave/"
+  path="/Users/kprovost/Documents/Research/Tyrannidae/Wave/"
 } else {
   outpath = args[1]
   path=args[1]
@@ -30,15 +33,16 @@ spp_substitute = ""
 parts_of_name_to_keep = 1:5
 setwd(path)
 date=format(Sys.time(), "%d%b%Y")
-suffix_pattern=".selections.MASTER.txt"
-centroid_pattern="_COMBINED_7Mar2023.txt.temp"
+suffix_pattern=".selections.txt"
+#suffix_pattern=".selections.MASTER.txt"
+centroid_pattern="_COMBINED_6Aug2024.txt.temp"
 #date="qABC"
 
-runSumstat=F ## calcualte summary statistics
-runBigpc=F ## calculate a principal components analysis
+runSumstat=T ## calcualte summary statistics
+runBigpc=T ## calculate a principal components analysis
 runCentroids=T ## calculate centroid locations among individuals
-runSyllables=F ## calculate distances between syllanbes 
-generatePlots=F ## make all the plots if files exist
+runSyllables=T ## calculate distances between syllanbes 
+generatePlots=T ## make all the plots if files exist
 
 outersect <- function(x, y) {
   sort(c(setdiff(x, y),
@@ -470,8 +474,9 @@ if(runSumstat==T){
   if(!(file.exists(final_bigtable_file))) {
   if(!(file.exists(temp_bigtable_file))){
   
-  generate_sumstats(filenames=metafiles,verbose=T,date=date,import_raven = F,suffix="selections.AVERAGE.txt$")
-  print("DONE WITH MAKING STATS")
+    #generate_sumstats(filenames=metafiles,verbose=T,date=date,import_raven = F,suffix="selections.AVERAGE.txt$")
+    generate_sumstats(filenames=metafiles,verbose=T,date=date,import_raven = F,suffix="selections.txt$")
+    print("DONE WITH MAKING STATS")
   
   ## to get slope of PFCs, subtract the i from i-1 value, multiply by 0.1875 -- i don't know why its this number
   
@@ -1374,5 +1379,5 @@ if(generatePlots==T){
 ## params <- specan(Phae.hisnrt, bp = c(2, 10), threshold = 15)
 
 
-## clustering: cluster within individuuals and then cluster between individuals? 
+## clustering: cluster within individuals and then cluster between individuals? 
 

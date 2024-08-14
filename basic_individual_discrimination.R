@@ -1,5 +1,19 @@
 rm(list = ls())
 
+outpath = "/Users/kprovost/Documents/Research/Tyrannidae/"
+path="/Users/kprovost/Documents/Research/Tyrannidae/"
+spp_substitute = ""
+parts_of_name_to_keep = 1:4
+setwd(path)
+#date=format(Sys.time(), "%d%b%Y")
+date="qABC"
+
+runSumstat=T ## calcualte summary statistics
+runBigpc=F ## calculate a principal components analysis
+runCentroids=F ## calculate centroid locations among individuals
+runSyllables=F ## calculate distances between syllanbes 
+generatePlots=F ## make all the plots if files exist
+
 ## really simple r stuff
 
 ## TODO: something is going wrong with the fcts code. its outputting 
@@ -10,23 +24,6 @@ rm(list = ls())
 ## for now just REAL simple doing length and bandwidth of the boxes
 ## and since boxes might be off this shouldn't be trusted
 ## start with C. cardinalis
-
-#outpath = "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Piciformes/Ramphastidae/"
-#path="/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Accipitriformes/Accipitridae/"
-#path=outpath
-outpath = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Ammodramus/maritimus/"
-path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Ammodramus/maritimus/"
-spp_substitute = ""
-parts_of_name_to_keep = 1:4
-setwd(path)
-#date=format(Sys.time(), "%d%b%Y")
-date="qABC"
-
-runSumstat=T ## calcualte summary statistics
-runBigpc=T ## calculate a principal components analysis
-runCentroids=T ## calculate centroid locations among individuals
-runSyllables=F ## calculate distances between syllanbes 
-generatePlots=F ## make all the plots if files exist
 
 outersect <- function(x, y) {
   sort(c(setdiff(x, y),
