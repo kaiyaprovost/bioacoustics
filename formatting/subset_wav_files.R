@@ -35,8 +35,15 @@ if(check_rate==T){
 
 for(meta in (metafiles)) {
   print(meta)
+<<<<<<< Updated upstream
   file = sub(mypattern,".wav",meta)
   gzfile =  sub(mypattern,".wav.gz",meta)
+=======
+  file = sub(mypattern,".mp3.resample.48000.wav",meta) ## finds the wav file that matches by replacing the suffix
+  gzfile =  sub(mypattern,".mp3.resample.48000.gz",meta)
+  print(file)
+  print(gzfile)
+>>>>>>> Stashed changes
   
   try({
     

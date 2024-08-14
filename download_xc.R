@@ -1,12 +1,18 @@
 library(warbleR)
 
+<<<<<<< Updated upstream
 #code == "i am code, but i don't wanna run right now"
 ## something == "i am a note to the programmer"
 #path = "~/bioacoustics/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/"
 #setwd(path)
+=======
+path = "~/Documents/Research/Tyrannidae/"
+#path = "~/Documents/Research/Chondestes_grammacus/"
+>>>>>>> Stashed changes
 
 ?query_xc ## gives us a help page for this function
 
+<<<<<<< Updated upstream
 #lasp_xc_recordings = query_xc(qword="Chondestes grammacus") ## give me all recorded by Passerllidae
 #warbleR::query_xc() ## r formatted
 #warbleR.query_xc() python formatting
@@ -70,3 +76,27 @@ lasp_small[ lasp_small$Specific_epithet == "grammacus" ,]
 
 lasp_xc_recordings[ lasp_xc_recordings$Subspecies == "strigatus", ]
 
+=======
+test = query_xc("Myiarchus crinitus type:song",download=F)
+write.csv(test,"Myiarchus_crinitus_songs.csv")
+
+test = query_xc("Sayornis phoebe type:song",download=F)
+write.csv(test,"Sayornis_phoebe_song.csv")
+
+test = query_xc("Contopus sordidulus type:song",download=F)
+write.csv(test,"Contopus_sordidulus_songs.csv")
+
+test = query_xc("Contopus virens type:song",download=F)
+write.csv(test,"Contopus_virens_songs.csv")
+
+test = query_xc("Contopus cooperi type:song",download=F)
+write.csv(test,"Contopus_cooperi_songs.csv")
+
+
+
+#eastern phoebe, 
+#eastern wood-pewee, 
+#great crested flycatcher, 
+#olive-sided flycatcher 
+#western wood-pewee
+>>>>>>> Stashed changes

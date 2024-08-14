@@ -2,8 +2,17 @@ library(tuneR)
 
 ## TODO: update so that formatted correctly
 
+<<<<<<< Updated upstream
 ## set our working directory that has the mp3 files in it
 setwd("/Users/kprovost/Documents/Chondestes_grammacus/")
+=======
+setwd("/Users/kprovost/Documents/Research/")
+mp3files = list.files(path=getwd(),
+                      pattern="\\.mp3$",full.names = T,recursive=T)
+## get rid of anything that is "weird" or in the "WEIRD" folder
+mp3files=mp3files[!(grepl("WEIRD",mp3files))]
+mp3files=mp3files[!(grepl("weird",mp3files))]
+>>>>>>> Stashed changes
 
 ## get all the mp3 files in my folder
 ## \\. means it's a real dot, not a wildcard
@@ -53,6 +62,20 @@ for(mp3 in mp3files) {
 wavfiles = list.files(path=getwd(),
                       pattern="\\.wav$",full.names = TRUE,recursive = TRUE)
 
+<<<<<<< Updated upstream
+=======
+## code to check the sample rate
+#y=sapply(wavfiles,FUN=function(wav){
+#  return(sound::rate(wav))
+#})
+# tells you the frequency of each sample rate in your wavfiles
+#sort(table(y))
+
+## the sample rate you are going to convert to after checking the frequencies
+preferred_sample_rate = 48000
+
+## convert and rename the wavfiles to preferred sampling rate 
+>>>>>>> Stashed changes
 for(wav in (sort(wavfiles))) {
   print(wav)
   try({
