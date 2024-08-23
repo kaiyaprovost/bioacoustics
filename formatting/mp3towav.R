@@ -2,7 +2,7 @@ library(tuneR)
 
 ## TODO: update so that formatted correctly
 
-setwd("/Users/kprovost/Documents/Tyrannidae/Contopus-cooperi")
+setwd("/Users/kprovost/Documents/Research/Tyrannidae/ToPredict")
 mp3files = list.files(path=getwd(),
                       pattern="\\.mp3$",full.names = T,recursive=T)
 ## get rid of anything that is "weird" or in the "WEIRD" folder
@@ -18,15 +18,19 @@ for(mp3 in (mp3files)[1:length(mp3files)]) {
     ## wav file does not exist
     print(mp3) ## prints the name of the mp3 file to convert
     try({r <- readMP3(mp3)})  ## read in the MP3 file in working directory
+    try({R.utils::gzip(mp3,overwrite=T)})
     ## convert from stereo to mono, but it is not working well for mp3s for some reason
     #if(r@stereo) {
     #  try({r = mono(r, which = c("both"))}) ## this is making things bad
     #}
     ## write the mp3 file as a wav file with format *mp3.wav
     try({writeWave(r,paste(mp3,".wav",sep=""),extensible=FALSE)})
-  } else {print("skip")} # the wav file already exists, so we skip doing anything
+  } else {
+    print("skip")# the wav file already exists, so we skip doing anything
+    try({R.utils::gzip(mp3,overwrite=T)})
+    } 
   ## gzips the mp3 file to compress it, renaming it to *mp3.gz
-  try({R.utils::gzip(mp3,overwrite=T)})
+  
 }
 
 ## if R breaks we need to do the ones that make it break in audacity
@@ -45,11 +49,12 @@ wavfiles=wavfiles[!(grepl("tweetynet-ed",wavfiles))]
 #wavfiles=wavfiles[grepl("255595",wavfiles)]
 
 ## code to check the sample rate
-#y=sapply(wavfiles[1:5],FUN=function(wav){
-#  return(sound::rate(wav))
-#})
-## tells you the frequency of each sample rate in your wavfiles
-#sort(table(y))
+y=sapply(wavfiles,FUN=function(wav){
+  print(wav)
+ return(sound::rate(wav))
+})
+# tells you the frequency of each sample rate in your wavfiles
+sort(table(y))
 
 ## the sample rate you are going to convert to after checking the frequencies
 preferred_sample_rate = 48000

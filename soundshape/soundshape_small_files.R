@@ -8,13 +8,13 @@ date=format(Sys.time(), "%d%b%Y")
 ## it is at the alignment step that the actual sounds change
 
 ## get the wavfiles 
-path="/Users/kprovost/Documents/Postdoc_Working/MMRR/WAVS/Wave/"
-wav.at = "/Users/kprovost/Documents/Postdoc_Working/SoundShape"
+path="/Users/kprovost/Documents/Research/Ruscitelli_Cowbird/Selections & WAV files/"
+wav.at = "/Users/kprovost/Documents/Research/Ruscitelli_Cowbird/Selections & WAV files/SoundShape/"
 setwd(path)
-wavfiles = list.files(path,".wav$",full.names = T,recursive=T)
+wavfiles = list.files(path,".wav$",full.names = T,recursive=F)
 #wavfiles = wavfiles[grepl("wav_",wavfiles)]
 
-selectionfiles = list.files(path,"selections.AVERAGE.txt$",full.names = T)
+selectionfiles = list.files(path,"selections.txt$",full.names = T)
 #selectionfiles = selectionfiles[grepl("wav_",selectionfiles)]
 
 maxdiflist = 0
@@ -287,7 +287,7 @@ for(j in 1:length(wavfiles)){
   wavfile = wavfiles[j]
   prefix=substr(wavfile,1,nchar(wavfile)-4)
   prefix=basename(prefix)
-  selection = selectionfiles[grepl(prefix,selectionfiles)]
+  selection = selectionfiles[grepl(paste(prefix,"\\.",sep=""),selectionfiles)]
   
   if(length(selection)==1){
     ## do the stuff
@@ -334,7 +334,8 @@ for(j in 1:length(wavfiles)){
 }
 
 ## align the files
-align.wave.custom(wav.at=wav.at, wav.to="Aligned", time.length = maxdiflist,time.perc=0,alignCheckpoint = 190000)
+align.wave.custom(wav.at=wav.at, wav.to="Aligned", time.length = maxdiflist,time.perc=0,alignCheckpoint = 1)
+## align.checkpoint is where it starts
 
 #dBlevel=25, f=48000, wl=512, ovlp=70,
 #overwrite=F,verbose=T,alignCheckpoint=1,zip=T
@@ -347,7 +348,7 @@ eig.sample <- eigensound.custom(analysis.type="threeDshape",
                                 wav.at=file.path(wav.at, "Aligned"),
                                 store.at=store_dir,
                                 TPS.file = "tpsfile",
-                                eigcheckpoint = 15050,
+                                eigcheckpoint = 1,
                                 log.scale = T,
                                 doIndTPS = T,
                                 shuffle=F
@@ -359,12 +360,12 @@ eig.sample <- eigensound.custom(analysis.type="threeDshape",
 ## pca iterations
 
 iter_start=1 ## set to 1
-num_to_keep_per_species = 50
-num_iterations=50
-pcascalemin=50
+num_to_keep_per_species = 2279
+num_iterations=1
+pcascalemin=2279
 pcascale=T
 verbose=T
-pca_to_keep = 3
+pca_to_keep = 5
 dynamic_pca_cutoff=0.5
 tps_path=file.path(wav.at, "TPS_PCA")
 dir.create(tps_path)
@@ -376,11 +377,12 @@ tps.list = list.files(path=store_dir,
                       full.names = F)
 tps.list=tps.list[tps.list!="tpsfile.tps"]
 
-tps.species=sapply(tps.list,FUN=function(y){
-  x=strsplit(as.character(y),"\\.")[[1]]
-  x =  paste(x[1:clusterN],collapse=".")
-  return(x)
-})
+#tps.species=sapply(tps.list,FUN=function(y){
+#  x=strsplit(as.character(y),"\\.")[[1]]
+#  x =  paste(x[1:clusterN],collapse=".")
+#  return(x)
+#})
+tps.species = "Molothrus_ater"
 
 tps.df = cbind(tps.list,tps.species)
 tps.df=as.data.frame(tps.df)
@@ -533,10 +535,28 @@ pca_importances = sapply(importance_files,FUN=function(f){
 pca_importances=as.numeric(pca_importances)
 
 
+## upload the importance and add broken stick
+broken_stick = function(P) {
+  sequence = 1:P
+  divided = 1/sequence
+  seq_sums = sapply(sequence,FUN=function(x){
+    subset = divided[x:P]
+    subset_sum = sum(subset)
+    i = subset_sum/P
+    return(i)
+  })
+  return(seq_sums)
+}
+
+my_shp_pca_imp = read.table("/Users/kprovost/Documents/Research/Ruscitelli_Cowbird/Selections & WAV files/SoundShape/TPS_PCA/old/pca_soundshape.1_importance_SUBSET.21Aug2024.temp",
+                            header=T,sep=" ")
+
+broken = broken_stick(2279)
+
 
 
 iter_files = list.files(path=tps_path,pattern="SCALETRUE")
-outtable="~/test.vols.txt"
+outtable=paste(tps_path,"test.vols.txt",sep="/")
 for(f in iter_files){
   pcaxF = as.data.frame(data.table::fread(file.path(tps_path,f),sep=" "))
   rownames(pcaxF) = pcaxF$V1

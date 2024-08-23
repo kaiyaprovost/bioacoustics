@@ -1,27 +1,32 @@
 library(warbleR)
 
 #path = "~/bioacoustics/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/"
-path = "~/Documents/Tyrannidae/"
+path = "~/Documents/Research/Tyrannidae/ToPredict/"
 
 setwd(path)
 
-test = query_xc("Sayornis phoebe type:song q:A",download=TRUE)
-write.csv(test,"Sayornis_phoebe.csv")
+test = query_xc("Molothrus ater",download=F)
 
-test = query_xc("Contopus sordidulus type:song q:A",download=TRUE)
-write.csv(test,"Contopus_sordidulus.csv")
+#test = query_xc("Sayornis phoebe type:song",download=TRUE)
+#write.csv(test,"Tyrannidae.csv",append = T)
 
-test = query_xc("Contopus virens type:song q:A",download=TRUE)
-write.csv(test,"Contopus_virens.csv")
+#test = query_xc("Contopus sordidulus type:song",download=TRUE)
+#write.csv(test,"Tyrannidae.csv",append = T)
 
-test = query_xc("Contopus cooperi type:song q:A",download=TRUE)
-write.csv(test,"Contopus_cooperi.csv")
+#test = query_xc("Contopus virens type:song",download=TRUE)
+#write.csv(test,"Tyrannidae.csv",append = T)
 
-test = query_xc("Myiarchus crinitus type:song q:A",download=TRUE)
-write.csv(test,"Myiarchus_crinitus.csv")
+#test = query_xc("Contopus cooperi type:song",download=TRUE)
+#write.csv(test,"Tyrannidae.csv",append = T)
 
-eastern phoebe, 
-eastern wood-pewee, 
-great crested flycatcher, 
-olive-sided flycatcher 
-western wood-pewee
+test = query_xc("Myiarchus crinitus type:song",download=TRUE)
+write.csv(test,"Tyrannidae.csv",append = T)
+
+#test = query_xc("Myiarchus crinitus type:song",download=TRUE)
+#write.csv(test,"Myiarchus_crinitus.csv")
+
+#eastern phoebe, 
+#eastern wood-pewee, 
+#great crested flycatcher, 
+#olive-sided flycatcher 
+#western wood-pewee

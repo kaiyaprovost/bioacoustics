@@ -1,5 +1,5 @@
 #df = read.csv("/Users/kprovost/Documents/AVONET Supplementary dataset 1.csv",header=T)
-df = read.csv("/Users/kprovost/Documents/Chondestes_grammacus/LASP_combined_annotations_18July2024.Table.1.selections.txt",sep="\t",header=T)
+df = read.csv("/Users/kprovost/Documents/Research/Tyrannidae/predicted_annotations/rvn.dat_trimmed_spectro_fcts_COMBINED_15Aug2024.txt",sep="\t",header=T)
 
 ## to do a PCA 
 ## you need numeric data only 
@@ -33,11 +33,11 @@ corrplot::corrplot(my_cor <= -0.75,method="color",order="hclust",diag=FALSE)
 ## before we do a PCA on it 
 
 write.table(x=my_cor,
-            file="/Users/kprovost/Documents/Chondestes_grammacus/correlations_to_remove.csv",
+            file="/Users/kprovost/Documents/Research/Tyrannidae/predicted_annotations/correlations_to_remove.csv",
             sep=",")
 
 ## these are the columns i kept after removing correlations of 0.75 and above
-good_columns = c("Agg.Entropy..bits.","Avg.Entropy..bits.","Avg.Power.Density..dB.FS.Hz.","BW.50...Hz.","BW.90...Hz.","Center.Time.Rel.","Delta.Freq..Hz.","Delta.Time..s.","Dur.50...s.","Dur.90...s.","Energy..dB.FS.","Freq.95...Hz.","Inband.Power..dB.FS.","Length..frames.","Max.Entropy..bits.","Min.Entropy..bits.","Peak.Power.Density..dB.FS.Hz.","Peak.Time.Relative","PFC.Avg.Slope..Hz.ms.","PFC.Max.Freq..Hz.","PFC.Max.Slope..Hz.ms.","PFC.Min.Freq..Hz.","PFC.Min.Slope..Hz.ms.","PFC.Num.Inf.Pts","Selection","Time.25..Rel.","Time.5..Rel.","Time.75..Rel.","Time.95..Rel.")
+good_columns = c("selec","mean_slope","inflections","sd","freq.median","time.IQR","skew","kurt","time.ent","mindom","maxdom","modindx","startdom","enddom","dfslope","meanpeakf")
 
 ## subset df_num to be only the good columns
 
@@ -53,10 +53,39 @@ sort(pca$rotation[,"PC2"])
 ## extract the pca data itself
 pca$x
 ## combine the original and pca data together
-df_pca = cbind(df[rownames(pca$x),],pca$x)
+## if they have the same number of rows
+df_pca = cbind(df[rownames(pca$x),],pca$x) 
+
+## if they don't 
+## cbind together the x data (has the removed NAs) and the pca$x data
+x_pca = cbind(x,pca$x)
+
+intersect(colnames(df),colnames(x_pca))
+df_pca = merge(x=df,y=x_pca,all=T)
+dim(df)
+dim(x_pca)
+dim(df_pca) ## if this looks like nrow(df) + nrow(x_pca), something went wrong
+
+palette(c("black","red","blue","cyan","pink","green","darkgreen"))
+legend("bottomright",
+       legend=c(unique(as.factor(df_pca$species))),
+       col=c(unique(as.numeric(as.factor(df_pca$species)))),
+       pch=16,
+       title="Specific epithet"
+       )
+print(levels(as.factor(df_pca$species))) ## the order here should match the order in the palette
+
+mod = aov(pc1~species)
+summary(mod)
+TukeyHSD(mod)
+
+mean_pc1 = aggregate(df$pc1~df$individual+df$species,FUN=function(x){mean(x,na.rm=T)})
 
 
 
+
+
+df_pca_pass = df_pca
 ## subset to passeriformes so that we have less to look at 
 #df_pca_pass = df_pca[df_pca$Order3=="Passeriformes",]
 
@@ -64,19 +93,7 @@ df_pca = cbind(df[rownames(pca$x),],pca$x)
 #df_pca_pass = df_pca_pass[df_pca_pass$Family3 %in% c("Passerellidae","Passeridae","Tyrannidae","Tityridae"),]
 
 ## plot the pca with each family being its own color and shape
-plot(df_pca_pass$PC2,df_pca_pass$PC3,
-    col=as.numeric(as.factor(df_pca_pass$Family3)),
-    pch=as.numeric(as.factor(df_pca_pass$Family3)))
-
-boxplot(df_pca_pass$PC1~df_pca_pass$Family3)
-boxplot(df_pca_pass$PC2~df_pca_pass$Family3)
-
-mod = aov(df_pca_pass$PC1~df_pca_pass$Family3)
-summary(mod)
-
-plot(df_pca_pass$Max.Latitude,df_pca_pass$PC1,
-     col=as.numeric(as.factor(df_pca_pass$Family3)),
-     pch=as.numeric(as.factor(df_pca_pass$Family3)))
+plot(df_pca_pass$PC2,df_pca_pass$PC3)
 
 # broken stick
 broken_stick = function(P) {
@@ -92,7 +109,7 @@ broken_stick = function(P) {
 }
 
 ## dim(pca$x), second number goes in the broken stick
-expected = broken_stick(19) 
+expected = broken_stick(16) 
 ## you don't need to do this after you subset the PCs
 actual = summary(pca)$importance[2,] ## proportion of variance only 
 plot(expected,actual)
@@ -111,19 +128,23 @@ dim(pca$x)
 
 ## now we can do any analyses on the PCs instead of the raw data
 ## export these data, including the PCA statistics that we need
-write.table(x=df_pca,file="/Users/kprovost/Documents/AVONET.Supplementary.dataset.1_PCA_18July2024.csv",
+write.table(x=df_pca,file="/Users/kprovost/Documents/Research/Tyrannidae/predicted_annotations/rvn.dat_trimmed_spectro_fcts_COMBINED_15Aug2024_PCA.csv",
             sep=",",row.names = FALSE)
 ## next export the rotations
 rotations = pca$rotation
-write.table(x=rotations,file="/Users/kprovost/Documents/AVONET.Supplementary.dataset.1_PCA_Rotations_18July2024.csv",
+write.table(x=rotations,file="/Users/kprovost/Documents/Research/Tyrannidae/predicted_annotations/rvn.dat_trimmed_spectro_fcts_COMBINED_15Aug2024_PCA_Rotations.csv",
             sep=",",row.names = TRUE)
 ## then export the importance
 importance = summary(pca)$importance
-write.table(x=importance,file="/Users/kprovost/Documents/AVONET.Supplementary.dataset.1_PCA_Importance_18July2024.csv",
+brokenstick=expected
+importance = rbind(importance,brokenstick)
+write.table(x=importance,file="/Users/kprovost/Documents/Research/Tyrannidae/predicted_annotations/rvn.dat_trimmed_spectro_fcts_COMBINED_15Aug2024_PCA_Importance.csv",
             sep=",",row.names = TRUE)
 ## export the standard deviations
 stdevs = pca$sdev
-write.table(x=stdevs,file="/Users/kprovost/Documents/AVONET.Supplementary.dataset.1_PCA_StDevs_18July2024.csv",
+write.table(x=stdevs,file="/Users/kprovost/Documents/Research/Tyrannidae/predicted_annotations/rvn.dat_trimmed_spectro_fcts_COMBINED_15Aug2024_PCA_StDevs.csv",
             sep=",",row.names = FALSE)
 
 boxplot(df_pca$PC2~df_pca$Channel)
+
+p

@@ -1,4 +1,4 @@
-rm(list = ls())
+#rm(list = ls())
 
 ## really simple r stuff
 
@@ -14,17 +14,17 @@ rm(list = ls())
 #outpath = "/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Piciformes/Ramphastidae/"
 #path="/users/PYS1065/kprovost/bioacoustics/Sounds_and_Annotations/Aves/Accipitriformes/Accipitridae/"
 #path=outpath
-outpath = "/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Ammodramus/maritimus/"
-path="/Users/kprovost/Documents/Postdoc_Working/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/Ammodramus/maritimus/"
+outpath = "/Users/kprovost/Documents/Research/Tyrannidae/predicted_annotations/"
+path="/Users/kprovost/Documents/Research/Tyrannidae/predicted_annotations/"
 spp_substitute = ""
-parts_of_name_to_keep = 1:4
+parts_of_name_to_keep = 1:3
 setwd(path)
 #date=format(Sys.time(), "%d%b%Y")
-date="qABC"
+date="15Aug2024"
 
 runSumstat=T ## calcualte summary statistics
-runBigpc=T ## calculate a principal components analysis
-runCentroids=T ## calculate centroid locations among individuals
+runBigpc=F ## calculate a principal components analysis
+runCentroids=F ## calculate centroid locations among individuals
 runSyllables=F ## calculate distances between syllanbes 
 generatePlots=F ## make all the plots if files exist
 
@@ -310,7 +310,10 @@ if(runSumstat==T){
           
           ## works on sin but not on card?
           rvn.dat.this = rvn.dat[!(rvn.dat$sound.files %in% not_here),]
-          sp <- spectro_analysis(X = rvn.dat,harmonicity = F,
+          rvn.dat.this = rvn.dat.this[,1:11]
+          rvn.dat.this = rvn.dat.this[complete.cases(rvn.dat.this),]
+          
+          sp <- spectro_analysis(X = rvn.dat.this,harmonicity = F,
                                  path=pathx,
                                  bp=c(0,22),fast=T) ## fast = 35 sec 28 cols, not fast = 3 min 15 sec
           ## harmonicity = T irrespective of fast causes a lot of errors and is estimated to take ~20 min
