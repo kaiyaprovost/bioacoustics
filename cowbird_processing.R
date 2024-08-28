@@ -2,7 +2,7 @@
 ## after first revision
 
 ## pca of the data
-path = "/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/"
+path = "/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/"
 pattern = ".Table.1.selections.txt$"
 myfiles = list.files(path=path,pattern=pattern,full.names = T,recursive = T)
 df_list = lapply(myfiles,FUN=function(x){
@@ -15,7 +15,7 @@ df$type[df$type==""] = NA
 df$Type[df$Type==""] = NA
 df$type[is.na(df$type)] = df$Type[is.na(df$type)]
 df$Type[is.na(df$Type)] = df$type[is.na(df$Type)]
-#write.table(df,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/combined_molothrus_ater.Table.1.selections.txt",
+#write.table(df,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/combined_molothrus_ater.Table.1.selections.txt",
 #            sep="\t",row.names = F,quote = F)
 
 big_df = df
@@ -75,11 +75,11 @@ goodcols_nometa = good_cols[!(good_cols %in% c("Selection","Begin.File"))]
 ## calculate correlation 
 corr = cor(big_df[,goodcols_nometa],use = "pairwise.complete.obs")
 corrplot::corrplot(corr,method="color")
-#write.table(corr,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/corrplot_reduced_20Aug2024.csv",
+#write.table(corr,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/corrplot_reduced_20Aug2024.csv",
 #            sep=",",row.names = T,quote = F)
 
 ## write out
-#write.table(big_df,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_frame_for_PCA.txt",
+#write.table(big_df,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_frame_for_PCA.txt",
 #            sep="\t",row.names = F,quote=F)
 
 ## calculate the PCA 21 Aug, 2024
@@ -112,21 +112,34 @@ plot(importance[2,],importance[4,]); abline(a=0,b=1)
 
 broken = broken_stick(2279)
 
-#write.table(pca_data,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA.txt",
+#write.table(pca_data,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA.txt",
 #            sep="\t",row.names = F,quote=F)
-#write.table(importance,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_importance.txt",
+#write.table(importance,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_importance.txt",
 #            sep="\t",row.names = F,quote=F)
-#write.table(eigens,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_eigenvalues.txt",
+#write.table(eigens,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_eigenvalues.txt",
 #            sep="\t",row.names = F,quote=F)
-#write.table(rotation,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_rotation.txt",
+#write.table(rotation,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_rotation.txt",
 #            sep="\t",row.names = F,quote=F)
 
-## aggregate by mean and sd for PC1
+## aggregate by mean and sd for PC1:PC3
 mean_pc1 = aggregate(pca_data$PC1~pca_data$Begin.File,FUN=function(x){mean(x,na.rm=T)})
 sd_pc1 = aggregate(pca_data$PC1~pca_data$Begin.File,FUN=function(x){sd(x,na.rm=T)})
+mean_pc2 = aggregate(pca_data$PC2~pca_data$Begin.File,FUN=function(x){mean(x,na.rm=T)})
+sd_pc2 = aggregate(pca_data$PC2~pca_data$Begin.File,FUN=function(x){sd(x,na.rm=T)})
+mean_pc3 = aggregate(pca_data$PC3~pca_data$Begin.File,FUN=function(x){mean(x,na.rm=T)})
+sd_pc3 = aggregate(pca_data$PC3~pca_data$Begin.File,FUN=function(x){sd(x,na.rm=T)})
 colnames(mean_pc1) = c("Begin.File","meanPC1")
 colnames(sd_pc1) = c("Begin.File","sdPC1")
+colnames(mean_pc2) = c("Begin.File","meanPC2")
+colnames(sd_pc2) = c("Begin.File","sdPC2")
+colnames(mean_pc3) = c("Begin.File","meanPC3")
+colnames(sd_pc3) = c("Begin.File","sdPC3")
 mean_sd_pc1 = merge(mean_pc1,sd_pc1,all=T,by="Begin.File")
+mean_sd_pc2 = merge(mean_pc2,sd_pc2,all=T,by="Begin.File")
+mean_sd_pc3 = merge(mean_pc3,sd_pc3,all=T,by="Begin.File")
+mean_sd_pc1 = merge(mean_sd_pc1,mean_sd_pc2,all=T,by="Begin.File")
+mean_sd_pc1 = merge(mean_sd_pc1,mean_sd_pc3,all=T,by="Begin.File")
+
 ## make a numeric ID column
 mean_sd_pc1$ID = sub("\\.wav","",mean_sd_pc1$Begin.File)
 mean_sd_pc1$ID = sub("BLB","",mean_sd_pc1$ID)
@@ -134,14 +147,14 @@ mean_sd_pc1$ID = as.numeric(mean_sd_pc1$ID)
 
 ## combine that with the pca data
 pca_data_mean = merge(pca_data,mean_sd_pc1,all=T,by="Begin.File")
-#write.table(pca_data_mean,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_mean.txt",
-#            sep="\t",row.names = F,quote=F)
+write.table(pca_data_mean,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_mean.txt",
+            sep="\t",row.names = F,quote=F)
 
-#write.table(mean_sd_pc1,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_meanONLY.txt",
-#            sep="\t",row.names = F,quote=F)
+write.table(mean_sd_pc1,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_meanONLY.txt",
+            sep="\t",row.names = F,quote=F)
 
 ##then combine that with the metadata we already have
-meta <- read.delim("/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/0syllable_type_added/BLB_klp_Molothrus.ater.csv",
+meta <- read.delim("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/0syllable_type_added/BLB_klp_Molothrus.ater.csv",
                    sep=",",header=T)
 meta_df = unique(meta)
 #meta_df$Begin.File = paste("BLB",meta_df$ID,".wav",sep="")
@@ -150,13 +163,13 @@ mean_sd_pc1_meta = merge(meta_df,mean_sd_pc1,all=T,by="ID")
 dim(mean_sd_pc1)
 dim(meta_df)
 dim(mean_sd_pc1_meta)
-#write.table(mean_sd_pc1_meta,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_meanONLY_metadata.txt",
-#            sep="\t",row.names = F,quote=F)
+write.table(mean_sd_pc1_meta,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_meanONLY_metadata.txt",
+            sep="\t",row.names = F,quote=F)
 plot(mean_sd_pc1_meta$YEAR_COLLECTED,mean_sd_pc1_meta$meanPC1)
 
 pca_data_mean_meta = merge(meta_df,pca_data_mean,all=T,by="ID")
-#write.table(pca_data_mean_meta,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_mean_metadata.txt",
-#            sep="\t",row.names = F,quote=F)
+write.table(pca_data_mean_meta,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_mean_metadata.txt",
+            sep="\t",row.names = F,quote=F)
 
 table(pca_data_mean_meta$type)
 boxplot(pca_data_mean_meta$PC1~pca_data_mean_meta$type)
@@ -164,17 +177,28 @@ plot(pca_data_mean_meta$YEAR_COLLECTED,pca_data_mean_meta$PC1,
      col=as.numeric(as.factor(pca_data_mean_meta$type)))
 ## now we need to extract us some data
 
-df_edit = read.table("/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_mean_metadata_urban_EDITED.txt",
+df_edit = read.table("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_mean_metadata_urban_EDITED.txt",
                      header=T,sep="\t")
 
+## actually need to merge with mean_sd_pc1 again
+#df_edit2 = merge(df_edit,mean_sd_pc1,by="ID",all=T)
+#pca_data_mean$ID = sub("\\.wav","",pca_data_mean$Begin.File)
+#pca_data_mean$ID = sub("BLB","",pca_data_mean$ID)
+#pca_data_mean$ID = as.numeric(pca_data_mean$ID)
+#pca_data_mean2 = pca_data_mean[,c("ID","Selection","PC2","PC3")]
+#colnames(pca_data_mean2) = c("ID","Selection","Prop.PC2","Prop.PC3")
+#df_edit2 = merge(x=pca_data_mean2,y=df_edit,all.x=F,all.y=T)
+#write.table(df_edit2,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_mean_metadata_urban_EDITED.txt",
+#            row.names = F,sep="\t",quote=F)
+
 ## need to add that to the shp.pcs 
-shp_pc_importance_file = "/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/SoundShape/TPS_PCA/pca_soundshape.1_importance_SUBSET.23Aug2024.temp"
+shp_pc_importance_file = "/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/SoundShape/TPS_PCA/pca_soundshape.1_importance_SUBSET.28Aug2024.temp"
 shp_pc_importance = read.table(shp_pc_importance_file,header=T,sep=" ")
 expected_brokenstick = broken_stick(ncol(shp_pc_importance))
 actual_brokenstick = shp_pc_importance[2,]
 which(actual_brokenstick>expected_brokenstick)
 
-shp_pcs = read.table("/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/SoundShape/TPS_PCA/pca_soundshape.1_SCALETRUE.23Aug2024.temp",
+shp_pcs = read.table("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/SoundShape/TPS_PCA/pca_soundshape.1_SCALETRUE.23Aug2024.temp",
                      header=T,sep=" ")
 shp_pcs = shp_pcs[,1:5]
 shp_pcs$syllid = rownames(shp_pcs)
@@ -194,7 +218,7 @@ colnames(shp_sd_agg) = c("ID","sdShp.PC1","sdShp.PC2","sdShp.PC3","sdShp.PC4","s
 shp_pcs = merge(shp_pcs,shp_sd_agg,all=T,by="ID")
 shp_pcs = merge(shp_pcs,shp_mean_agg,all=T,by="ID")
 
-#write.table(shp_pcs,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/shp_pcs.txt",sep="\t",row.names = F,quote = F)
+#write.table(shp_pcs,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/shp_pcs.txt",sep="\t",row.names = F,quote = F)
 
 df_merge = merge(df_edit,shp_pcs,all=T,by=c("ID","Selection"))
   
@@ -209,14 +233,14 @@ boxplot(df_merge$Shp.PC5~df_merge$type)
 plot(df_merge$Prop.PC1,df_merge$Shp.PC1,col=as.numeric(as.factor(df_merge$type)),
      pch=as.numeric(as.factor(df_merge$type)))
 
-#write.table(df_merge,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/final_dataset_23Aug2024.txt",
-#            sep="\t",quote=F,row.names =F)
+write.table(df_merge,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/final_dataset_28Aug2024.txt",
+            sep="\t",quote=F,row.names =F)
 
 
-df_merge = read.table("/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/final_dataset_23Aug2024.txt",
+df_merge = read.table("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/final_dataset_28Aug2024.txt",
                       sep="\t",header=T)
 
-mean_agg_type_ind = aggregate(cbind(Prop.PC1,Shp.PC1,Shp.PC2,Shp.PC3,Shp.PC4,Shp.PC5)~ID+type,data=df_merge,
+mean_agg_type_ind = aggregate(cbind(Prop.PC1,Prop.PC2,Prop.PC3,Shp.PC1,Shp.PC2,Shp.PC3,Shp.PC4,Shp.PC5)~ID+type,data=df_merge,
                               FUN=function(x){mean(x,na.rm=T)})
 colnames(mean_agg_type_ind)[3:8] = paste("mean",colnames(mean_agg_type_ind)[3:8],sep="")
 sd_agg_type_ind = aggregate(cbind(Prop.PC1,Shp.PC1,Shp.PC2,Shp.PC3,Shp.PC4,Shp.PC5)~ID+type,data=df_merge,
@@ -225,7 +249,7 @@ colnames(sd_agg_type_ind)[3:8] = paste("sd",colnames(sd_agg_type_ind)[3:8],sep="
 
 ## combine those 
 meansd_agg_type_df = merge(mean_agg_type_ind,sd_agg_type_ind,all=T,by=c("ID","type"))
-#write.table(meansd_agg_type_df,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/final_dataset_23Aug2024_meanSdIndType.txt",
+#write.table(meansd_agg_type_df,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/final_dataset_28Aug2024_meanSdIndType.txt",
 #            sep="\t",quote=F,row.names =F)
 plot(meansd_agg_type_df$meanProp.PC1,meansd_agg_type_df$meanShp.PC1,col=as.numeric(as.factor(meansd_agg_type_df$type)))
 
@@ -247,13 +271,72 @@ df_merge_typeuniques = df_merge[,c("COUNTY","ID","LATITUDE","LONGITUDE","YEAR","
 df_merge_typeuniques = unique(df_merge_typeuniques)
 df_merge_typeuniques = merge(df_merge_typeuniques,meansd_agg_type_df,all=T,by=c("ID","type"))
 df_merge_typeuniques = df_merge_typeuniques[df_merge_typeuniques!="other",]
-#write.table(df_merge_typeuniques,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/final_dataset_23Aug2024_meanSdIndType_meta.txt",
+#write.table(df_merge_typeuniques,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/final_dataset_28Aug2024_meanSdIndType_meta.txt",
 #            sep="\t",quote=F,row.names =F)
 
 plot(df_merge_typeuniques$YEAR,df_merge_typeuniques$meanProp.PC1,
      col=as.numeric(as.factor(df_merge_typeuniques$type)))
 
 df_merge = df_merge[df_merge$type!="other",]
+df_merge = df_merge[!(is.na(df_merge$Prop.PC1)),]
+df_merge = df_merge[!(is.na(df_merge$Shp.PC1)),]
+df_merge = df_merge[!(is.na(df_merge$YEAR)),]
+df_merge = df_merge[!(is.na(df_merge$cropland_year)),]
+df_merge = df_merge[!(is.na(df_merge$type)),]
+df_merge = df_merge[!(is.na(df_merge$COUNTY)),]
+
+## ALL OF THEM, NOT JUST THE MEANS
+all_prop_pc1_glm = lmer(Prop.PC1~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
+all_prop_pc2_glm = lmer(Prop.PC2~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
+all_prop_pc3_glm = lmer(Prop.PC3~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
+all_shp_pc1_glm = lmer(Shp.PC1~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
+all_shp_pc2_glm = lmer(Shp.PC2~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
+all_shp_pc3_glm = lmer(Shp.PC3~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
+all_shp_pc4_glm = lmer(Shp.PC4~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
+all_shp_pc5_glm = lmer(Shp.PC5~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
+
+summary(all_prop_pc1_glm) ## sig
+summary(all_prop_pc2_glm) ## sig
+summary(all_prop_pc3_glm) ## sig
+summary(all_shp_pc1_glm) ## sig
+summary(all_shp_pc2_glm) ## sig
+summary(all_shp_pc3_glm) ## sig
+summary(all_shp_pc4_glm) ## sig
+summary(all_shp_pc5_glm) ## sig
+
+## ONLY THE MEANS FOR EACH ID AND TYPE
+df_syllmean = read.table("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/final_dataset_28Aug2024_meanSdIndType.txt",
+                         header=T)
+df_merge_predict = df_merge[,c("ID","type","COUNTY","YEAR","cropland_year","grazing_year","uopp_year")]
+df_merge_predict = unique(df_merge_predict)
+df_syllmean = merge(df_syllmean,df_merge_predict,by=c("ID","type"),all=T)
+df_syllmean = df_syllmean[df_syllmean$type!="other",]
+df_syllmean = df_syllmean[!(is.na(df_syllmean$meanProp.PC1)),]
+df_syllmean = df_syllmean[!(is.na(df_syllmean$meanShp.PC1)),]
+df_syllmean = df_syllmean[!(is.na(df_syllmean$YEAR)),]
+df_syllmean = df_syllmean[!(is.na(df_syllmean$cropland_year)),]
+df_syllmean = df_syllmean[!(is.na(df_syllmean$type)),]
+df_syllmean = df_syllmean[!(is.na(df_syllmean$COUNTY)),]
+
+MEAN_prop_pc1_glm = lmer(meanProp.PC1~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_syllmean)
+MEAN_shp_pc1_glm = lmer(meanShp.PC1~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_syllmean)
+MEAN_shp_pc2_glm = lmer(meanShp.PC2~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_syllmean)
+MEAN_shp_pc3_glm = lmer(meanShp.PC3~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_syllmean)
+MEAN_shp_pc4_glm = lmer(meanShp.PC4~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_syllmean)
+MEAN_shp_pc5_glm = lmer(meanShp.PC5~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_syllmean)
+
+summary(MEAN_prop_pc1_glm) ## sig
+summary(MEAN_shp_pc1_glm) ## sig
+summary(MEAN_shp_pc2_glm) ## sig
+summary(MEAN_shp_pc3_glm) ## sig
+summary(MEAN_shp_pc4_glm) ## sig
+summary(MEAN_shp_pc5_glm) ## sig
+
+
+
+
+
+
 
 summary(aov(Prop.PC1~type,data=df_merge)) ## sig
 summary(aov(Shp.PC1~type,data=df_merge)) ## sig
@@ -262,19 +345,8 @@ summary(aov(Shp.PC3~type,data=df_merge)) ## sig
 summary(aov(Shp.PC4~type,data=df_merge)) ## not sig
 summary(aov(Shp.PC5~type,data=df_merge)) ## sig
 
-all_prop_pc1_glm = lmer(meanProp.PC1~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
-all_shp_pc1_glm = lmer(meanShp.PC1~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
-all_shp_pc2_glm = lmer(meanShp.PC2~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
-all_shp_pc3_glm = lmer(meanShp.PC3~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
-all_shp_pc4_glm = lmer(meanShp.PC4~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
-all_shp_pc5_glm = lmer(meanShp.PC5~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR+type,data=df_merge)
 
-summary(all_prop_pc1_glm) ## sig
-summary(all_shp_pc1_glm) ## sig
-summary(all_shp_pc2_glm) ## sig
-summary(all_shp_pc3_glm) ## sig
-summary(all_shp_pc4_glm) ## sig
-summary(all_shp_pc5_glm) ## sig
+
 
 mean_prop_pc1_glm = lmer(meanProp.PC1~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_merge_uniques)
 prop_pc1_glm_whistle = lmer(meanProp.PC1~cropland_year+grazing_year+uopp_year+(1|COUNTY)+YEAR,data=df_merge_typeuniques[df_merge_typeuniques$type=="w",])
@@ -310,18 +382,308 @@ summary(Shp_PC2_glm_whistle) ## sig
 summary(Shp_PC2_glm_song) ## sig, singular
 summary(Shp_PC2_glm_call) ## sig, singular
 
+## plots 
 
+## each pc vs cropland
+## each pc vs grazing
+## each pc vs urban
+## each pc vs year
+## boxplot of each pc vs syllable type
+## boxplot of each pc vs county
 
-palette(c("blue","grey","red","goldenrod"))
-plot(df_merge$YEAR,df_merge$Prop.PC1,
+palette(c("blue","lightblue","grey","cyan","darkblue"))
+
+png("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/cropland_allpcs.png",
+    width=6.5,height=4,units="in",res=300)
+par(mfrow=c(2,4),mar=c(4,4,0,0))
+plot(df_merge$cropland_year,df_merge$Prop.PC1,xlab="Cropland %",ylab="Prop.PC1",
      col=as.numeric(as.factor(df_merge$type)),
      pch=as.numeric(as.factor(df_merge$type)))
-legend("topright",legend=c("Calls","Other","Songs","Whistles"),
-       col=1:4,pch=1:4)
-abline(lm(df_merge$Prop.PC1~df_merge$YEAR),
-       col="black",lwd=3)
-abline(lm(df_merge$Prop.PC1[df_merge$type=="s"]~df_merge$YEAR[df_merge$type=="s"]),
-       col="blue",lwd=2)
+abline(lm(df_merge$meanProp.PC1~df_merge$cropland_year),
+          col="red",lwd=1,lty=3)
+legend("topright",legend=c("Call","Song","Whistle"),
+       pch=1:3,col=1:3,bty="n")
+
+plot(df_merge$cropland_year,df_merge$Shp.PC1,xlab="Cropland %",ylab="Shp.PC1",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC1~df_merge$cropland_year),
+       col="red",lwd=2,lty=2)
+
+plot(df_merge$cropland_year,df_merge$Shp.PC2,xlab="Cropland %",ylab="Shp.PC2",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC2~df_merge$cropland_year),
+       col="red",lwd=1,lty=3)
+
+plot(df_merge$cropland_year,df_merge$Shp.PC3,xlab="Cropland %",ylab="Shp.PC3",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC3~df_merge$cropland_year),
+       col="red",lwd=2,lty=2)
+
+plot(df_merge$cropland_year,df_merge$Shp.PC4,xlab="Cropland %",ylab="Shp.PC4",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC4~df_merge$cropland_year),
+       col="red",lwd=1,lty=3)
+
+plot(df_merge$cropland_year,df_merge$Shp.PC5,xlab="Cropland %",ylab="Shp.PC5",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC5~df_merge$cropland_year),
+       col="red",lwd=3,lty=1)
+
+dev.off()
+
+
+png("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/grazing_allpcs.png",
+    width=6.5,height=4,units="in",res=300)
+par(mfrow=c(2,3),mar=c(4,4,0,0))
+plot(df_merge$grazing_year,df_merge$Prop.PC1,xlab="Grazing %",ylab="Prop.PC1",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$meanProp.PC1~df_merge$grazing_year),
+       col="red",lwd=1,lty=3)
+legend("topright",legend=c("Call","Song","Whistle"),
+       pch=1:3,col=1:3,bty="n")
+
+plot(df_merge$grazing_year,df_merge$Shp.PC1,xlab="Grazing %",ylab="Shp.PC1",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC1~df_merge$grazing_year),
+       col="red",lwd=1,lty=3)
+
+plot(df_merge$grazing_year,df_merge$Shp.PC2,xlab="Grazing %",ylab="Shp.PC2",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC2~df_merge$grazing_year),
+       col="red",lwd=1,lty=3)
+
+plot(df_merge$grazing_year,df_merge$Shp.PC3,xlab="Grazing %",ylab="Shp.PC3",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC3~df_merge$grazing_year),
+       col="red",lwd=3,lty=1)
+
+plot(df_merge$grazing_year,df_merge$Shp.PC4,xlab="Grazing %",ylab="Shp.PC4",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC4~df_merge$grazing_year),
+       col="red",lwd=2,lty=2)
+
+plot(df_merge$grazing_year,df_merge$Shp.PC5,xlab="Grazing %",ylab="Shp.PC5",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC5~df_merge$grazing_year),
+       col="red",lwd=1,lty=3)
+
+dev.off()
+
+png("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/uopp_allpcs.png",
+    width=6.5,height=4,units="in",res=300)
+par(mfrow=c(2,3),mar=c(4,4,0,0))
+plot(df_merge$uopp_year,df_merge$Prop.PC1,xlab="Urban Occupancy %",ylab="Prop.PC1",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$meanProp.PC1~df_merge$uopp_year),
+       col="red",lwd=2,lty=2)
+legend("topright",legend=c("Call","Song","Whistle"),
+       pch=1:3,col=1:3,bty="n")
+
+plot(df_merge$uopp_year,df_merge$Shp.PC1,xlab="Urban Occupancy %",ylab="Shp.PC1",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC1~df_merge$uopp_year),
+       col="red",lwd=1,lty=3)
+
+plot(df_merge$uopp_year,df_merge$Shp.PC2,xlab="Urban Occupancy %",ylab="Shp.PC2",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC2~df_merge$uopp_year),
+       col="red",lwd=3,lty=1)
+
+plot(df_merge$uopp_year,df_merge$Shp.PC3,xlab="Urban Occupancy %",ylab="Shp.PC3",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC3~df_merge$uopp_year),
+       col="red",lwd=1,lty=3)
+
+plot(df_merge$uopp_year,df_merge$Shp.PC4,xlab="Urban Occupancy %",ylab="Shp.PC4",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC4~df_merge$uopp_year),
+       col="red",lwd=1,lty=3)
+
+plot(df_merge$uopp_year,df_merge$Shp.PC5,xlab="Urban Occupancy %",ylab="Shp.PC5",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC5~df_merge$uopp_year),
+       col="red",lwd=2,lty=2)
+
+dev.off()
+
+png("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/year_allpcs.png",
+    width=6.5,height=4,units="in",res=300)
+par(mfrow=c(2,3),mar=c(4,4,0,0))
+plot(df_merge$YEAR,df_merge$Prop.PC1,xlab="Year",ylab="Prop.PC1",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$meanProp.PC1~df_merge$YEAR),
+       col="red",lwd=3,lty=1)
+legend("topright",legend=c("Call","Song","Whistle"),
+       pch=1:3,col=1:3,bty="n")
+
+plot(df_merge$YEAR,df_merge$Shp.PC1,xlab="Year",ylab="Shp.PC1",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC1~df_merge$YEAR),
+       col="red",lwd=3,lty=1)
+
+plot(df_merge$YEAR,df_merge$Shp.PC2,xlab="Year",ylab="Shp.PC2",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC2~df_merge$YEAR),
+       col="red",lwd=2,lty=2)
+
+plot(df_merge$YEAR,df_merge$Shp.PC3,xlab="Year",ylab="Shp.PC3",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC3~df_merge$YEAR),
+       col="red",lwd=3,lty=1)
+
+plot(df_merge$YEAR,df_merge$Shp.PC4,xlab="Year",ylab="Shp.PC4",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC4~df_merge$YEAR),
+       col="red",lwd=2,lty=2)
+
+plot(df_merge$YEAR,df_merge$Shp.PC5,xlab="Year",ylab="Shp.PC5",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$Shp.PC5~df_merge$YEAR),
+       col="red",lwd=2,lty=2)
+
+dev.off()
+
+png("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/type_allpcs.png",
+    width=6.5,height=4,units="in",res=300)
+par(mfrow=c(2,4),mar=c(4,4,0,0))
+boxplot(df_merge$Prop.PC1~df_merge$type,xlab="Syllable Type",ylab="Prop.PC1",col=1:3,names=c("Call","Song","Whistle"))
+boxplot(df_merge$Prop.PC2~df_merge$type,xlab="Syllable Type",ylab="Prop.PC2",col=1:3,names=c("Call","Song","Whistle"))
+boxplot(df_merge$Prop.PC3~df_merge$type,xlab="Syllable Type",ylab="Prop.PC3",col=1:3,names=c("Call","Song","Whistle"))
+boxplot(df_merge$Shp.PC1~df_merge$type,xlab="Syllable Type",ylab="Shp.PC1",col=1:3,names=c("Call","Song","Whistle"))
+boxplot(df_merge$Shp.PC2~df_merge$type,xlab="Syllable Type",ylab="Shp.PC2",col=1:3,names=c("Call","Song","Whistle"))
+boxplot(df_merge$Shp.PC3~df_merge$type,xlab="Syllable Type",ylab="Shp.PC3",col=1:3,names=c("Call","Song","Whistle"))
+boxplot(df_merge$Shp.PC4~df_merge$type,xlab="Syllable Type",ylab="Shp.PC4",col=1:3,names=c("Call","Song","Whistle"))
+boxplot(df_merge$Shp.PC5~df_merge$type,xlab="Syllable Type",ylab="Shp.PC5",col=1:3,names=c("Call","Song","Whistle"))
+dev.off()
+
+png("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/county_allpcs.png",
+    width=6.5,height=4,units="in",res=300)
+par(mfrow=c(2,3),mar=c(4.5,4,0,0))
+boxplot(df_merge$Prop.PC1~df_merge$COUNTY,xlab="",ylab="Prop.PC1",las=2)
+boxplot(df_merge$Shp.PC1~df_merge$COUNTY,xlab="",ylab="Shp.PC1",las=2)
+boxplot(df_merge$Shp.PC2~df_merge$COUNTY,xlab="",ylab="Shp.PC2",las=2)
+boxplot(df_merge$Shp.PC3~df_merge$COUNTY,xlab="",ylab="Shp.PC3",las=2)
+boxplot(df_merge$Shp.PC4~df_merge$COUNTY,xlab="",ylab="Shp.PC4",las=2)
+boxplot(df_merge$Shp.PC5~df_merge$COUNTY,xlab="",ylab="Shp.PC5",las=2)
+dev.off()
+
+
+
+png("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/proppc1_land_year.png",
+    width=6.5,height=6.5,units="in",res=300)
+par(mfrow=c(2,2),mar=c(4,4,0,0))
+plot(df_merge$cropland_year,df_merge$Prop.PC1,xlab="Cropland %",ylab="Prop.PC1",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$meanProp.PC1~df_merge$cropland_year),
+       col="red",lwd=1,lty=3)
+legend("top",legend=c("Call","Song","Whistle"),
+       pch=1:3,col=1:3,bty="n")
+
+plot(df_merge$grazing_year,df_merge$Prop.PC1,xlab="Grazing %",ylab="Prop.PC1",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$meanProp.PC1~df_merge$grazing_year),
+       col="red",lwd=1,lty=3)
+
+plot(df_merge$uopp_year,df_merge$Prop.PC1,xlab="Urban Occupancy %",ylab="Prop.PC1",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$meanProp.PC1~df_merge$uopp_year),
+       col="red",lwd=2,lty=2)
+
+plot(df_merge$YEAR,df_merge$Prop.PC1,xlab="Year",ylab="Prop.PC1",
+     col=as.numeric(as.factor(df_merge$type)),
+     pch=as.numeric(as.factor(df_merge$type)))
+abline(lm(df_merge$meanProp.PC1~df_merge$YEAR),
+       col="red",lwd=3,lty=1)
+dev.off()
+
+png("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/proppc1_county_type.png",
+    width=6.5,height=4,units="in",res=300)
+par(mfrow=c(1,2),mar=c(4,4,0,0))
+boxplot(df_merge$Prop.PC1~df_merge$type,xlab="Syllable Type",ylab="Prop.PC1",col=1:3,names=c("Call","Song","Whistle"))
+boxplot(df_merge$Prop.PC1~df_merge$COUNTY,xlab="",ylab="Prop.PC1",las=2)
+dev.off()
+
+
+png("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/1940vs2000_urbans.png",
+    width=6.5,height=4,units="in",res=300)
+par(mfrow=c(1,3),mar=c(4.5,4,0,0))
+plot(df_merge$uopp.stack_1940AD.tif,df_merge$uopp.stack_2000AD.tif,xlim=c(0,66),ylim=c(0,66),
+     xlab="Urban Occupancy % 1940",ylab="Urban Occupancy % Other Years")
+points(df_merge$uopp.stack_1940AD.tif,df_merge$uopp.stack_1950AD.tif,col="lightblue")
+points(df_merge$uopp.stack_1940AD.tif,df_merge$uopp.stack_1960AD.tif,col="cyan")
+points(df_merge$uopp.stack_1940AD.tif,df_merge$uopp.stack_1970AD.tif,col="lightskyblue")
+points(df_merge$uopp.stack_1940AD.tif,df_merge$uopp.stack_1980AD.tif,col="lightslateblue")
+points(df_merge$uopp.stack_1940AD.tif,df_merge$uopp.stack_1990AD.tif,col="blue")
+abline(a=0,b=1)
+legend("bottomright",legend=c(1950,1960,1970,1980,1990,2000),
+       pch=1,col=c("lightblue","cyan","lightskyblue","lightslateblue","blue","black"))
+plot(df_merge$cropland.stack_1940AD.tif,df_merge$cropland.stack_2000AD.tif,xlim=c(0,45),ylim=c(0,45),
+     xlab="Cropland % 1940",ylab="Cropland % Other Years")
+points(df_merge$cropland.stack_1940AD.tif,df_merge$cropland.stack_1950AD.tif,col="lightblue")
+points(df_merge$cropland.stack_1940AD.tif,df_merge$cropland.stack_1960AD.tif,col="cyan")
+points(df_merge$cropland.stack_1940AD.tif,df_merge$cropland.stack_1970AD.tif,col="lightskyblue")
+points(df_merge$cropland.stack_1940AD.tif,df_merge$cropland.stack_1980AD.tif,col="lightslateblue")
+points(df_merge$cropland.stack_1940AD.tif,df_merge$cropland.stack_1990AD.tif,col="blue")
+abline(a=0,b=1)
+plot(df_merge$grazing.stack_1940AD.tif,df_merge$grazing.stack_2000AD.tif,xlim=c(0,22),ylim=c(0,22),
+     xlab="Grazing % 1940",ylab="Grazing % Other Years")
+points(df_merge$grazing.stack_1940AD.tif,df_merge$grazing.stack_1950AD.tif,col="lightblue")
+points(df_merge$grazing.stack_1940AD.tif,df_merge$grazing.stack_1960AD.tif,col="cyan")
+points(df_merge$grazing.stack_1940AD.tif,df_merge$grazing.stack_1970AD.tif,col="lightskyblue")
+points(df_merge$grazing.stack_1940AD.tif,df_merge$grazing.stack_1980AD.tif,col="lightslateblue")
+points(df_merge$grazing.stack_1940AD.tif,df_merge$grazing.stack_1990AD.tif,col="blue")
+abline(a=0,b=1)
+dev.off()
+
+
+df_x = df_merge[,c(20:26,33:39,54:60,12:13)]
+df_x = unique(df_x)
+y=colMeans(df_x)
+x=as.data.frame(cbind(y[1:7],y[8:14],y[15:21]))
+colnames(x) = c("crop","graz","uopp")
+x$year = seq(1940,2000,10)
+barplot(as.matrix(t(x[,1:3])))
+plot(x$year,x$uopp,ylim=c(0,30),col="black",type="b",pch=0)
+points(x$year,x$graz,col="red",type="b",pch=1)
+points(x$year,x$crop,col="blue",type="b",pch=2)
+
+par(mfrow=c(1,3))
+plot(df_merge$cropland_year,df_merge$grazing_year)
+plot(df_merge$cropland_year,df_merge$uopp_year)
+plot(df_merge$uopp_year,df_merge$grazing_year)
+
+
+df_temp = df_merge[,c("cropland_year",
+                      "grazing_year",
+                      "uopp_year")]
+df_temp = unique(df_temp)
+cor(df_temp,use="pairwise.complete.obs")
 
 
 prop_pc2_glm_A = lmer(Prop.PC2~cropland_year+uopp_year+(1|COUNTY)+YEAR,data=df_edit) ## singular fit?
@@ -348,7 +710,7 @@ summary(shp_pc5_glm)
 
 
 
-urban_meta = read.table("/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Molothrus.ater.combined.PCA.merged_nocorrelations_metadata_16July2024_EDITED.csv",
+urban_meta = read.table("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Molothrus.ater.combined.PCA.merged_nocorrelations_metadata_16July2024_EDITED.csv",
                         sep=",",header=T)
 urban_keep = c("Lat","Long","YEAR","Anthromes_Year","cropland_year","cropland.stack_1940AD.tif",
                "cropland.stack_1950AD.tif","cropland.stack_1960AD.tif","cropland.stack_1970AD.tif",
@@ -369,11 +731,11 @@ colnames(urban_meta)[1:3] = c("LATITUDE","LONGITUDE","YEAR_COLLECTED")
 pca_data_mean_meta_urban = merge(x=urban_meta,y=pca_data_mean_meta,all.y=T,all.x=F,by=c("LATITUDE","LONGITUDE","YEAR_COLLECTED"))
 dim(pca_data_mean_meta_urban)
 View(pca_data_mean_meta_urban)
-#write.table(pca_data_mean_meta_urban,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_mean_metadata_urban.txt",
+#write.table(pca_data_mean_meta_urban,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_mean_metadata_urban.txt",
 #            sep="\t",row.names = F,quote=F)
 plot(pca_data_mean_meta_urban$PC1,pca_data_mean_meta_urban$cropland_year)
 
-df_edit = read.table("/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_mean_metadata_urban_EDITED.txt",
+df_edit = read.table("/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/big_data_PCA_mean_metadata_urban_EDITED.txt",
                     sep="\t",header=T)
 
 
@@ -387,7 +749,7 @@ df_edit = read.table("/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/
 #meta_df = meta_df[!(is.na(meta_df$Selection)),]
 #meta_df = meta_df[complete.cases(meta_df),]
 #meta_df = unique(meta_df)
-##write.table(meta_df,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/metadata_only.txt",
+##write.table(meta_df,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/metadata_only.txt",
 #            sep="\t",row.names = F,quote=F)
 #
 #meta_good = meta[,c(good_cols,"Begin.Time..s.","End.Time..s.","Low.Freq..Hz.","High.Freq..Hz.")]
@@ -397,7 +759,7 @@ df_edit = read.table("/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/
 #pca_data_mean_meta_good = merge(x=meta_good,y=pca_data_mean,all.y=T,all.x=F#,
 #                                #by=c("Selection","Begin.File","Begin.Time..s.","End.Time..s.","Low.Freq..Hz.","High.Freq..Hz.")
 #                                )
-##write.table(pca_data_mean_meta_good,"/Users/kprovost/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/pca_data_mean_meta_good.txt",
+##write.table(pca_data_mean_meta_good,"/Users/kaiya/AMNH Dropbox/Kaiya Provost/Postdoc_Backup/Molothrus ater/Selections & WAV files/pca_data_mean_meta_good.txt",
 #            sep="\t",row.names = F,quote=F)
 #
 #pca_data_mean_meta = merge(meta_df,pca_data_mean,all=T)
@@ -468,7 +830,7 @@ df_edit = df_edit[,keep_colnames]
 
 
 ## plotting
-my_data = "/Users/kprovost/Documents/Research/Cowbird/Molothrus.ater.combined.PCA.merged_nocorrelations_metadata_16July2024_EDITED.csv"
+my_data = "/Users/kaiya/Documents/Research/Cowbird/Molothrus.ater.combined.PCA.merged_nocorrelations_metadata_16July2024_EDITED.csv"
 df = read.table(my_data,header=T,sep=",")
 
 prop1_crop = lm(df$Prop.PC1~df$cropland_year)
@@ -531,7 +893,7 @@ x = brokenstick(1040)
 {
 BLB26 <-
   read.delim(
-    "/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections/BLB26.Table.1.selections.txt"
+    "/Users/kaiya/Documents/Postdoc_Working/Molothrus.ater.selections/BLB26.Table.1.selections.txt"
   )
 colnames(BLB26) ## this prints the column names of this table
 
@@ -607,7 +969,7 @@ plot(data$PC1, data2$PC1)
 {
 ## 2 November 2022
 
-folder = "/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections"
+folder = "/Users/kaiya/Documents/Postdoc_Working/Molothrus.ater.selections"
 files = list.files(path = folder,
                    pattern = "selections.txt",
                    full.names = T)
@@ -628,7 +990,7 @@ install.packages("gtools")
 big_blb_data = do.call(what = gtools::smartbind, args = blb_data)
 hist(big_blb_data$Low.Freq..Hz.)
 
-new_file = "/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections/Molothrus.ater.combined.Table.1.selections.txt"
+new_file = "/Users/kaiya/Documents/Postdoc_Working/Molothrus.ater.selections/Molothrus.ater.combined.Table.1.selections.txt"
 #write.table(
 #  big_blb_data,
 #  new_file,
@@ -783,7 +1145,7 @@ new_file_pca = "~/Work/Molothrus.ater.combined.PCA.merged_nocorrelations_metadat
 ## look at correlations and stuff
 {
 ## import some data
-new_file_pca = "/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections/Molothrus.ater.combined.PCA.merged.txt"
+new_file_pca = "/Users/kaiya/Documents/Postdoc_Working/Molothrus.ater.selections/Molothrus.ater.combined.PCA.merged.txt"
 corr_data_original = read.delim(new_file_pca, header = T, sep = "\t")
 colnames(corr_data_original)
 corr_data = corr_data_original[, c(86:140)] ## plot all PCs and how correlated they are
@@ -803,7 +1165,7 @@ corrplot::corrplot(corr_2, method = "ellipse", order = "hclust")
 library(SoundShape)
 install.packages("SoundShape")
 
-path = "/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections"
+path = "/Users/kaiya/Documents/Postdoc_Working/Molothrus.ater.selections"
 
 wav.at = file.path(path, "ClippedWavs")
 dir.create(wav.at)
@@ -1023,7 +1385,7 @@ crop_extent = extent(-85,-80,35,45)
 wcdata_oh = crop(wcdata,crop_extent)
 plot(wcdata_oh[[1]])
 
-cowbird_data = read.csv("/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections/BLB_klp_Molothrus.ater.csv")
+cowbird_data = read.csv("/Users/kaiya/Documents/Postdoc_Working/Molothrus.ater.selections/BLB_klp_Molothrus.ater.csv")
 plot(wcdata_oh[[1]])
 points(cowbird_data$LONGITUDE,cowbird_data$LATITUDE)
 
@@ -1034,8 +1396,8 @@ cell_data = extract(wcdata_oh,cells)
 ## put together the env data and the cowbird data
 cowbird_env = cbind(cowbird_data,cell_data)
 
-old_file = "/Users/kprovost/Downloads/dataverse_files/Anthromes-12k-DGG/raw-data/HYDE/stack_1940AD.tif"
-new_file = "/Users/kprovost/Downloads/dataverse_files/Anthromes-12k-DGG/raw-data/HYDE/stack_2017AD.tif"
+old_file = "/Users/kaiya/Downloads/dataverse_files/Anthromes-12k-DGG/raw-data/HYDE/stack_1940AD.tif"
+new_file = "/Users/kaiya/Downloads/dataverse_files/Anthromes-12k-DGG/raw-data/HYDE/stack_2017AD.tif"
 
 new_urban = stack(new_file)
 plot(new_urban)
@@ -1107,7 +1469,7 @@ writeRaster(dif_urban_oh,"~/dif_urban_oh.tif",format="GTiff")
 
 
 ## read.table(blah blah blah)
-cowbird=read.table("/Users/kprovost/cowbird_dif_urban.txt")
+cowbird=read.table("/Users/kaiya/cowbird_dif_urban.txt")
 cowbird$SEX
 table(cowbird$SEX)
 cowbird$cropland
@@ -1127,8 +1489,8 @@ barplot(cowbird$cropland)
 barplot(table(cowbird$SEX))
 barplot(table(cowbird$YEAR_COLLECTED))
 
-cowbird_urban=read.table("/Users/kprovost/cowbird_dif_urban.txt")
-cowbird_song =read.table("/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections/combined_cowbird_metadata_shape_properties.txt",
+cowbird_urban=read.table("/Users/kaiya/cowbird_dif_urban.txt")
+cowbird_song =read.table("/Users/kaiya/Documents/Postdoc_Working/Molothrus.ater.selections/combined_cowbird_metadata_shape_properties.txt",
                          header=T)
 
 cowbird_urban_song = merge(cowbird_urban,cowbird_song,all=T)
@@ -1155,9 +1517,9 @@ boxplot(cowbird_urban_song$Prop.PC1~cowbird_urban_song$MONTH_COLLECTED)
 
 ## MAPS
 library(raster)
-shp=raster::shapefile("/Users/kprovost/Downloads/cb_2016_us_state_500k/cb_2016_us_state_500k.shp")
+shp=raster::shapefile("/Users/kaiya/Downloads/cb_2016_us_state_500k/cb_2016_us_state_500k.shp")
 plot(shp,xlim=c(-85,-80),ylim=c(38,42))
-cowbird_song =read.table("/Users/kprovost/Downloads/combined_cowbird_metadata_shape_properties.txt",
+cowbird_song =read.table("/Users/kaiya/Downloads/combined_cowbird_metadata_shape_properties.txt",
                          header=T)
 points(cowbird_song$Long,cowbird_song$Lat)
 
@@ -1165,7 +1527,7 @@ wcdata = getData("worldclim",download=T,res=10,var="bio")
 
 
 
-png(filename="/Users/kprovost/Downloads/climate_and_cowbird_ohio_map.png",
+png(filename="/Users/kaiya/Downloads/climate_and_cowbird_ohio_map.png",
     width=600,height=600)
 plot(wcdata[[1]],xlim=c(-85,-80),ylim=c(38,42)) 
 ## we can change this to the urbanization data if we want
@@ -1304,7 +1666,7 @@ sink(file=NULL)
 ## kaiya doing some stuff that Kristen does not have to do 
 {
 ## 25 shape PCAs to get over 50%
-shape_pca = read.table("/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections/cowbird_pca_data.txt")
+shape_pca = read.table("/Users/kaiya/Documents/Postdoc_Working/Molothrus.ater.selections/cowbird_pca_data.txt")
 shape_pca$ID = rownames(shape_pca)
 shape_pca_small = shape_pca[,c("ID","PC1","PC2","PC3","PC4","PC5")]
 colnames(shape_pca_small) = c("ID","Shp.PC1","Shp.PC2","Shp.PC3","Shp.PC4","Shp.PC5")
@@ -1322,7 +1684,7 @@ IDs=sapply(shape_pca_small$ID,FUN=function(x){
 shape_pca_small$Selection = as.numeric(syllable)
 shape_pca_small$ID = as.numeric(IDs)
 
-properties_pca = read.table("/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections/Molothrus.ater.combined.PCA.merged.txt",sep="\t",header=T)
+properties_pca = read.table("/Users/kaiya/Documents/Postdoc_Working/Molothrus.ater.selections/Molothrus.ater.combined.PCA.merged.txt",sep="\t",header=T)
 properties_pca_small = properties_pca[,c("Begin.File","PC1","PC2","PC3","PC4","PC5","Selection")]
 colnames(properties_pca_small) = c("ID","Prop.PC1","Prop.PC2","Prop.PC3","Prop.PC4","Prop.PC5","Selection")
 properties_pca_small$Genus = "Molothrus"
@@ -1336,7 +1698,7 @@ shape_prop_pca_small = merge(shape_pca_small,properties_pca_small,all=T)
 plot(shape_prop_pca_small$Prop.PC1,shape_prop_pca_small$Shp.PC1)
 
 
-metadata = read.csv("/Users/kprovost/Documents/Postdoc_Working/Molothrus.ater.selections/BLB_klp_Molothrus.ater.csv")
+metadata = read.csv("/Users/kaiya/Documents/Postdoc_Working/Molothrus.ater.selections/BLB_klp_Molothrus.ater.csv")
 metadata_small = metadata[,c("ID","GENUS_NAME","SPECIES_EPITHET","YEAR_COLLECTED","LONGITUDE","LATITUDE")]
 colnames(metadata_small) = c("ID","Genus","Species","Year","Long","Lat")
 
@@ -1352,7 +1714,7 @@ for(i in 1:nrow(metadata_small)){
   shape_prop_pca_small$Lat[shape_prop_pca_small$ID == meta_df$ID] = meta_df$Lat
 }
 #write.table(shape_prop_pca_small,"~/combined_cowbird_metadata_shape_properties.txt")
-shape_prop_pca_small = read.table("/Users/kprovost/Documents/Postdoc_Working/combined_cowbird_metadata_shape_properties.txt",header=T)
+shape_prop_pca_small = read.table("/Users/kaiya/Documents/Postdoc_Working/combined_cowbird_metadata_shape_properties.txt",header=T)
 plot(shape_prop_pca_small$Prop.PC1,shape_prop_pca_small$Shp.PC1)
 boxplot(shape_prop_pca_small$Shp.PC1~shape_prop_pca_small$Year)
 
