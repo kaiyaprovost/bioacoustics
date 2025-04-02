@@ -1,11 +1,22 @@
 library(warbleR)
 
-#path = "~/bioacoustics/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/"
-path = "~/Documents/Research/Tyrannidae/ToPredict/"
+path = "/Users/kprovost/Documents/Research/Student_Projects/Calidris/"
 
 setwd(path)
 
-test = query_xc("Molothrus ater",download=F)
+test <- query_xc("Calidris alba",download=FALSE)
+write.table(test,"Calidris alba.csv",append = TRUE,sep=",")
+
+
+
+
+
+
+
+#path = "~/bioacoustics/Sounds_and_Annotations/Aves/Passeriformes/Oscines/Passerellidae/"
+
+
+
 
 #test = query_xc("Sayornis phoebe type:song",download=TRUE)
 #write.csv(test,"Tyrannidae.csv",append = T)
