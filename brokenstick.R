@@ -11,4 +11,4 @@ broken_stick = function(P) {
   return(seq_sums)
 }
 
-broken_stick(52)
+broken_stick(14)
