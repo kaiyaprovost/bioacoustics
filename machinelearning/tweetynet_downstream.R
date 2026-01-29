@@ -8,15 +8,16 @@ library(geomorph)
 do_sumstats = T
 do_soundshape = T
 
-mainpath="/Users/kprovost/Documents/Postdoc_Working/MMRR/WAVS/Wave/0DONE/"
+mainpath="/Users/kprovost/Documents/Research/Student_Projects/LASP/TABLE1/"
+#mainpath="/Users/kprovost/Documents/Postdoc_Working/MMRR/WAVS/Wave/0DONE/"
 #mainpath = "/Users/kprovost/Documents/OneDrive - The Ohio State University/Song/SoundShape/complexity_metric/"
 setwd(mainpath)
 
 #pattern="Table.1.selections.txt$"
-pattern=".selections.AVERAGE.txt$"
+pattern="selections.txt$"
 
-date=format(Sys.time(), "%d%b%Y")
-#date="19may2021"
+#date=format(Sys.time(), "%d%b%Y")
+date="18Jun2025_TABLE1"
 
 if(do_sumstats==T){
   

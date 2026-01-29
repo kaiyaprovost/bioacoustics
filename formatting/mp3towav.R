@@ -2,7 +2,7 @@ library(tuneR)
 
 ## TODO: update so that formatted correctly
 
-setwd("/Users/kprovost/Documents/Research/Tyrannidae/ToPredict")
+setwd("/Users/kprovost/Documents/Research/")
 mp3files = list.files(path=getwd(),
                       pattern="\\.mp3$",full.names = T,recursive=T)
 ## get rid of anything that is "weird" or in the "WEIRD" folder
@@ -10,8 +10,8 @@ mp3files=mp3files[!(grepl("WEIRD",mp3files))]
 mp3files=mp3files[!(grepl("weird",mp3files))]
 
 ## sort your files based on file size 
-#x <- file.info(mp3files)
-#mp3files=mp3files[order(x$size)]
+x <- file.info(mp3files)
+mp3files=mp3files[order(x$size)]
 for(mp3 in (mp3files)[1:length(mp3files)]) {
   ## check if the wav file we are trying to make already exists
   if(!(file.exists(paste(mp3,".wav",sep="")))) {

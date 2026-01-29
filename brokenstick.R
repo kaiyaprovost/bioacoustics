@@ -11,4 +11,9 @@ broken_stick = function(P) {
   return(seq_sums)
 }
 
-broken_stick(14)
+broken_stick(20)
+
+my_pc_importance = c(0.9935,0.00607,0.00043)
+
+plot(broken_stick(3),my_pc_importance,xlim=c(0,1),ylim=c(0,1))
+abline(0,1)

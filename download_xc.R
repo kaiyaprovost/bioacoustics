@@ -1,13 +1,12 @@
 library(warbleR)
 
-path = "/Users/kprovost/Documents/Research/Student_Projects/Calidris/"
+path = "/Users/kprovost/Documents/Research/Student_Projects/LASP/"
 
 setwd(path)
 
-test <- query_xc("Calidris alba",download=FALSE)
-write.table(test,"Calidris alba.csv",append = TRUE,sep=",")
+test <- query_xc("Chondestes grammacus",download=FALSE)
 
-
+write.table(test,"/Users/kprovost/Documents/Research/Student_Projects/LASP/LASP_metadata_18June2025.txt",sep="\t",row.names = F,quote=F)
 
 
 
